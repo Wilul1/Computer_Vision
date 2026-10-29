@@ -1,0 +1,19 @@
+.venv/
+__pycache__/
+*.pyc
+
+# Videos and weights are too big for git: they are shared through Google Drive (see README).
+data/raw/*
+data/train/*
+data/val/*
+data/test/*
+!data/*/.gitkeep
+models/*.pt
+models/*.task
+outputs/*
+!outputs/metrics/
+!outputs/samples/
+!outputs/.gitkeep
+*.mp4
+*.avi
+*.mov
