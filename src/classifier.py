@@ -5,10 +5,14 @@ from . import config
 
 
 def classify_frame(f: dict) -> str:
-    """One frame's label from posture + speed features. Order matters: lying is
-    checked first, then sitting, then the upright activities by speed."""
+    """One frame's label from posture + speed features. Order matters: visibility
+    first, then lying, then sitting, then the upright activities by speed."""
+    if not f["hips_visible"]:
+        return "unknown"
     if f["torso_angle"] >= config.LYING_TORSO_ANGLE_MIN:
         return "lying"
+    if not f["legs_visible"]:
+        return "unknown"
 
     knee, hip, thigh = f["knee_angle"], f["hip_angle"], f["thigh_ratio"]
     side_view_sit = knee is not None and hip is not None and knee < config.SIT_KNEE_ANGLE_MAX and hip < config.SIT_HIP_ANGLE_MAX

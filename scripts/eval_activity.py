@@ -52,7 +52,8 @@ def main():
         pipe = MonitorPipeline(use_yolo=not args.no_yolo)  # fresh state per clip
         rows = predict_stream(str(clip), f"{clip.parent.name}__{clip.stem}", out_dir, pipe, show=False)
         pipe.close()
-        labels = [r["activity"] for r in rows if r["activity"] != "no person"]
+        # Frames with no person or hidden legs do not vote; a clip with only those is "no person".
+        labels = [r["activity"] for r in rows if r["activity"] not in ("no person", "unknown")]
         pred = Counter(labels).most_common(1)[0][0] if labels else "no person"
         y_true.append(clip.parent.name)
         y_pred.append(pred)

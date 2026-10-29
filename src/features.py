@@ -46,6 +46,11 @@ def posture_features(lm: np.ndarray) -> dict:
     else:
         body_h = 2.5 * torso
     return {
+        # Off-screen joints still get guessed coordinates from MediaPipe, but with
+        # low visibility. Without hips and at least one thigh in view, posture rules
+        # would only be guessing (e.g. someone seated at a desk looks "upright").
+        "hips_visible": _visible(lm, L_HIP) or _visible(lm, R_HIP),
+        "legs_visible": thigh_ratio is not None,
         "knee_angle": knee_angle,
         "hip_angle": hip_angle,
         "thigh_ratio": thigh_ratio,

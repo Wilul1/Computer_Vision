@@ -11,7 +11,9 @@ COLORS = {
     "running": (40, 90, 240),
     "lying": (200, 60, 200),
     "no person": (150, 150, 150),
+    "unknown": (150, 150, 150),
 }
+DISPLAY = {"unknown": "UNKNOWN - legs not visible"}
 
 
 def draw_result(frame, r: dict):
@@ -39,11 +41,12 @@ def draw_result(frame, r: dict):
                 cv2.circle(out, (int(x), int(y)), 3, color, -1)
 
     lines = [
-        f"Activity: {r['activity'].upper()}  ({r['confidence']:.0%})",
+        f"Activity: {DISPLAY.get(r['activity'], r['activity'].upper())}  ({r['confidence']:.0%})",
         f"Motion: {'YES' if r['moving'] else 'no'}  {r['motion_ratio']:.1%}   events: {r['motion_events']}",
         f"FPS: {r['fps']:.1f}",
     ]
-    cv2.rectangle(out, (0, 0), (330, 22 * len(lines) + 10), (0, 0, 0), -1)
+    width = max(cv2.getTextSize(t, cv2.FONT_HERSHEY_SIMPLEX, 0.55, 2)[0][0] for t in lines) + 16
+    cv2.rectangle(out, (0, 0), (width, 22 * len(lines) + 10), (0, 0, 0), -1)
     for i, text in enumerate(lines):
         cv2.putText(out, text, (8, 22 * (i + 1)), cv2.FONT_HERSHEY_SIMPLEX, 0.55,
                     color if i == 0 else (255, 255, 255), 2 if i == 0 else 1)
