@@ -1,0 +1,333 @@
+{
+  "split": "val",
+  "clips": 44,
+  "accuracy": 0.4773,
+  "macro_f1": 0.5098,
+  "mean_fps": 11.81,
+  "confusion": {
+    "running": {
+      "no person": 0,
+      "running": 3,
+      "sitting": 2,
+      "standing": 3,
+      "walking": 4
+    },
+    "walking": {
+      "no person": 1,
+      "running": 2,
+      "sitting": 0,
+      "standing": 11,
+      "walking": 18
+    }
+  },
+  "per_clip": [
+    {
+      "clip": "data\\val\\running\\hmdb-bridgetoterabithia__01.avi",
+      "true": "running",
+      "pred": "running",
+      "frame_accuracy": 0.756,
+      "fps": 10.1
+    },
+    {
+      "clip": "data\\val\\running\\hmdb-charlieandthechocolatefactory__01.avi",
+      "true": "running",
+      "pred": "sitting",
+      "frame_accuracy": 0.5,
+      "fps": 10.1
+    },
+    {
+      "clip": "data\\val\\running\\hmdb-happy-go-lovely__01.avi",
+      "true": "running",
+      "pred": "walking",
+      "frame_accuracy": 0.397,
+      "fps": 11.9
+    },
+    {
+      "clip": "data\\val\\running\\hmdb-happy-go-lovely__02.avi",
+      "true": "running",
+      "pred": "standing",
+      "frame_accuracy": 0.0,
+      "fps": 11.2
+    },
+    {
+      "clip": "data\\val\\running\\hmdb-happy-go-lovely__03.avi",
+      "true": "running",
+      "pred": "walking",
+      "frame_accuracy": 0.412,
+      "fps": 11.9
+    },
+    {
+      "clip": "data\\val\\running\\hmdb-littlechildren__01.avi",
+      "true": "running",
+      "pred": "running",
+      "frame_accuracy": 0.656,
+      "fps": 10.3
+    },
+    {
+      "clip": "data\\val\\running\\hmdb-shadow-of-a-doubt__01.avi",
+      "true": "running",
+      "pred": "sitting",
+      "frame_accuracy": 0.362,
+      "fps": 11.9
+    },
+    {
+      "clip": "data\\val\\running\\hmdb-the-matrix-6__01.avi",
+      "true": "running",
+      "pred": "walking",
+      "frame_accuracy": 0.0,
+      "fps": 11.5
+    },
+    {
+      "clip": "data\\val\\running\\hmdb-the-matrix-6__02.avi",
+      "true": "running",
+      "pred": "standing",
+      "frame_accuracy": 0.0,
+      "fps": 13.6
+    },
+    {
+      "clip": "data\\val\\running\\hmdb-the-matrix-6__03.avi",
+      "true": "running",
+      "pred": "standing",
+      "frame_accuracy": 0.0,
+      "fps": 12.5
+    },
+    {
+      "clip": "data\\val\\running\\hmdb-thebigbangs01e01pilot__01.avi",
+      "true": "running",
+      "pred": "running",
+      "frame_accuracy": 1.0,
+      "fps": 10.6
+    },
+    {
+      "clip": "data\\val\\running\\hmdb-theboondocksaints__01.avi",
+      "true": "running",
+      "pred": "walking",
+      "frame_accuracy": 0.164,
+      "fps": 11.0
+    },
+    {
+      "clip": "data\\val\\walking\\hmdb-20060723sfjffschmoozer__01.avi",
+      "true": "walking",
+      "pred": "walking",
+      "frame_accuracy": 0.874,
+      "fps": 12.0
+    },
+    {
+      "clip": "data\\val\\walking\\hmdb-20070723-sfjff-waitingforrescue__01.avi",
+      "true": "walking",
+      "pred": "standing",
+      "frame_accuracy": 0.467,
+      "fps": 11.7
+    },
+    {
+      "clip": "data\\val\\walking\\hmdb-bridgetoterabithia__01.avi",
+      "true": "walking",
+      "pred": "walking",
+      "frame_accuracy": 0.923,
+      "fps": 11.8
+    },
+    {
+      "clip": "data\\val\\walking\\hmdb-charlieandthechocolatefactory__01.avi",
+      "true": "walking",
+      "pred": "walking",
+      "frame_accuracy": 0.494,
+      "fps": 11.4
+    },
+    {
+      "clip": "data\\val\\walking\\hmdb-charlieandthechocolatefactory__02.avi",
+      "true": "walking",
+      "pred": "running",
+      "frame_accuracy": 0.259,
+      "fps": 11.4
+    },
+    {
+      "clip": "data\\val\\walking\\hmdb-charlieandthechocolatefactory__03.avi",
+      "true": "walking",
+      "pred": "standing",
+      "frame_accuracy": 0.0,
+      "fps": 11.1
+    },
+    {
+      "clip": "data\\val\\walking\\hmdb-finding-forrester-1__01.avi",
+      "true": "walking",
+      "pred": "walking",
+      "frame_accuracy": 0.545,
+      "fps": 11.6
+    },
+    {
+      "clip": "data\\val\\walking\\hmdb-finding-forrester-1__02.avi",
+      "true": "walking",
+      "pred": "standing",
+      "frame_accuracy": 0.403,
+      "fps": 12.4
+    },
+    {
+      "clip": "data\\val\\walking\\hmdb-gossip1953256kb__01.avi",
+      "true": "walking",
+      "pred": "walking",
+      "frame_accuracy": 0.812,
+      "fps": 12.3
+    },
+    {
+      "clip": "data\\val\\walking\\hmdb-happy-go-lovely__01.avi",
+      "true": "walking",
+      "pred": "standing",
+      "frame_accuracy": 0.463,
+      "fps": 11.6
+    },
+    {
+      "clip": "data\\val\\walking\\hmdb-happy-go-lovely__02.avi",
+      "true": "walking",
+      "pred": "walking",
+      "frame_accuracy": 0.944,
+      "fps": 10.7
+    },
+    {
+      "clip": "data\\val\\walking\\hmdb-happy-go-lovely__03.avi",
+      "true": "walking",
+      "pred": "walking",
+      "frame_accuracy": 0.821,
+      "fps": 10.9
+    },
+    {
+      "clip": "data\\val\\walking\\hmdb-littlechildren__01.avi",
+      "true": "walking",
+      "pred": "walking",
+      "frame_accuracy": 0.602,
+      "fps": 10.4
+    },
+    {
+      "clip": "data\\val\\walking\\hmdb-meetthefockers__01.avi",
+      "true": "walking",
+      "pred": "standing",
+      "frame_accuracy": 0.0,
+      "fps": 10.9
+    },
+    {
+      "clip": "data\\val\\walking\\hmdb-narcotic19672256kb__01.avi",
+      "true": "walking",
+      "pred": "walking",
+      "frame_accuracy": 0.707,
+      "fps": 12.7
+    },
+    {
+      "clip": "data\\val\\walking\\hmdb-narcotic19672256kb__02.avi",
+      "true": "walking",
+      "pred": "walking",
+      "frame_accuracy": 0.552,
+      "fps": 12.3
+    },
+    {
+      "clip": "data\\val\\walking\\hmdb-narcotic19672256kb__03.avi",
+      "true": "walking",
+      "pred": "standing",
+      "frame_accuracy": 0.191,
+      "fps": 12.7
+    },
+    {
+      "clip": "data\\val\\walking\\hmdb-nocountryforoldmen__01.avi",
+      "true": "walking",
+      "pred": "running",
+      "frame_accuracy": 0.283,
+      "fps": 12.4
+    },
+    {
+      "clip": "data\\val\\walking\\hmdb-nova-elegantuniverse1__01.avi",
+      "true": "walking",
+      "pred": "walking",
+      "frame_accuracy": 0.866,
+      "fps": 12.2
+    },
+    {
+      "clip": "data\\val\\walking\\hmdb-nova-elegantuniverse1__02.avi",
+      "true": "walking",
+      "pred": "walking",
+      "frame_accuracy": 0.859,
+      "fps": 13.1
+    },
+    {
+      "clip": "data\\val\\walking\\hmdb-prelinger-controly1950__01.avi",
+      "true": "walking",
+      "pred": "no person",
+      "frame_accuracy": 0.0,
+      "fps": 15.4
+    },
+    {
+      "clip": "data\\val\\walking\\hmdb-return-of-the-king-5__01.avi",
+      "true": "walking",
+      "pred": "standing",
+      "frame_accuracy": 0.262,
+      "fps": 12.1
+    },
+    {
+      "clip": "data\\val\\walking\\hmdb-shadow-of-a-doubt__01.avi",
+      "true": "walking",
+      "pred": "walking",
+      "frame_accuracy": 0.863,
+      "fps": 12.0
+    },
+    {
+      "clip": "data\\val\\walking\\hmdb-shadow-of-a-doubt__02.avi",
+      "true": "walking",
+      "pred": "walking",
+      "frame_accuracy": 0.948,
+      "fps": 11.9
+    },
+    {
+      "clip": "data\\val\\walking\\hmdb-strangerthanfiction__01.avi",
+      "true": "walking",
+      "pred": "walking",
+      "frame_accuracy": 0.643,
+      "fps": 12.1
+    },
+    {
+      "clip": "data\\val\\walking\\hmdb-strangerthanfiction__02.avi",
+      "true": "walking",
+      "pred": "standing",
+      "frame_accuracy": 0.108,
+      "fps": 11.9
+    },
+    {
+      "clip": "data\\val\\walking\\hmdb-theboondocksaints__01.avi",
+      "true": "walking",
+      "pred": "standing",
+      "frame_accuracy": 0.058,
+      "fps": 11.7
+    },
+    {
+      "clip": "data\\val\\walking\\hmdb-theboondocksaints__02.avi",
+      "true": "walking",
+      "pred": "walking",
+      "frame_accuracy": 1.0,
+      "fps": 11.5
+    },
+    {
+      "clip": "data\\val\\walking\\hmdb-theboondocksaints__03.avi",
+      "true": "walking",
+      "pred": "walking",
+      "frame_accuracy": 0.925,
+      "fps": 11.0
+    },
+    {
+      "clip": "data\\val\\walking\\hmdb-thelittleshopofhorrors__01.avi",
+      "true": "walking",
+      "pred": "standing",
+      "frame_accuracy": 0.235,
+      "fps": 13.3
+    },
+    {
+      "clip": "data\\val\\walking\\hmdb-thelittleshopofhorrors__02.avi",
+      "true": "walking",
+      "pred": "standing",
+      "frame_accuracy": 0.183,
+      "fps": 11.7
+    },
+    {
+      "clip": "data\\val\\walking\\hmdb-thelittleshopofhorrors__03.avi",
+      "true": "walking",
+      "pred": "walking",
+      "frame_accuracy": 0.577,
+      "fps": 12.6
+    }
+  ]
+}

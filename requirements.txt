@@ -6,3 +6,4 @@ opencv-python==5.0.0.93
 mediapipe==1.2.0
 ultralytics==8.4.192
 numpy==2.5.4
+markdown==3.11.2          # only for scripts/make_report_pdf.py
