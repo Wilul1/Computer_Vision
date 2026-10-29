@@ -5,7 +5,12 @@
 ## Sources and licences
 - **Own recordings** by the three team members, made with `scripts/record_clips.py` on laptop webcams and phone
   cameras. Everyone filmed agreed to appear. For course use only.
-- TODO: list any public dataset clips here with their licence, or write "none".
+- TODO: delete the lines below that you didn't use.
+- **HMDB51** (Kuehne et al., ICCV 2011, Brown University), walk and run classes. Free for non-commercial research.
+  Imported with `scripts/import_public.py hmdb51`, which keeps full-body, single-person, non-bad-quality clips.
+  Source = the movie the clip came from.
+- **KTH Actions** (Schüldt, Laptev & Caputo, ICPR 2004), walking and running classes. Free for non-commercial
+  research. Source = the subject (person01–25). Frames are upscaled 4× from 160×120.
 
 ## Naming and splitting
 - `data/raw/<activity>/<source>__<NN>.mp4`. A **source** is one recording session: one person, one place, one

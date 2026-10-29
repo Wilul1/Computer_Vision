@@ -45,6 +45,7 @@ record your own:
 
 ```bash
 python scripts/record_clips.py --activity walking --source s01-wilmark-room-webcam --seconds 10 --count 3
+python scripts/import_public.py hmdb51 <folder>   # optional: add public clips (see the script's docstring)
 python scripts/make_splits.py        # 70/15/15 split BY SOURCE -> data/train|val|test, data/splits.csv
 ```
 
@@ -53,19 +54,22 @@ See [data/README.md](data/README.md) for the data card.
 ## Evaluate
 
 ```bash
-python scripts/eval_activity.py --split val          # accuracy, macro-F1, confusion matrix, FPS
-python scripts/eval_motion_baseline.py               # MOG2 events vs hand count, FPS
-python scripts/preprocess_strip.py --input <clip>    # before/after figure in docs/figures/
+python scripts/run_all_eval.py                       # every val number in one go -> outputs/metrics/summary.md
+python scripts/preprocess_strip.py --input data/val  # before/after figure, one row per activity -> docs/figures/
 ```
 
-Results are saved to `outputs/metrics/*.json`. The test split is only used for the final evaluation.
+`run_all_eval.py` runs `eval_activity.py --split val` (accuracy, macro-F1, confusion matrix, FPS) and
+`eval_motion_baseline.py` (MOG2 events vs hand count, FPS). Results are saved to `outputs/metrics/`. The test split
+is only used for the final evaluation. The reasons behind every setting are in
+[docs/design_choices.md](docs/design_choices.md).
 
 ## Layout
 
 ```
 src/            config.py (all thresholds) · preprocess.py · motion.py · detector.py · pose.py
                 features.py · classifier.py · visualize.py · pipeline.py · predict.py
-scripts/        record_clips.py · make_splits.py · eval_activity.py · eval_motion_baseline.py · preprocess_strip.py
+scripts/        record_clips.py · import_public.py · make_splits.py · run_all_eval.py · eval_activity.py
+                eval_motion_baseline.py · preprocess_strip.py
 data/           raw/<activity>/<source>__NN.mp4 · train|val|test/<activity>/ · splits.csv · annotations/
 docs/           progress_report.md · figures/
 outputs/        annotated results and metrics

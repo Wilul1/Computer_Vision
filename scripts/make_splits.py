@@ -58,6 +58,8 @@ def main():
 
     for split in RATIOS:
         shutil.rmtree(DATA / split, ignore_errors=True)
+        (DATA / split).mkdir()
+        (DATA / split / ".gitkeep").touch()  # keeps the empty folder in git
     for src, files in by_source.items():
         for c in files:
             dest = DATA / assigned[src] / c.parent.name / c.name
