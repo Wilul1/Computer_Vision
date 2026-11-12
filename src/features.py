@@ -75,13 +75,19 @@ class MotionFeatures:
         while self.history and t - self.history[0][0] > config.SPEED_WINDOW_SEC:
             self.history.popleft()
         if len(self.history) < 3:
-            return {"hip_speed": 0.0, "leg_speed": 0.0}
+            return {"hip_speed": 0.0, "hip_speed_comp": 0.0, "leg_speed": 0.0}
 
         (t0, f0), (t1, f1) = self.history[0], self.history[-1]
         dt = max(t1 - t0, 1e-3)
         scale = np.median([f["body_h"] for _, f in self.history])
         # Horizontal travel of the hips across the frame.
-        hip_speed = abs(f1["mid_hip"][0] - f0["mid_hip"][0]) / scale / dt
+        dx = f1["mid_hip"][0] - f0["mid_hip"][0]
+        hip_speed = abs(dx) / scale / dt
+        # Same, relative to the background: if the camera pans to follow the
+        # person, the background moves the other way, and subtracting its shift
+        # recovers the person's real travel.
+        cam_dx = f1.get("cam_offset", (0, 0))[0] - f0.get("cam_offset", (0, 0))[0]
+        hip_speed_comp = abs(dx - cam_dx) / scale / dt
         # Leg swing: range of ankle positions relative to the hips over the window.
         # Catches walking/running toward the camera where hips barely shift. Using
         # the range (not the summed path) keeps landmark jitter from adding up.
@@ -91,4 +97,4 @@ class MotionFeatures:
             leg_speed = float((a.max(axis=0) - a.min(axis=0)).sum()) / scale / dt
         else:
             leg_speed = 0.0
-        return {"hip_speed": float(hip_speed), "leg_speed": float(leg_speed)}
+        return {"hip_speed": float(hip_speed), "hip_speed_comp": float(hip_speed_comp), "leg_speed": float(leg_speed)}

@@ -1,0 +1,455 @@
+clip,dataset,condition,original
+_segments/gmdcsa-s1__adl-01.mp4,gmdcsa24,"room, static camera; Day (Light On); Full T-shirt & Trousers; Sitting on the bed to sleeping right side on the bed. Face towards camera",Subject 1/ADL/01.mp4
+_segments/gmdcsa-s1__adl-02.mp4,gmdcsa24,"room, static camera; Day (Light On); Full T-shirt & Trousers; Sitting on the bed to sleeping left side on the bed. Face towards the camera",Subject 1/ADL/02.mp4
+_segments/gmdcsa-s1__adl-03.mp4,gmdcsa24,"room, static camera; Day (Light On); Full T-shirt & Trousers; Sitting on the bed to sleeping left side on the bed. Face towards the ceiling",Subject 1/ADL/03.mp4
+_segments/gmdcsa-s1__adl-04.mp4,gmdcsa24,"room, static camera; Day (Light On); Full T-shirt & Trousers; From sleeping left side on the bed (Face towards the ceiling) to sitting on the bed",Subject 1/ADL/04.mp4
+_segments/gmdcsa-s1__adl-05.mp4,gmdcsa24,"room, static camera; Day (Light On); Full T-shirt & Trousers; Coming to the bed and reading book in the sitting position. Front view of the subject. One leg folded",Subject 1/ADL/05.mp4
+_segments/gmdcsa-s1__adl-06.mp4,gmdcsa24,"room, static camera; Day (Light On); Full T-shirt & Trousers; Sitting on the bed (front view) to reading the book while supporting towards the wall. Side view",Subject 1/ADL/06.mp4
+_segments/gmdcsa-s1__adl-07.mp4,gmdcsa24,"room, static camera; Day (Light On); Full T-shirt & Trousers; Reading book while sitting on the chair; Front view;Leg straight",Subject 1/ADL/07.mp4
+_segments/gmdcsa-s1__adl-08.mp4,gmdcsa24,"room, static camera; Day (Light On); Full T-shirt & Trousers; Walking in the room",Subject 1/ADL/08.mp4
+_segments/gmdcsa-s1__adl-09.mp4,gmdcsa24,"room, static camera; Day (Light On); Full T-shirt & Trousers; Reading book while walking in the room",Subject 1/ADL/09.mp4
+_segments/gmdcsa-s1__adl-10.mp4,gmdcsa24,"room, static camera; Day (Light On); Full T-shirt & Trousers; Reading book while walking in the room",Subject 1/ADL/10.mp4
+_segments/gmdcsa-s1__adl-11.mp4,gmdcsa24,"room, static camera; Day (Light On); Full T-shirt & Trousers; Walking to sitting on the chair and then reading book",Subject 1/ADL/11.mp4
+_segments/gmdcsa-s1__adl-12.mp4,gmdcsa24,"room, static camera; Day (Light On); Full T-shirt & Trousers; Reading book while sitting on the chair to stand up and keeping the book on the chair and going out of the room",Subject 1/ADL/12.mp4
+_segments/gmdcsa-s1__adl-13.mp4,gmdcsa24,"room, static camera; Day (Light On); T-shirt & Trousers; Walking to sitting on the chair (side view)",Subject 1/ADL/13.mp4
+_segments/gmdcsa-s1__adl-14.mp4,gmdcsa24,"room, static camera; Day (Light On); T-shirt & Trousers; Sitting on the chair (side view) to walking",Subject 1/ADL/14.mp4
+_segments/gmdcsa-s1__adl-15.mp4,gmdcsa24,"room, static camera; Day (Light On); T-shirt & Trousers; Walking to picking a mobile phone from the ground and then sitting on the chair",Subject 1/ADL/15.mp4
+_segments/gmdcsa-s1__adl-16.mp4,gmdcsa24,"room, static camera; Day (Light On); T-shirt & Trousers; Picking the mobile phone from the ground while sitting on the chair",Subject 1/ADL/16.mp4
+_segments/gmdcsa-s1__fall-01.mp4,gmdcsa24,"room, static camera; Day (Light On); Full T-shirt & Trousers; Falling from sitting on the chair to the ground. Left side Fall. Full body not visible",Subject 1/Fall/01.mp4
+_segments/gmdcsa-s1__fall-02.mp4,gmdcsa24,"room, static camera; Day (Light On); Full T-shirt & Trousers; Falling from sitting on the chair to the ground. Left side Fall. Full body not visible",Subject 1/Fall/02.mp4
+_segments/gmdcsa-s1__fall-03.mp4,gmdcsa24,"room, static camera; Day (Light On); Full T-shirt & Trousers; Falling from sitting on the chair to the ground. Left side fall",Subject 1/Fall/03.mp4
+_segments/gmdcsa-s1__fall-04.mp4,gmdcsa24,"room, static camera; Day (Light On); Full T-shirt & Trousers; Falling from sitting on the chair to the ground. Right side fall",Subject 1/Fall/04.mp4
+_segments/gmdcsa-s1__fall-05.mp4,gmdcsa24,"room, static camera; Day (Light On); Full T-shirt & Trousers; Walking to falling. Right side fall",Subject 1/Fall/05.mp4
+_segments/gmdcsa-s1__fall-06.mp4,gmdcsa24,"room, static camera; Day (Light On); Full T-shirt & Trousers; Walking to falling. Right side fall",Subject 1/Fall/06.mp4
+_segments/gmdcsa-s1__fall-07.mp4,gmdcsa24,"room, static camera; Day (Light On); Full T-shirt & Trousers; Walking to falling. Right side fall",Subject 1/Fall/07.mp4
+_segments/gmdcsa-s1__fall-08.mp4,gmdcsa24,"room, static camera; Day (Light On); Full T-shirt & Trousers; Walking to falling. Left side fall",Subject 1/Fall/08.mp4
+_segments/gmdcsa-s1__fall-09.mp4,gmdcsa24,"room, static camera; Day (Light On); Full T-shirt & Trousers; Standing position to falling. Forward Fall. Full body (head) not visible",Subject 1/Fall/09.mp4
+_segments/gmdcsa-s1__fall-10.mp4,gmdcsa24,"room, static camera; Day (Light On); Full T-shirt & Trousers; Standing position to falling. Forward Fall. Full body (right eye) not visible",Subject 1/Fall/10.mp4
+_segments/gmdcsa-s1__fall-11.mp4,gmdcsa24,"room, static camera; Day (Light On); T-shirt & Trousers; Standing position to falling",Subject 1/Fall/11.mp4
+_segments/gmdcsa-s1__fall-12.mp4,gmdcsa24,"room, static camera; Day (Light On); T-shirt & Trousers; Standing position to falling. Backward Fall",Subject 1/Fall/12.mp4
+_segments/gmdcsa-s1__fall-13.mp4,gmdcsa24,"room, static camera; Day (Light On); T-shirt & Trousers; Standing position to falling. Backward fall. Full body (head) is not visible",Subject 1/Fall/13.mp4
+_segments/gmdcsa-s1__fall-14.mp4,gmdcsa24,"room, static camera; Day (Light On); T-shirt & Trousers; Standing position to falling. Backward fall. Full body (both ankles) is not visible",Subject 1/Fall/14.mp4
+_segments/gmdcsa-s1__fall-15.mp4,gmdcsa24,"room, static camera; Day (Light On); T-shirt & Trousers; Sitting on the chair (side view) to right side fall",Subject 1/Fall/15.mp4
+_segments/gmdcsa-s1__fall-16.mp4,gmdcsa24,"room, static camera; Day (Light On); T-shirt & Trousers; Sitting on the chair (side view) to the left side fall",Subject 1/Fall/16.mp4
+_segments/gmdcsa-s2__adl-01.mp4,gmdcsa24,"room, static camera; Day; Full Shirt & Pant; Talking on the mobile phone while sitting on the bed and walking",Subject 2/ADL/01.mp4
+_segments/gmdcsa-s2__adl-02.mp4,gmdcsa24,"room, static camera; Day; Full Shirt & Pant; Picking up a water bottle from the ground and drinking while sitting on the bed",Subject 2/ADL/02.mp4
+_segments/gmdcsa-s2__adl-03.mp4,gmdcsa24,"room, static camera; Day; Full Shirt & Pant; Walking; removing dust from the bed using a pillow; and sleeping on the bed",Subject 2/ADL/03.mp4
+_segments/gmdcsa-s2__adl-04.mp4,gmdcsa24,"room, static camera; Day; Full Shirt & Pant; Yoga: Standing forward bend (Uttanasana)",Subject 2/ADL/04.mp4
+_segments/gmdcsa-s2__adl-05.mp4,gmdcsa24,"room, static camera; Day; Full Shirt & Pant; Throwing a book on the bed; standing up from the ground; walking; and opening the curtain",Subject 2/ADL/05.mp4
+_segments/gmdcsa-s2__adl-06.mp4,gmdcsa24,"room, static camera; Day; Full Shirt & Pant; Picking up the mobile phone from the ground; placing it on the bed; and sitting on the bed",Subject 2/ADL/06.mp4
+_segments/gmdcsa-s2__adl-07.mp4,gmdcsa24,"room, static camera; Day; Full Shirt & Pant; Exercising (Moving both hands up and down)",Subject 2/ADL/07.mp4
+_segments/gmdcsa-s2__adl-08.mp4,gmdcsa24,"room, static camera; Day; Full Shirt & Pant; Exercising (Stretching thigh and trying to touch the ground:Pyramid Pose)",Subject 2/ADL/08.mp4
+_segments/gmdcsa-s2__adl-09.mp4,gmdcsa24,"room, static camera; Day; Full Shirt & Paint; Standing up from a sitting position on the bed and then sitting on the ground",Subject 2/ADL/09.mp4
+_segments/gmdcsa-s2__adl-10.mp4,gmdcsa24,"room, static camera; Day; Full Shirt & Paint; Standing up from the ground and closing the curtain",Subject 2/ADL/10.mp4
+_segments/gmdcsa-s2__adl-11.mp4,gmdcsa24,"room, static camera; Day; Full Shirt; T-shirt & Pant; Removing the shirt and hanging it on the hanger",Subject 2/ADL/11.mp4
+_segments/gmdcsa-s2__adl-12.mp4,gmdcsa24,"room, static camera; Day; T-shirt and Pant; Going to bed and sleeping (belly facing downwards)",Subject 2/ADL/12.mp4
+_segments/gmdcsa-s2__adl-13.mp4,gmdcsa24,"room, static camera; Day; T-shirt and Pant; Sitting on the ground and reading a book",Subject 2/ADL/13.mp4
+_segments/gmdcsa-s2__adl-14.mp4,gmdcsa24,"room, static camera; Night; Full Shirt & Jeans; Walking and reading something while sitting on the bed",Subject 2/ADL/14.mp4
+_segments/gmdcsa-s2__adl-15.mp4,gmdcsa24,"room, static camera; Night; Full Shirt & Jeans; Reading a newspaper while sitting on the bed and placing a pillow on the lap",Subject 2/ADL/15.mp4
+_segments/gmdcsa-s2__adl-16.mp4,gmdcsa24,"room, static camera; Night; Full Shirt & Jeans; Reading a newspaper; throwing the newspaper; and sleeping",Subject 2/ADL/16.mp4
+_segments/gmdcsa-s2__adl-17.mp4,gmdcsa24,"room, static camera; Night; Full Shirt & Jeans; Standing up from bed; walking; and checking the dress on the hanger",Subject 2/ADL/17.mp4
+_segments/gmdcsa-s2__adl-18.mp4,gmdcsa24,"room, static camera; Night; Full Shirt & Jeans; Walking; opening the window; and looking outside",Subject 2/ADL/18.mp4
+_segments/gmdcsa-s2__adl-19.mp4,gmdcsa24,"room, static camera; Night; Full Shirt & Jeans; Sitting on the ground and writing in a notebook",Subject 2/ADL/19.mp4
+_segments/gmdcsa-s2__adl-20.mp4,gmdcsa24,"room, static camera; Night; Full Shirt & Jeans; Standing up; picking up a water bottle; and drinking water while sitting on the ground",Subject 2/ADL/20.mp4
+_segments/gmdcsa-s2__adl-21.mp4,gmdcsa24,"room, static camera; Night; Full Shirt & Jeans; Picking up a pen from the ground and walking",Subject 2/ADL/21.mp4
+_segments/gmdcsa-s2__adl-22.mp4,gmdcsa24,"room, static camera; Night; Full Shirt & Jeans; Exercising (Push-up) and sitting",Subject 2/ADL/22.mp4
+_segments/gmdcsa-s2__adl-23.mp4,gmdcsa24,"room, static camera; Night; Full Shirt & Jeans; Eating biscuits while sitting on the bed with legs folded",Subject 2/ADL/23.mp4
+_segments/gmdcsa-s2__fall-01.mp4,gmdcsa24,"room, static camera; Day; T-Shirt & Pants; Right side fall on the ground",Subject 2/Fall/01.mp4
+_segments/gmdcsa-s2__fall-02.mp4,gmdcsa24,"room, static camera; Day; T-Shirt & Pants; Right side fall on the ground after walking",Subject 2/Fall/02.mp4
+_segments/gmdcsa-s2__fall-03.mp4,gmdcsa24,"room, static camera; Day; T-Shirt & Pants; Forward fall on the bed",Subject 2/Fall/03.mp4
+_segments/gmdcsa-s2__fall-04.mp4,gmdcsa24,"room, static camera; Day; T-Shirt & Pants; Seeing outside the window then backward fall",Subject 2/Fall/04.mp4
+_segments/gmdcsa-s2__fall-05.mp4,gmdcsa24,"room, static camera; Day; T-Shirt & Pants; Left side fall (face hidden by hand)",Subject 2/Fall/05.mp4
+_segments/gmdcsa-s2__fall-06.mp4,gmdcsa24,"room, static camera; Day; T-Shirt & Pants; Walking while seeing the mobile phone then fall backward (left hand not fully in the frame)",Subject 2/Fall/06.mp4
+_segments/gmdcsa-s2__fall-07.mp4,gmdcsa24,"room, static camera; Day; Full Shirt & Pants; Falling (forward) after trying to pick the bottle from the ground",Subject 2/Fall/07.mp4
+_segments/gmdcsa-s2__fall-08.mp4,gmdcsa24,"room, static camera; Day; Full Shirt & Pants; Reading a newspaper in the sitting position on the ground then falling backward",Subject 2/Fall/08.mp4
+_segments/gmdcsa-s2__fall-09.mp4,gmdcsa24,"room, static camera; Day; Full Shirt & Pants; Falling backward after walking",Subject 2/Fall/09.mp4
+_segments/gmdcsa-s2__fall-10.mp4,gmdcsa24,"room, static camera; Night; Full Shirt & Jeans; Right side fall then backward",Subject 2/Fall/10.mp4
+_segments/gmdcsa-s2__fall-11.mp4,gmdcsa24,"room, static camera; Night; Full Shirt & Jeans; Falling from bed to ground",Subject 2/Fall/11.mp4
+_segments/gmdcsa-s2__fall-12.mp4,gmdcsa24,"room, static camera; Night; Full Shirt & Jeans; Drinking water from the water bottle then falling backwards",Subject 2/Fall/12.mp4
+_segments/gmdcsa-s2__fall-13.mp4,gmdcsa24,"room, static camera; Night; Full Shirt & Jeans; Falling backward (side view)",Subject 2/Fall/13.mp4
+_segments/gmdcsa-s2__fall-14.mp4,gmdcsa24,"room, static camera; Night; Full Shirt & Jeans; Falling backward on the bed",Subject 2/Fall/14.mp4
+_segments/gmdcsa-s2__fall-15.mp4,gmdcsa24,"room, static camera; Day; T-Shirt & Pants 2; Writing while sitting on the bed; then falling on the ground",Subject 2/Fall/15.mp4
+_segments/gmdcsa-s2__fall-16.mp4,gmdcsa24,"room, static camera; Day; T-Shirt & Pants 2; Walking then falling forward",Subject 2/Fall/16.mp4
+_segments/gmdcsa-s2__fall-17.mp4,gmdcsa24,"room, static camera; Day; T-Shirt & Pants 2; Walking then falling forward",Subject 2/Fall/17.mp4
+_segments/gmdcsa-s2__fall-18.mp4,gmdcsa24,"room, static camera; Day; T-Shirt & Pants 2; Picking a water bottle from the ground and drinking water from it then falling forward on the ground",Subject 2/Fall/18.mp4
+_segments/gmdcsa-s2__fall-19.mp4,gmdcsa24,"room, static camera; Day; T-Shirt & Pants 2; Eating in standing position then falling forward",Subject 2/Fall/19.mp4
+_segments/gmdcsa-s2__fall-20.mp4,gmdcsa24,"room, static camera; Day; T-Shirt & Pants 2; Eating in standing position then falling forward",Subject 2/Fall/20.mp4
+_segments/gmdcsa-s2__fall-21.mp4,gmdcsa24,"room, static camera; Day; T-Shirt & Pants 2; Standing then falling sideways",Subject 2/Fall/21.mp4
+_segments/gmdcsa-s2__fall-22.mp4,gmdcsa24,"room, static camera; Day; T-Shirt & Pants 2; Walking then falling forward",Subject 2/Fall/22.mp4
+_segments/gmdcsa-s2__fall-23.mp4,gmdcsa24,"room, static camera; Day; T-Shirt & Pants 2; Standing then falling sideways",Subject 2/Fall/23.mp4
+_segments/gmdcsa-s2__fall-24.mp4,gmdcsa24,"room, static camera; Day; T-Shirt & Pants 2; Standing from the bed and then falling sideways on the ground",Subject 2/Fall/24.mp4
+_segments/gmdcsa-s2__fall-25.mp4,gmdcsa24,"room, static camera; Day; T-Shirt & Pants 2; Standing then falling backward on the ground",Subject 2/Fall/25.mp4
+_segments/gmdcsa-s3__adl-01.mp4,gmdcsa24,"room, static camera; Day; Full T-shirt & Trousers; Writing something in the notebook while sitting on the bed",Subject 3/ADL/01.mp4
+_segments/gmdcsa-s3__adl-02.mp4,gmdcsa24,"room, static camera; Day; Full T-shirt & Trousers; Exercise (Hand up & down)",Subject 3/ADL/02.mp4
+_segments/gmdcsa-s3__adl-03.mp4,gmdcsa24,"room, static camera; Day; Full T-shirt & Trousers; Getting up from the sleeping position from the bed; Putting a mask on the face; then walking",Subject 3/ADL/03.mp4
+_segments/gmdcsa-s3__adl-04.mp4,gmdcsa24,"room, static camera; Day; Full T-shirt & Trousers; Picking a book from the floor and putting it on the bed; sitting on the bed",Subject 3/ADL/04.mp4
+_segments/gmdcsa-s3__adl-05.mp4,gmdcsa24,"room, static camera; Day; Full T-shirt & Trousers; Exercising (hand down & up with body bending)",Subject 3/ADL/05.mp4
+_segments/gmdcsa-s3__adl-06.mp4,gmdcsa24,"room, static camera; Day; Full T-shirt & Trousers; Exercising then sitting down on the floor",Subject 3/ADL/06.mp4
+_segments/gmdcsa-s3__adl-07.mp4,gmdcsa24,"room, static camera; Day; Full T-shirt & Trousers; Exercising (sitting and standing)",Subject 3/ADL/07.mp4
+_segments/gmdcsa-s3__adl-08.mp4,gmdcsa24,"room, static camera; Day; Full T-shirt & Trousers; Sitting to sleeping on the floor",Subject 3/ADL/08.mp4
+_segments/gmdcsa-s3__adl-09.mp4,gmdcsa24,"room, static camera; Day; Full T-shirt & Trousers; Sleeping on the floor to sitting and then standing",Subject 3/ADL/09.mp4
+_segments/gmdcsa-s3__adl-10.mp4,gmdcsa24,"room, static camera; Day; Full shirt & Trousers; Opening the window curtain and the window",Subject 3/ADL/10.mp4
+_segments/gmdcsa-s3__adl-11.mp4,gmdcsa24,"room, static camera; Day; Full shirt & Trousers; Closing the window curtain and the window",Subject 3/ADL/11.mp4
+_segments/gmdcsa-s3__adl-12.mp4,gmdcsa24,"room, static camera; Night; Full T-shirt 2 & Trousers; Changing pages of a book while sitting on the bed; standing",Subject 3/ADL/12.mp4
+_segments/gmdcsa-s3__adl-13.mp4,gmdcsa24,"room, static camera; Night; Full T-shirt (different) & Trousers; Sitting on the floor",Subject 3/ADL/13.mp4
+_segments/gmdcsa-s3__adl-14.mp4,gmdcsa24,"room, static camera; Night; Full T-shirt (different) & Trousers; Sitting on the floor & drinking water from the water bottle",Subject 3/ADL/14.mp4
+_segments/gmdcsa-s3__adl-15.mp4,gmdcsa24,"room, static camera; Night; Full T-shirt (different) & Trousers; Reading newspaper while sitting on the floor",Subject 3/ADL/15.mp4
+_segments/gmdcsa-s3__adl-16.mp4,gmdcsa24,"room, static camera; Day; Kurta & Trousers; Eating while sitting on the ground",Subject 3/ADL/16.mp4
+_segments/gmdcsa-s3__adl-17.mp4,gmdcsa24,"room, static camera; Night; Full T-shirt (different) & Trousers; Drinking water from a water bottle while sitting on the bed Putting the water bottle on the bed",Subject 3/ADL/17.mp4
+_segments/gmdcsa-s3__adl-18.mp4,gmdcsa24,"room, static camera; Night; Full T-shirt (different) & Trousers; Walking; sitting on the bed and eating biscuits",Subject 3/ADL/18.mp4
+_segments/gmdcsa-s3__adl-19.mp4,gmdcsa24,"room, static camera; Night; Full T-shirt (different) & Trousers; Picking the pen from the floor and putting it on the bed",Subject 3/ADL/19.mp4
+_segments/gmdcsa-s3__adl-20.mp4,gmdcsa24,"room, static camera; Night; Full T-shirt (different) & Trousers; Talking on the phone while sitting on the bed",Subject 3/ADL/20.mp4
+_segments/gmdcsa-s3__adl-21.mp4,gmdcsa24,"room, static camera; Day; Kurta & Trousers; Drinking while sitting on the bed",Subject 3/ADL/21.mp4
+_segments/gmdcsa-s3__adl-22.mp4,gmdcsa24,"room, static camera; Day; Kurta & Trousers; Writing while sitting on the bed",Subject 3/ADL/22.mp4
+_segments/gmdcsa-s3__fall-01.mp4,gmdcsa24,"room, static camera; Day; Full T-shirt & Trouser; falling forward",Subject 3/Fall/01.mp4
+_segments/gmdcsa-s3__fall-02.mp4,gmdcsa24,"room, static camera; Day; Full T-shirt & Trouser; Falling on the bed (forward)",Subject 3/Fall/02.mp4
+_segments/gmdcsa-s3__fall-03.mp4,gmdcsa24,"room, static camera; Day; Full T-shirt & Trouser; Falling backward on the floor",Subject 3/Fall/03.mp4
+_segments/gmdcsa-s3__fall-04.mp4,gmdcsa24,"room, static camera; Day; Full T-shirt & Trouser; Walking and then falling backward on the floor",Subject 3/Fall/04.mp4
+_segments/gmdcsa-s3__fall-05.mp4,gmdcsa24,"room, static camera; Day; Full T-shirt & Trouser; Falling slowly from standing position to the floor",Subject 3/Fall/05.mp4
+_segments/gmdcsa-s3__fall-06.mp4,gmdcsa24,"room, static camera; Day; Full T-shirt & Trouser; Falling (backward) on the floor from the sitting position",Subject 3/Fall/06.mp4
+_segments/gmdcsa-s3__fall-07.mp4,gmdcsa24,"room, static camera; Day; Full T-shirt & Trouser; Falling on the floor from the standing position",Subject 3/Fall/07.mp4
+_segments/gmdcsa-s3__fall-08.mp4,gmdcsa24,"room, static camera; Day; Full T-shirt & Trouser; Falling on the right side onto the floor from a standing position",Subject 3/Fall/08.mp4
+_segments/gmdcsa-s3__fall-09.mp4,gmdcsa24,"room, static camera; Day; Full T-shirt & Trouser; Reading the book while sitting on the ground; then falling backward",Subject 3/Fall/09.mp4
+_segments/gmdcsa-s3__fall-10.mp4,gmdcsa24,"room, static camera; Day; Full shirt & Trouser; Falling forward on the bed",Subject 3/Fall/10.mp4
+_segments/gmdcsa-s3__fall-11.mp4,gmdcsa24,"room, static camera; Day; Kurta & Trouser; Eating in standing position then falling forward",Subject 3/Fall/11.mp4
+_segments/gmdcsa-s3__fall-12.mp4,gmdcsa24,"room, static camera; Day; Full T-shirt & Trouser; Falling backward from the bed",Subject 3/Fall/12.mp4
+_segments/gmdcsa-s3__fall-13.mp4,gmdcsa24,"room, static camera; Day; Full T-shirt & Trouser; Writing something in a notebook while sitting position on the floor; then falling backward",Subject 3/Fall/13.mp4
+_segments/gmdcsa-s3__fall-14.mp4,gmdcsa24,"room, static camera; Day; Full T-shirt; Shirt  & Trouser; Falling backward on the floor while removing the shirt and trying to hang it on the hangar",Subject 3/Fall/14.mp4
+_segments/gmdcsa-s3__fall-15.mp4,gmdcsa24,"room, static camera; Night; Full T-shirt (different) & Trouser; Trying to drink water from the water bottle and then falling on the floor",Subject 3/Fall/15.mp4
+_segments/gmdcsa-s3__fall-16.mp4,gmdcsa24,"room, static camera; Night; Full T-shirt (different) & Trouser; Walking and then falling left side on the floor",Subject 3/Fall/16.mp4
+_segments/gmdcsa-s3__fall-17.mp4,gmdcsa24,"room, static camera; Night; Full T-shirt (different) & Trouser; Reading newspaper then falling Backward on the bed",Subject 3/Fall/17.mp4
+_segments/gmdcsa-s3__fall-18.mp4,gmdcsa24,"room, static camera; Night; Full T-shirt (different) & Trouser; Sitting on the bed; then falling on the floor",Subject 3/Fall/18.mp4
+_segments/gmdcsa-s3__fall-19.mp4,gmdcsa24,"room, static camera; Night; Full T-shirt (different) & Trouser; Falling on the floor from the standing position",Subject 3/Fall/19.mp4
+_segments/gmdcsa-s3__fall-20.mp4,gmdcsa24,"room, static camera; Night; Full T-shirt (different) & Trouser; Walking then falling forward on the floor",Subject 3/Fall/20.mp4
+_segments/gmdcsa-s3__fall-21.mp4,gmdcsa24,"room, static camera; Day; Kurta & Trouser; Drinking in standing position then falling sideways",Subject 3/Fall/21.mp4
+_segments/gmdcsa-s4__adl-01.mp4,gmdcsa24,"room, static camera; Day (Lights Off); Full Shirt & Pant; Wiping the face with a handkerchief while sitting on the bed; cleaning the goggles and putting them on",Subject 4/ADL/01.mp4
+_segments/gmdcsa-s4__adl-02.mp4,gmdcsa24,"room, static camera; Day (Lights Off); Full Shirt & Pant; Talking on the mobile phone while walking",Subject 4/ADL/02.mp4
+_segments/gmdcsa-s4__adl-03.mp4,gmdcsa24,"room, static camera; Day (Lights Off); Full Shirt & Pant; Reading a book while sitting on the bed",Subject 4/ADL/03.mp4
+_segments/gmdcsa-s4__adl-04.mp4,gmdcsa24,"room, static camera; Day (Lights Off); Full Shirt & Pant; Using a laptop while sitting on the bed",Subject 4/ADL/04.mp4
+_segments/gmdcsa-s4__adl-05.mp4,gmdcsa24,"room, static camera; Day (Lights Off); Full Shirt & Pant; Doing exercise (push-up); view 1",Subject 4/ADL/05.mp4
+_segments/gmdcsa-s4__adl-06.mp4,gmdcsa24,"room, static camera; Day (Lights Off); Full Shirt & Pant; Doing exercise (push-up); view 2",Subject 4/ADL/06.mp4
+_segments/gmdcsa-s4__adl-07.mp4,gmdcsa24,"room, static camera; Day (Lights Off); Full Shirt & Pant; Doing exercise (push-up); view 3",Subject 4/ADL/07.mp4
+_segments/gmdcsa-s4__adl-08.mp4,gmdcsa24,"room, static camera; Day (Lights Off); Full Shirt & Pant; Sleeping to sitting; putting on the goggles and drinking water",Subject 4/ADL/08.mp4
+_segments/gmdcsa-s4__adl-09.mp4,gmdcsa24,"room, static camera; Day (Lights Off); Full Shirt & Pant; Reading a book and checking the mobile phone while sitting on the bed",Subject 4/ADL/09.mp4
+_segments/gmdcsa-s4__adl-10.mp4,gmdcsa24,"room, static camera; Day (Lights Off); Full Shirt & Pant; Walking then sleeping on the bed after removing the goggles",Subject 4/ADL/10.mp4
+_segments/gmdcsa-s4__adl-11.mp4,gmdcsa24,"room, static camera; Day (Lights Off); Full Shirt & Pant; Copying content from a book into a notebook while sitting on the floor",Subject 4/ADL/11.mp4
+_segments/gmdcsa-s4__adl-12.mp4,gmdcsa24,"room, static camera; Day (Lights Off); Full Shirt & Pant; Stopping copying from a book and drinking water while sitting on the floor",Subject 4/ADL/12.mp4
+_segments/gmdcsa-s4__adl-13.mp4,gmdcsa24,"room, static camera; Day (Lights On); Full Shirt & Pant; Writing while sitting on the chair",Subject 4/ADL/13.mp4
+_segments/gmdcsa-s4__adl-14.mp4,gmdcsa24,"room, static camera; Day (Lights On); Full Shirt & Pant; Sitting in the chair to standing on the floor; then picking up the water bottle and drinking water from it",Subject 4/ADL/14.mp4
+_segments/gmdcsa-s4__adl-15.mp4,gmdcsa24,"room, static camera; Day (Lights On); Full Shirt & Pant; Sitting to sleeping on the bed",Subject 4/ADL/15.mp4
+_segments/gmdcsa-s4__adl-16.mp4,gmdcsa24,"room, static camera; Day (Lights On); Full Shirt & Pant; Sitting on the bed; removing the goggles; then sleeping",Subject 4/ADL/16.mp4
+_segments/gmdcsa-s4__adl-17.mp4,gmdcsa24,"room, static camera; Day (Lights On); Full Shirt & Pant; Picking up the book from the floor and putting it on the bed",Subject 4/ADL/17.mp4
+_segments/gmdcsa-s4__adl-18.mp4,gmdcsa24,"room, static camera; Day (Lights On); Full Shirt & Pant; Wiping the face with a handkerchief; putting on the goggles; then reading a book",Subject 4/ADL/18.mp4
+_segments/gmdcsa-s4__adl-19.mp4,gmdcsa24,"room, static camera; Day (Lights On); Full Shirt & Pant; Walking; then picking up the biscuit jar and eating biscuits from it after sitting on the bed",Subject 4/ADL/19.mp4
+_segments/gmdcsa-s4__adl-20.mp4,gmdcsa24,"room, static camera; Day (Lights On); Full Shirt & Pant; Eating biscuits then picking up the water bottle from the floor and drinking the water from it after sitting on the bed; keeping the bottle on the floor",Subject 4/ADL/20.mp4
+_segments/gmdcsa-s4__fall-01.mp4,gmdcsa24,"room, static camera; Day (Lights On); Full Shirt & Pant; Standing on the bed to falling (LS) on the bed",Subject 4/Fall/01.mp4
+_segments/gmdcsa-s4__fall-02.mp4,gmdcsa24,"room, static camera; Day (Lights On); Full Shirt & Pant; Falling (LS) from the bed to the floor",Subject 4/Fall/02.mp4
+_segments/gmdcsa-s4__fall-03.mp4,gmdcsa24,"room, static camera; Day (Lights Off); Full Shirt & Pant; Walking then falling (forward) view 1",Subject 4/Fall/03.mp4
+_segments/gmdcsa-s4__fall-04.mp4,gmdcsa24,"room, static camera; Day (Lights Off); Full Shirt & Pant; Walking then falling (forward) view 2",Subject 4/Fall/04.mp4
+_segments/gmdcsa-s4__fall-05.mp4,gmdcsa24,"room, static camera; Day (Lights Off); Full Shirt & Pant; Falling (RS) on the bed from sitting on the bed",Subject 4/Fall/05.mp4
+_segments/gmdcsa-s4__fall-06.mp4,gmdcsa24,"room, static camera; Day (Lights Off); Full Shirt & Pant; Falling (LS) on the bed from sitting on the bed then falling (RS) to the floor",Subject 4/Fall/06.mp4
+_segments/gmdcsa-s4__fall-07.mp4,gmdcsa24,"room, static camera; Day (Lights Off); Full Shirt & Pant; Walking then falling (LS) on the floor",Subject 4/Fall/07.mp4
+_segments/gmdcsa-s4__fall-08.mp4,gmdcsa24,"room, static camera; Day (Lights Off); Full Shirt & Pant; Falling backward on the bed from sitting on the bed",Subject 4/Fall/08.mp4
+_segments/gmdcsa-s4__fall-09.mp4,gmdcsa24,"room, static camera; Day (Lights On); Full Shirt & Pant; Falling backward on the bed from sitting on the bed",Subject 4/Fall/09.mp4
+_segments/gmdcsa-s4__fall-10.mp4,gmdcsa24,"room, static camera; Day (Lights On); Full Shirt & Pant; Reading a book while sitting on the chair then falling (FW) on the ground",Subject 4/Fall/10.mp4
+_segments/gmdcsa-s4__fall-11.mp4,gmdcsa24,"room, static camera; Day (Lights On); Full Shirt & Pant; Walking then falling (FW: only waist to toe is visible after falling)",Subject 4/Fall/11.mp4
+_segments/gmdcsa-s4__fall-12.mp4,gmdcsa24,"room, static camera; Day (Lights On); T-Shirt & Pant; Falling (FW)to the floor from sitting on the bed",Subject 4/Fall/12.mp4
+_segments/gmdcsa-s4__fall-13.mp4,gmdcsa24,"room, static camera; Day (Lights On); T-Shirt & Pant; Falling (sideways) on the bed from sitting on the bed",Subject 4/Fall/13.mp4
+_segments/gmdcsa-s4__fall-14.mp4,gmdcsa24,"room, static camera; Day (Lights On); T-Shirt & Pant; Falling (RS) on the bed from sitting on the bed then falling (LS) to the floor",Subject 4/Fall/14.mp4
+_segments/gmdcsa-s4__fall-15.mp4,gmdcsa24,"room, static camera; Day (Lights On); T-Shirt & Pant; Falling (FW) on the floor from sitting on the bed",Subject 4/Fall/15.mp4
+_segments/gmdcsa-s4__fall-16.mp4,gmdcsa24,"room, static camera; Day (Lights On); T-Shirt & Pant; Walking then falling (FW) on the floor",Subject 4/Fall/16.mp4
+_segments/gmdcsa-s4__fall-17.mp4,gmdcsa24,"room, static camera; Day (Lights On); T-Shirt & Pant; Falling (LS) on the bed from sitting on the bed",Subject 4/Fall/17.mp4
+running/hmdb-20060723sfjffangelina__01.avi,hmdb51,movie; static camera; right view; med quality,20060723sfjffangelina_run_f_nm_np1_ri_med_1.avi
+running/hmdb-20060723sfjffangelina__02.avi,hmdb51,movie; static camera; right view; med quality,20060723sfjffangelina_run_f_nm_np1_ri_med_2.avi
+running/hmdb-20060723sfjffbartsinger__01.avi,hmdb51,movie; static camera; front view; med quality,20060723sfjffbartsinger_run_f_nm_np1_fr_med_1.avi
+running/hmdb-20060723sfjffinallseriousness__01.avi,hmdb51,movie; moving camera; front view; med quality,20060723sfjffinallseriousness_run_f_cm_np1_fr_med_0.avi
+running/hmdb-20060723sfjffjewcy__01.avi,hmdb51,movie; static camera; back view; med quality,20060723sfjffjewcy_run_f_nm_np1_ba_med_3.avi
+running/hmdb-20060723sfjffsomelikeitwarmed__01.avi,hmdb51,movie; static camera; front view; med quality,20060723sfjffsomelikeitwarmed_run_f_nm_np1_fr_med_6.avi
+running/hmdb-50-first-dates__01.avi,hmdb51,movie; moving camera; back view; med quality,50_FIRST_DATES_run_f_cm_np1_ba_med_12.avi
+running/hmdb-50-first-dates__02.avi,hmdb51,movie; moving camera; right view; med quality,50_FIRST_DATES_run_f_cm_np1_ri_med_21.avi
+running/hmdb-50-first-dates__03.avi,hmdb51,movie; static camera; back view; med quality,50_FIRST_DATES_run_f_nm_np1_ba_med_20.avi
+running/hmdb-a-beautiful-mind-4__01.avi,hmdb51,movie; moving camera; back view; med quality,A_Beautiful_Mind_4_run_f_cm_np1_ba_med_9.avi
+running/hmdb-age13-1__01.avi,hmdb51,movie; static camera; front view; med quality,Age13_1_run_f_nm_np1_fr_med_1.avi
+running/hmdb-age13-1__02.avi,hmdb51,movie; static camera; front view; med quality,Age13_1_run_f_nm_np1_fr_med_2.avi
+running/hmdb-age13-2__01.avi,hmdb51,movie; moving camera; back view; med quality,Age13_2_run_f_cm_np1_ba_med_1.avi
+running/hmdb-agentcodybanks__01.avi,hmdb51,movie; moving camera; back view; med quality,AgentCodyBanks_run_f_cm_np1_ba_med_11.avi
+running/hmdb-american-history-x__01.avi,hmdb51,movie; moving camera; left view; med quality,American_History_X_run_f_cm_np1_le_med_17.avi
+running/hmdb-american-history-x__02.avi,hmdb51,movie; static camera; front view; med quality,American_History_X_run_f_nm_np1_fr_med_34.avi
+running/hmdb-american-history-x__03.avi,hmdb51,movie; static camera; front view; med quality,American_History_X_run_f_nm_np1_fr_med_50.avi
+running/hmdb-americangangster__01.avi,hmdb51,movie; moving camera; left view; med quality,AmericanGangster_run_f_cm_np1_le_med_18.avi
+running/hmdb-batman-begins__01.avi,hmdb51,movie; static camera; front view; med quality,BATMAN_BEGINS_run_f_nm_np1_fr_med_14.avi
+running/hmdb-big-fish__01.avi,hmdb51,movie; moving camera; front view; med quality,BIG_FISH_run_f_cm_np1_fr_med_33.avi
+running/hmdb-black-hawk-down__01.avi,hmdb51,movie; moving camera; back view; med quality,BLACK_HAWK_DOWN_run_f_cm_np1_ba_med_27.avi
+running/hmdb-black-hawk-down__02.avi,hmdb51,movie; moving camera; back view; med quality,BLACK_HAWK_DOWN_run_f_cm_np1_ba_med_30.avi
+running/hmdb-black-hawk-down__03.avi,hmdb51,movie; moving camera; front view; med quality,BLACK_HAWK_DOWN_run_f_cm_np1_fr_med_10.avi
+running/hmdb-bridgetoterabithia__01.avi,hmdb51,movie; static camera; left view; med quality,BRIDGETOTERABITHIA_run_f_nm_np1_le_med_6.avi
+running/hmdb-castaway1__01.avi,hmdb51,movie; moving camera; right view; med quality,CastAway1_run_f_cm_np1_ri_med_2.avi
+running/hmdb-castaway1__02.avi,hmdb51,movie; moving camera; right view; med quality,CastAway1_run_f_cm_np1_ri_med_3.avi
+running/hmdb-charlieandthechocolatefactory__01.avi,hmdb51,movie; static camera; front view; med quality,CharlieAndTheChocolateFactory_run_f_nm_np1_fr_med_24.avi
+running/hmdb-crash__01.avi,hmdb51,movie; moving camera; front view; med quality,Crash_run_f_cm_np1_fr_med_17.avi
+running/hmdb-evolution__01.avi,hmdb51,movie; moving camera; back view; med quality,EVOLUTION_run_f_cm_np1_ba_med_0.avi
+running/hmdb-evolution__02.avi,hmdb51,movie; moving camera; front view; med quality,EVOLUTION_run_f_cm_np1_fr_med_2.avi
+running/hmdb-evolution__03.avi,hmdb51,movie; static camera; front view; med quality,EVOLUTION_run_f_nm_np1_fr_med_22.avi
+running/hmdb-faith-rewarded__01.avi,hmdb51,movie; moving camera; left view; med quality,Faith_Rewarded_run_f_cm_np1_le_med_16.avi
+running/hmdb-fellowship-6__01.avi,hmdb51,movie; moving camera; front view; med quality,Fellowship_6_run_f_cm_np1_fr_med_8.avi
+running/hmdb-fellowship-7__01.avi,hmdb51,movie; moving camera; front view; med quality,Fellowship_7_run_f_cm_np1_fr_med_4.avi
+running/hmdb-fellowship-7__02.avi,hmdb51,movie; moving camera; right view; med quality,Fellowship_7_run_f_cm_np1_ri_med_15.avi
+running/hmdb-finding-forrester-2__01.avi,hmdb51,movie; moving camera; left view; med quality,Finding_Forrester_2_run_f_cm_np1_le_med_2.avi
+running/hmdb-gangboy256kb__01.avi,hmdb51,movie; static camera; back view; med quality,gangboy256kb_run_f_nm_np1_ba_med_1.avi
+running/hmdb-glory__01.avi,hmdb51,movie; moving camera; front view; med quality,Glory_run_f_cm_np1_fr_med_54.avi
+running/hmdb-happy-go-lovely__01.avi,hmdb51,movie; moving camera; front view; goo quality,happy_go_lovely_run_f_cm_np1_fr_goo_2.avi
+running/hmdb-happy-go-lovely__02.avi,hmdb51,movie; static camera; back view; med quality,happy_go_lovely_run_f_nm_np1_ba_med_17.avi
+running/hmdb-happy-go-lovely__03.avi,hmdb51,movie; static camera; front view; med quality,happy_go_lovely_run_f_nm_np1_fr_med_16.avi
+running/hmdb-hitch-part-2__01.avi,hmdb51,movie; moving camera; front view; med quality,Hitch_Part_2_run_f_cm_np1_fr_med_8.avi
+running/hmdb-hitch-part-2__02.avi,hmdb51,movie; static camera; front view; med quality,Hitch_Part_2_run_f_nm_np1_fr_med_11.avi
+running/hmdb-hp-prisoner-of-azkaban__01.avi,hmdb51,movie; moving camera; front view; med quality,HP_PRISONER_OF_AZKABAN_run_f_cm_np1_fr_med_0.avi
+running/hmdb-hp-prisoner-of-azkaban__02.avi,hmdb51,movie; static camera; front view; med quality,HP_PRISONER_OF_AZKABAN_run_f_nm_np1_fr_med_25.avi
+running/hmdb-iamlegend__01.avi,hmdb51,movie; static camera; front view; med quality,IamLegend_run_f_nm_np1_fr_med_13.avi
+running/hmdb-iamlegend__02.avi,hmdb51,movie; static camera; left view; med quality,IamLegend_run_f_nm_np1_le_med_3.avi
+running/hmdb-juno__01.avi,hmdb51,movie; moving camera; back view; med quality,Juno_run_f_cm_np1_ba_med_5.avi
+running/hmdb-juno__02.avi,hmdb51,movie; static camera; front view; med quality,Juno_run_f_nm_np1_fr_med_10.avi
+running/hmdb-kung-fu-hustle__01.avi,hmdb51,movie; moving camera; front view; med quality,KUNG_FU_HUSTLE_run_f_cm_np1_fr_med_26.avi
+running/hmdb-kung-fu-hustle__02.avi,hmdb51,movie; moving camera; front view; med quality,KUNG_FU_HUSTLE_run_f_cm_np1_fr_med_27.avi
+running/hmdb-kung-fu-hustle__03.avi,hmdb51,movie; moving camera; left view; med quality,KUNG_FU_HUSTLE_run_f_cm_np1_le_med_2.avi
+running/hmdb-likebeckam__01.avi,hmdb51,movie; moving camera; back view; med quality,likebeckam_run_f_cm_np1_ba_med_14.avi
+running/hmdb-likebeckam__02.avi,hmdb51,movie; moving camera; back view; med quality,likebeckam_run_f_cm_np1_ba_med_2.avi
+running/hmdb-likebeckam__03.avi,hmdb51,movie; moving camera; back view; med quality,likebeckam_run_f_cm_np1_ba_med_22.avi
+running/hmdb-littlechildren__01.avi,hmdb51,movie; moving camera; back view; med quality,LittleChildren_run_f_cm_np1_ba_med_1.avi
+running/hmdb-longestyard__01.avi,hmdb51,movie; moving camera; back view; med quality,LONGESTYARD_run_f_cm_np1_ba_med_24.avi
+running/hmdb-longestyard__02.avi,hmdb51,movie; moving camera; left view; med quality,LONGESTYARD_run_f_cm_np1_le_med_15.avi
+running/hmdb-longestyard__03.avi,hmdb51,movie; moving camera; left view; med quality,LONGESTYARD_run_f_cm_np1_le_med_4.avi
+running/hmdb-man-who-cheated-himself-512kb__01.avi,hmdb51,movie; moving camera; front view; med quality,Man_Who_Cheated_Himself_512kb_run_f_cm_np1_fr_med_8.avi
+running/hmdb-metacafe-coolsoccer__01.avi,hmdb51,movie; moving camera; back view; med quality,metacafe_coolsoccer_run_f_cm_np1_ba_med_1.avi
+running/hmdb-nameunknown256kb__01.avi,hmdb51,movie; moving camera; front view; med quality,nameunknown256kb_run_f_cm_np1_fr_med_3.avi
+running/hmdb-oldschool__01.avi,hmdb51,movie; moving camera; back view; med quality,OldSchool_run_f_cm_np1_ba_med_14.avi
+running/hmdb-prelinger-habitpat1954__01.avi,hmdb51,movie; moving camera; right view; med quality,Prelinger_HabitPat1954_run_f_cm_np1_ri_med_18.avi
+running/hmdb-prelinger-letsplay1949__01.avi,hmdb51,movie; static camera; front view; med quality,prelinger_LetsPlay1949_run_f_nm_np1_fr_med_16.avi
+running/hmdb-prelinger-they-grow-up-so-fast-1__01.avi,hmdb51,movie; moving camera; right view; med quality,prelinger_they_grow_up_so_fast_1_run_f_cm_np1_ri_med_14.avi
+running/hmdb-prelinger-they-grow-up-so-fast-1__02.avi,hmdb51,movie; static camera; back view; med quality,prelinger_they_grow_up_so_fast_1_run_f_nm_np1_ba_med_6.avi
+running/hmdb-ratrace__01.avi,hmdb51,movie; moving camera; back view; med quality,RATRACE_run_f_cm_np1_ba_med_14.avi
+running/hmdb-ratrace__02.avi,hmdb51,movie; moving camera; back view; med quality,RATRACE_run_f_cm_np1_ba_med_22.avi
+running/hmdb-ratrace__03.avi,hmdb51,movie; moving camera; front view; med quality,RATRACE_run_f_cm_np1_fr_med_16.avi
+running/hmdb-return-of-the-king-12__01.avi,hmdb51,movie; moving camera; front view; med quality,Return_of_the_King_12_run_f_cm_np1_fr_med_1.avi
+running/hmdb-return-of-the-king-4__01.avi,hmdb51,movie; moving camera; right view; med quality,Return_of_the_King_4_run_f_cm_np1_ri_med_5.avi
+running/hmdb-return-of-the-king__01.avi,hmdb51,movie; moving camera; front view; med quality,RETURN_OF_THE_KING_run_f_cm_np1_fr_med_31.avi
+running/hmdb-return-of-the-king__02.avi,hmdb51,movie; moving camera; front view; med quality,RETURN_OF_THE_KING_run_f_cm_np1_fr_med_52.avi
+running/hmdb-return-of-the-king__03.avi,hmdb51,movie; moving camera; right view; med quality,RETURN_OF_THE_KING_run_f_cm_np1_ri_med_11.avi
+running/hmdb-rushhour2__01.avi,hmdb51,movie; moving camera; front view; med quality,RushHour2_run_f_cm_np1_fr_med_0.avi
+running/hmdb-shadow-of-a-doubt__01.avi,hmdb51,movie; static camera; front view; med quality,Shadow_of_a_Doubt_run_f_nm_np1_fr_med_16.avi
+running/hmdb-superbad__01.avi,hmdb51,movie; static camera; back view; med quality,Superbad_run_f_nm_np1_ba_med_2.avi
+running/hmdb-the-fugitive-2__01.avi,hmdb51,movie; moving camera; front view; med quality,The_Fugitive_2_run_f_cm_np1_fr_med_1.avi
+running/hmdb-the-fugitive-2__02.avi,hmdb51,movie; moving camera; front view; med quality,The_Fugitive_2_run_f_cm_np1_fr_med_2.avi
+running/hmdb-the-fugitive-2__03.avi,hmdb51,movie; moving camera; front view; med quality,The_Fugitive_2_run_f_cm_np1_fr_med_20.avi
+running/hmdb-the-fugitive-5__01.avi,hmdb51,movie; moving camera; front view; med quality,The_Fugitive_5_run_f_cm_np1_fr_med_1.avi
+running/hmdb-the-fugitive-5__02.avi,hmdb51,movie; static camera; back view; med quality,The_Fugitive_5_run_f_nm_np1_ba_med_12.avi
+running/hmdb-the-fugitive-6__01.avi,hmdb51,movie; moving camera; front view; med quality,The_Fugitive_6_run_f_cm_np1_fr_med_19.avi
+running/hmdb-the-house-on-haunted-hill__01.avi,hmdb51,movie; moving camera; left view; med quality,The_House_on_Haunted_Hill_run_f_cm_np1_le_med_12.avi
+running/hmdb-the-matrix-1__01.avi,hmdb51,movie; moving camera; front view; med quality,The_Matrix_1_run_f_cm_np1_fr_med_1.avi
+running/hmdb-the-matrix-3__01.avi,hmdb51,movie; moving camera; back view; med quality,The_Matrix_3_run_f_cm_np1_ba_med_8.avi
+running/hmdb-the-matrix-3__02.avi,hmdb51,movie; moving camera; right view; med quality,The_Matrix_3_run_f_cm_np1_ri_med_7.avi
+running/hmdb-the-matrix-6__01.avi,hmdb51,movie; moving camera; back view; med quality,The_Matrix_6_run_f_cm_np1_ba_med_1.avi
+running/hmdb-the-matrix-6__02.avi,hmdb51,movie; moving camera; front view; med quality,The_Matrix_6_run_f_cm_np1_fr_med_2.avi
+running/hmdb-the-matrix-6__03.avi,hmdb51,movie; static camera; front view; med quality,The_Matrix_6_run_f_nm_np1_fr_med_7.avi
+running/hmdb-the-protector__01.avi,hmdb51,movie; moving camera; back view; med quality,THE_PROTECTOR_run_f_cm_np1_ba_med_13.avi
+running/hmdb-the-protector__02.avi,hmdb51,movie; moving camera; back view; med quality,THE_PROTECTOR_run_f_cm_np1_ba_med_28.avi
+running/hmdb-the-protector__03.avi,hmdb51,movie; moving camera; back view; med quality,THE_PROTECTOR_run_f_cm_np1_ba_med_35.avi
+running/hmdb-thebigbangs01e01pilot__01.avi,hmdb51,movie; static camera; back view; med quality,TheBigBangS01E01Pilot_run_f_nm_np1_ba_med_0.avi
+running/hmdb-theboondocksaints__01.avi,hmdb51,movie; moving camera; right view; med quality,TheBoondockSaints_run_f_cm_np1_ri_med_61.avi
+running/hmdb-thelastmanonearth__01.avi,hmdb51,movie; moving camera; back view; med quality,TheLastManOnearth_run_f_cm_np1_ba_med_39.avi
+running/hmdb-thelastmanonearth__02.avi,hmdb51,movie; moving camera; back view; med quality,TheLastManOnearth_run_f_cm_np1_ba_med_45.avi
+running/hmdb-thelastmanonearth__03.avi,hmdb51,movie; moving camera; front view; med quality,TheLastManOnearth_run_f_cm_np1_fr_med_48.avi
+running/hmdb-trumanshow__01.avi,hmdb51,movie; moving camera; back view; med quality,TrumanShow_run_f_cm_np1_ba_med_13.avi
+running/hmdb-trumanshow__02.avi,hmdb51,movie; moving camera; left view; med quality,TrumanShow_run_f_cm_np1_le_med_3.avi
+running/hmdb-trumanshow__03.avi,hmdb51,movie; static camera; back view; med quality,TrumanShow_run_f_nm_np1_ba_med_19.avi
+running/hmdb-two-towers-1__01.avi,hmdb51,movie; moving camera; front view; med quality,Two_Towers_1_run_f_cm_np1_fr_med_3.avi
+running/hmdb-veoh-alpha-dog-1__01.avi,hmdb51,movie; moving camera; back view; med quality,Veoh_Alpha_Dog_1_run_f_cm_np1_ba_med_29.avi
+running/hmdb-veoh-alpha-dog-2__01.avi,hmdb51,movie; static camera; back view; med quality,Veoh_Alpha_Dog_2_run_f_nm_np1_ba_med_11.avi
+running/hmdb-veoh-alpha-dog-2__02.avi,hmdb51,movie; static camera; front view; med quality,Veoh_Alpha_Dog_2_run_f_nm_np1_fr_med_26.avi
+running/hmdb-wayne-rooney-at-home-funny-must-see__01.avi,hmdb51,movie; moving camera; left view; med quality,Wayne_Rooney_At_Home_Funny_Must_See_run_f_cm_np1_le_med_2.avi
+running/hmdb-wayne-rooney-at-home-funny-must-see__02.avi,hmdb51,movie; moving camera; left view; med quality,Wayne_Rooney_At_Home_Funny_Must_See_run_f_cm_np1_le_med_3.avi
+walking/hmdb-20060723sfjffjewcy__01.avi,hmdb51,movie; moving camera; back view; med quality,20060723sfjffjewcy_walk_f_cm_np1_ba_med_2.avi
+walking/hmdb-20060723sfjffjewcy__02.avi,hmdb51,movie; static camera; front view; med quality,20060723sfjffjewcy_walk_f_nm_np1_fr_med_0.avi
+walking/hmdb-20060723sfjffjewcy__03.avi,hmdb51,movie; static camera; front view; med quality,20060723sfjffjewcy_walk_f_nm_np1_fr_med_1.avi
+walking/hmdb-20060723sfjffjewgotmail__01.avi,hmdb51,movie; static camera; front view; med quality,20060723sfjffjewgotmail_walk_f_nm_np1_fr_med_1.avi
+walking/hmdb-20060723sfjffkillerskiss__01.avi,hmdb51,movie; moving camera; front view; med quality,20060723sfjffkillerskiss_walk_f_cm_np1_fr_med_1.avi
+walking/hmdb-20060723sfjffmyspot__01.avi,hmdb51,movie; static camera; right view; med quality,20060723sfjffmyspot_walk_f_nm_np1_ri_med_0.avi
+walking/hmdb-20060723sfjffschmoozer__01.avi,hmdb51,movie; moving camera; right view; med quality,20060723sfjffschmoozer_walk_f_cm_np1_ri_med_1.avi
+walking/hmdb-20060723sfjffsomelikeitwarmed__01.avi,hmdb51,movie; moving camera; back view; med quality,20060723sfjffsomelikeitwarmed_walk_f_cm_np1_ba_med_0.avi
+walking/hmdb-20060723sfjffsomelikeitwarmed__02.avi,hmdb51,movie; static camera; back view; med quality,20060723sfjffsomelikeitwarmed_walk_f_nm_np1_ba_med_4.avi
+walking/hmdb-20070723-sfjff-waitingforrescue__01.avi,hmdb51,movie; static camera; back view; med quality,20070723_sfjff_waitingforrescue_walk_f_nm_np1_ba_med_1.avi
+walking/hmdb-50-first-dates__01.avi,hmdb51,movie; moving camera; front view; med quality,50_FIRST_DATES_walk_f_cm_np1_fr_med_26.avi
+walking/hmdb-50-first-dates__02.avi,hmdb51,movie; moving camera; front view; med quality,50_FIRST_DATES_walk_f_cm_np1_fr_med_7.avi
+walking/hmdb-50-first-dates__03.avi,hmdb51,movie; moving camera; left view; med quality,50_FIRST_DATES_walk_f_cm_np1_le_med_10.avi
+walking/hmdb-a-beautiful-mind-2__01.avi,hmdb51,movie; moving camera; front view; med quality,A_Beautiful_Mind_2_walk_f_cm_np1_fr_med_7.avi
+walking/hmdb-a-beautiful-mind-5__01.avi,hmdb51,movie; moving camera; right view; med quality,A_Beautiful_Mind_5_walk_f_cm_np1_ri_med_3.avi
+walking/hmdb-a-beautiful-mind-6__01.avi,hmdb51,movie; moving camera; back view; med quality,A_Beautiful_Mind_6_walk_f_cm_np1_ba_med_7.avi
+walking/hmdb-aboutaboy__01.avi,hmdb51,movie; moving camera; front view; med quality,AboutABoy_walk_f_cm_np1_fr_med_4.avi
+walking/hmdb-aboutaboy__02.avi,hmdb51,movie; static camera; front view; med quality,AboutABoy_walk_f_nm_np1_fr_med_0.avi
+walking/hmdb-aboutaboy__03.avi,hmdb51,movie; static camera; left view; med quality,AboutABoy_walk_f_nm_np1_le_med_5.avi
+walking/hmdb-age13-2__01.avi,hmdb51,movie; moving camera; front view; med quality,Age13_2_walk_f_cm_np1_fr_med_0.avi
+walking/hmdb-agentcodybanks__01.avi,hmdb51,movie; static camera; front view; med quality,AgentCodyBanks_walk_f_nm_np1_fr_med_17.avi
+walking/hmdb-agentcodybanks__02.avi,hmdb51,movie; static camera; right view; med quality,AgentCodyBanks_walk_f_nm_np1_ri_med_16.avi
+walking/hmdb-agriculturalaviation__01.avi,hmdb51,movie; static camera; left view; med quality,AgriculturalAviation_walk_f_nm_np1_le_med_0.avi
+walking/hmdb-agriculturalaviation__02.avi,hmdb51,movie; static camera; left view; med quality,AgriculturalAviation_walk_f_nm_np1_le_med_1.avi
+walking/hmdb-amadeus__01.avi,hmdb51,movie; static camera; back view; med quality,AMADEUS_walk_f_nm_np1_ba_med_9.avi
+walking/hmdb-amadeus__02.avi,hmdb51,movie; static camera; front view; med quality,AMADEUS_walk_f_nm_np1_fr_med_1.avi
+walking/hmdb-american-history-x__01.avi,hmdb51,movie; moving camera; right view; med quality,American_History_X_walk_f_cm_np1_ri_med_12.avi
+walking/hmdb-american-history-x__02.avi,hmdb51,movie; moving camera; right view; med quality,American_History_X_walk_f_cm_np1_ri_med_48.avi
+walking/hmdb-american-history-x__03.avi,hmdb51,movie; static camera; back view; med quality,American_History_X_walk_f_nm_np1_ba_med_13.avi
+walking/hmdb-americangangster__01.avi,hmdb51,movie; moving camera; front view; med quality,AmericanGangster_walk_f_cm_np1_fr_med_1.avi
+walking/hmdb-americangangster__02.avi,hmdb51,movie; moving camera; front view; med quality,AmericanGangster_walk_f_cm_np1_fr_med_58.avi
+walking/hmdb-americangangster__03.avi,hmdb51,movie; moving camera; left view; med quality,AmericanGangster_walk_f_cm_np1_le_med_23.avi
+walking/hmdb-americanthrift1__01.avi,hmdb51,movie; moving camera; front view; med quality,americanthrift1_walk_f_cm_np1_fr_med_2.avi
+walking/hmdb-batman-begins__01.avi,hmdb51,movie; moving camera; back view; med quality,BATMAN_BEGINS_walk_f_cm_np1_ba_med_1.avi
+walking/hmdb-batman-begins__02.avi,hmdb51,movie; moving camera; front view; med quality,BATMAN_BEGINS_walk_f_cm_np1_fr_med_16.avi
+walking/hmdb-batman-begins__03.avi,hmdb51,movie; moving camera; front view; med quality,BATMAN_BEGINS_walk_f_cm_np1_fr_med_4.avi
+walking/hmdb-beforenightfalls__01.avi,hmdb51,movie; moving camera; left view; med quality,BeforeNightFalls_walk_f_cm_np1_le_med_2.avi
+walking/hmdb-big-fish__01.avi,hmdb51,movie; moving camera; front view; med quality,BIG_FISH_walk_f_cm_np1_fr_med_32.avi
+walking/hmdb-big-fish__02.avi,hmdb51,movie; static camera; back view; med quality,BIG_FISH_walk_f_nm_np1_ba_med_12.avi
+walking/hmdb-big-fish__03.avi,hmdb51,movie; static camera; back view; med quality,BIG_FISH_walk_f_nm_np1_ba_med_18.avi
+walking/hmdb-black-hawk-down__01.avi,hmdb51,movie; moving camera; front view; med quality,BLACK_HAWK_DOWN_walk_f_cm_np1_fr_med_23.avi
+walking/hmdb-black-hawk-down__02.avi,hmdb51,movie; moving camera; right view; med quality,BLACK_HAWK_DOWN_walk_f_cm_np1_ri_med_20.avi
+walking/hmdb-black-hawk-down__03.avi,hmdb51,movie; static camera; left view; med quality,BLACK_HAWK_DOWN_walk_f_nm_np1_le_med_7.avi
+walking/hmdb-bridgetoterabithia__01.avi,hmdb51,movie; static camera; left view; med quality,BRIDGETOTERABITHIA_walk_f_nm_np1_le_med_2.avi
+walking/hmdb-castaway1__01.avi,hmdb51,movie; moving camera; back view; med quality,CastAway1_walk_f_cm_np1_ba_med_0.avi
+walking/hmdb-castaway1__02.avi,hmdb51,movie; moving camera; back view; med quality,CastAway1_walk_f_cm_np1_ba_med_1.avi
+walking/hmdb-castaway1__03.avi,hmdb51,movie; moving camera; back view; med quality,CastAway1_walk_f_cm_np1_ba_med_18.avi
+walking/hmdb-castaway2__01.avi,hmdb51,movie; moving camera; back view; med quality,CastAway2_walk_f_cm_np1_ba_med_5.avi
+walking/hmdb-castaway2__02.avi,hmdb51,movie; moving camera; front view; med quality,CastAway2_walk_f_cm_np1_fr_med_3.avi
+walking/hmdb-castaway2__03.avi,hmdb51,movie; moving camera; front view; med quality,CastAway2_walk_f_cm_np1_fr_med_4.avi
+walking/hmdb-catch-me-if-you-can__01.avi,hmdb51,movie; moving camera; front view; med quality,Catch_Me_If_You_Can_walk_f_cm_np1_fr_med_3.avi
+walking/hmdb-catch-me-if-you-can__02.avi,hmdb51,movie; moving camera; front view; med quality,Catch_Me_If_You_Can_walk_f_cm_np1_fr_med_4.avi
+walking/hmdb-catch-me-if-you-can__03.avi,hmdb51,movie; moving camera; front view; med quality,Catch_Me_If_You_Can_walk_f_cm_np1_fr_med_7.avi
+walking/hmdb-charlieandthechocolatefactory__01.avi,hmdb51,movie; moving camera; front view; med quality,CharlieAndTheChocolateFactory_walk_f_cm_np1_fr_med_13.avi
+walking/hmdb-charlieandthechocolatefactory__02.avi,hmdb51,movie; moving camera; front view; med quality,CharlieAndTheChocolateFactory_walk_f_cm_np1_fr_med_14.avi
+walking/hmdb-charlieandthechocolatefactory__03.avi,hmdb51,movie; moving camera; front view; med quality,CharlieAndTheChocolateFactory_walk_f_cm_np1_fr_med_9.avi
+walking/hmdb-crash__01.avi,hmdb51,movie; moving camera; left view; med quality,Crash_walk_f_cm_np1_le_med_2.avi
+walking/hmdb-crash__02.avi,hmdb51,movie; moving camera; left view; med quality,Crash_walk_f_cm_np1_le_med_7.avi
+walking/hmdb-crash__03.avi,hmdb51,movie; moving camera; right view; med quality,Crash_walk_f_cm_np1_ri_med_0.avi
+walking/hmdb-donnie-darko__01.avi,hmdb51,movie; static camera; front view; med quality,DONNIE_DARKO_walk_f_nm_np1_fr_med_5.avi
+walking/hmdb-eddieizzardcircle__01.avi,hmdb51,movie; static camera; left view; med quality,eddieizzardcircle_walk_f_nm_np1_le_med_0.avi
+walking/hmdb-eurotrip__01.avi,hmdb51,movie; static camera; front view; med quality,Eurotrip_walk_f_nm_np1_fr_med_5.avi
+walking/hmdb-eurotrip__02.avi,hmdb51,movie; static camera; front view; med quality,Eurotrip_walk_f_nm_np1_fr_med_8.avi
+walking/hmdb-everythingisilluminated__01.avi,hmdb51,movie; static camera; front view; med quality,EverythingisIlluminated_walk_f_nm_np1_fr_med_1.avi
+walking/hmdb-everythingisilluminated__02.avi,hmdb51,movie; static camera; left view; med quality,EverythingisIlluminated_walk_f_nm_np1_le_med_0.avi
+walking/hmdb-evolution__01.avi,hmdb51,movie; moving camera; back view; med quality,EVOLUTION_walk_f_cm_np1_ba_med_12.avi
+walking/hmdb-evolution__02.avi,hmdb51,movie; moving camera; front view; med quality,EVOLUTION_walk_f_cm_np1_fr_med_23.avi
+walking/hmdb-evolution__03.avi,hmdb51,movie; moving camera; left view; med quality,EVOLUTION_walk_f_cm_np1_le_med_14.avi
+walking/hmdb-fellowship-6__01.avi,hmdb51,movie; moving camera; front view; med quality,Fellowship_6_walk_f_cm_np1_fr_med_11.avi
+walking/hmdb-finding-forrester-1__01.avi,hmdb51,movie; static camera; back view; med quality,Finding_Forrester_1_walk_f_nm_np1_ba_med_5.avi
+walking/hmdb-finding-forrester-1__02.avi,hmdb51,movie; static camera; back view; med quality,Finding_Forrester_1_walk_f_nm_np1_ba_med_6.avi
+walking/hmdb-gangboy256kb__01.avi,hmdb51,movie; static camera; front view; med quality,gangboy256kb_walk_f_nm_np1_fr_med_2.avi
+walking/hmdb-glory__01.avi,hmdb51,movie; static camera; front view; med quality,Glory_walk_f_nm_np1_fr_med_9.avi
+walking/hmdb-gossip1953256kb__01.avi,hmdb51,movie; moving camera; front view; med quality,Gossip1953256kb_walk_f_cm_np1_fr_med_1.avi
+walking/hmdb-happy-go-lovely__01.avi,hmdb51,movie; moving camera; front view; med quality,happy_go_lovely_walk_f_cm_np1_fr_med_11.avi
+walking/hmdb-happy-go-lovely__02.avi,hmdb51,movie; moving camera; front view; med quality,happy_go_lovely_walk_f_cm_np1_fr_med_13.avi
+walking/hmdb-happy-go-lovely__03.avi,hmdb51,movie; moving camera; front view; med quality,happy_go_lovely_walk_f_cm_np1_fr_med_5.avi
+walking/hmdb-hitch-part-2__01.avi,hmdb51,movie; static camera; front view; med quality,Hitch_Part_2_walk_f_nm_np1_fr_med_6.avi
+walking/hmdb-hp-prisoner-of-azkaban__01.avi,hmdb51,movie; moving camera; back view; med quality,HP_PRISONER_OF_AZKABAN_walk_f_cm_np1_ba_med_23.avi
+walking/hmdb-hp-prisoner-of-azkaban__02.avi,hmdb51,movie; moving camera; right view; med quality,HP_PRISONER_OF_AZKABAN_walk_f_cm_np1_ri_med_17.avi
+walking/hmdb-hp-prisoner-of-azkaban__03.avi,hmdb51,movie; moving camera; right view; med quality,HP_PRISONER_OF_AZKABAN_walk_f_cm_np1_ri_med_2.avi
+walking/hmdb-iamlegend__01.avi,hmdb51,movie; moving camera; left view; med quality,IamLegend_walk_f_cm_np1_le_med_0.avi
+walking/hmdb-iamlegend__02.avi,hmdb51,movie; static camera; back view; med quality,IamLegend_walk_f_nm_np1_ba_med_4.avi
+walking/hmdb-iamlegend__03.avi,hmdb51,movie; static camera; back view; med quality,IamLegend_walk_f_nm_np1_ba_med_9.avi
+walking/hmdb-juno__01.avi,hmdb51,movie; moving camera; front view; med quality,Juno_walk_f_cm_np1_fr_med_8.avi
+walking/hmdb-juno__02.avi,hmdb51,movie; static camera; front view; med quality,Juno_walk_f_nm_np1_fr_med_1.avi
+walking/hmdb-kung-fu-hustle__01.avi,hmdb51,movie; moving camera; front view; med quality,KUNG_FU_HUSTLE_walk_f_cm_np1_fr_med_39.avi
+walking/hmdb-kung-fu-hustle__02.avi,hmdb51,movie; moving camera; front view; med quality,KUNG_FU_HUSTLE_walk_f_cm_np1_fr_med_42.avi
+walking/hmdb-kung-fu-hustle__03.avi,hmdb51,movie; moving camera; left view; med quality,KUNG_FU_HUSTLE_walk_f_cm_np1_le_med_6.avi
+walking/hmdb-likebeckam__01.avi,hmdb51,movie; moving camera; front view; med quality,likebeckam_walk_f_cm_np1_fr_med_21.avi
+walking/hmdb-likebeckam__02.avi,hmdb51,movie; moving camera; front view; med quality,likebeckam_walk_f_cm_np1_fr_med_25.avi
+walking/hmdb-likebeckam__03.avi,hmdb51,movie; moving camera; front view; med quality,likebeckam_walk_f_cm_np1_fr_med_27.avi
+walking/hmdb-littlechildren__01.avi,hmdb51,movie; moving camera; front view; med quality,LittleChildren_walk_f_cm_np1_fr_med_3.avi
+walking/hmdb-longestyard__01.avi,hmdb51,movie; moving camera; left view; med quality,LONGESTYARD_walk_f_cm_np1_le_med_10.avi
+walking/hmdb-longestyard__02.avi,hmdb51,movie; moving camera; right view; med quality,LONGESTYARD_walk_f_cm_np1_ri_med_7.avi
+walking/hmdb-longestyard__03.avi,hmdb51,movie; static camera; front view; med quality,LONGESTYARD_walk_f_nm_np1_fr_med_6.avi
+walking/hmdb-man-who-cheated-himself-512kb__01.avi,hmdb51,movie; moving camera; back view; med quality,Man_Who_Cheated_Himself_512kb_walk_f_cm_np1_ba_med_15.avi
+walking/hmdb-man-who-cheated-himself-512kb__02.avi,hmdb51,movie; moving camera; front view; med quality,Man_Who_Cheated_Himself_512kb_walk_f_cm_np1_fr_med_13.avi
+walking/hmdb-meetthefockers__01.avi,hmdb51,movie; static camera; back view; med quality,MeettheFockers_walk_f_nm_np1_ba_med_9.avi
+walking/hmdb-meettheparents__01.avi,hmdb51,movie; moving camera; front view; med quality,MeettheParents_walk_f_cm_np1_fr_med_10.avi
+walking/hmdb-narcotic19672256kb__01.avi,hmdb51,movie; moving camera; back view; med quality,Narcotic19672256kb_walk_f_cm_np1_ba_med_3.avi
+walking/hmdb-narcotic19672256kb__02.avi,hmdb51,movie; moving camera; front view; med quality,Narcotic19672256kb_walk_f_cm_np1_fr_med_0.avi
+walking/hmdb-narcotic19672256kb__03.avi,hmdb51,movie; moving camera; right view; med quality,Narcotic19672256kb_walk_f_cm_np1_ri_med_1.avi
+walking/hmdb-nocountryforoldmen__01.avi,hmdb51,movie; moving camera; right view; med quality,NoCountryForOldMen_walk_f_cm_np1_ri_med_5.avi
+walking/hmdb-nova-elegantuniverse1__01.avi,hmdb51,movie; static camera; front view; med quality,NOVA_ELEGANTUNIVERSE1_walk_f_nm_np1_fr_med_2.avi
+walking/hmdb-nova-elegantuniverse1__02.avi,hmdb51,movie; static camera; left view; med quality,NOVA_ELEGANTUNIVERSE1_walk_f_nm_np1_le_med_3.avi
+walking/hmdb-nova-elegantuniverse2__01.avi,hmdb51,movie; static camera; back view; med quality,NOVA_ELEGANTUNIVERSE2_walk_f_nm_np1_ba_med_0.avi
+walking/hmdb-nova-elegantuniverse3__01.avi,hmdb51,movie; static camera; back view; med quality,NOVA_ELEGANTUNIVERSE3_walk_f_nm_np1_ba_med_1.avi
+walking/hmdb-oceans11__01.avi,hmdb51,movie; moving camera; front view; med quality,Oceans11_walk_f_cm_np1_fr_med_6.avi
+walking/hmdb-oceans12__01.avi,hmdb51,movie; moving camera; front view; med quality,Oceans12_walk_f_cm_np1_fr_med_12.avi
+walking/hmdb-oceans12__02.avi,hmdb51,movie; moving camera; front view; med quality,Oceans12_walk_f_cm_np1_fr_med_7.avi
+walking/hmdb-oceans13__01.avi,hmdb51,movie; moving camera; front view; med quality,Oceans13_walk_f_cm_np1_fr_med_6.avi
+walking/hmdb-oldschool__01.avi,hmdb51,movie; moving camera; left view; med quality,OldSchool_walk_f_cm_np1_le_med_1.avi
+walking/hmdb-oldschool__02.avi,hmdb51,movie; static camera; back view; med quality,OldSchool_walk_f_nm_np1_ba_med_10.avi
+walking/hmdb-oldschool__03.avi,hmdb51,movie; static camera; front view; med quality,OldSchool_walk_f_nm_np1_fr_med_2.avi
+walking/hmdb-panic-in-the-streets__01.avi,hmdb51,movie; moving camera; front view; med quality,Panic_in_the_Streets_walk_f_cm_np1_fr_med_11.avi
+walking/hmdb-prelinger-controly1950__01.avi,hmdb51,movie; static camera; front view; med quality,prelinger_ControlY1950_walk_f_nm_np1_fr_med_5.avi
+walking/hmdb-prelinger-habitpat1954__01.avi,hmdb51,movie; moving camera; left view; med quality,Prelinger_HabitPat1954_walk_f_cm_np1_le_med_13.avi
+walking/hmdb-prelinger-letsbego1953__01.avi,hmdb51,movie; moving camera; right view; med quality,prelinger_LetsBeGo1953_walk_f_cm_np1_ri_med_10.avi
+walking/hmdb-prelinger-letsbego1953__02.avi,hmdb51,movie; moving camera; right view; med quality,prelinger_LetsBeGo1953_walk_f_cm_np1_ri_med_9.avi
+walking/hmdb-prelinger-letsbego1953__03.avi,hmdb51,movie; static camera; back view; med quality,prelinger_LetsBeGo1953_walk_f_nm_np1_ba_med_1.avi
+walking/hmdb-prelinger-letsplay1949__01.avi,hmdb51,movie; static camera; left view; med quality,prelinger_LetsPlay1949_walk_f_nm_np1_le_med_10.avi
+walking/hmdb-prelinger-letyours1940__01.avi,hmdb51,movie; static camera; back view; med quality,Prelinger_LetYours1940_walk_f_nm_np1_ba_med_5.avi
+walking/hmdb-prelinger-they-grow-up-so-fast-1__01.avi,hmdb51,movie; moving camera; left view; med quality,prelinger_they_grow_up_so_fast_1_walk_f_cm_np1_le_med_3.avi
+walking/hmdb-prelinger-they-grow-up-so-fast-1__02.avi,hmdb51,movie; static camera; front view; med quality,prelinger_they_grow_up_so_fast_1_walk_f_nm_np1_fr_med_5.avi
+walking/hmdb-preparationoffoods256kb__01.avi,hmdb51,movie; moving camera; right view; med quality,preparationoffoods256kb_walk_f_cm_np1_ri_med_1.avi
+walking/hmdb-prideandprejudice1__01.avi,hmdb51,movie; static camera; back view; med quality,prideandprejudice1_walk_f_nm_np1_ba_med_0.avi
+walking/hmdb-prideandprejudice1__02.avi,hmdb51,movie; static camera; front view; med quality,prideandprejudice1_walk_f_nm_np1_fr_med_2.avi
+walking/hmdb-prideandprejudice1__03.avi,hmdb51,movie; static camera; front view; med quality,prideandprejudice1_walk_f_nm_np1_fr_med_4.avi
+walking/hmdb-ratrace__01.avi,hmdb51,movie; moving camera; back view; med quality,RATRACE_walk_f_cm_np1_ba_med_17.avi
+walking/hmdb-ratrace__02.avi,hmdb51,movie; static camera; front view; med quality,RATRACE_walk_f_nm_np1_fr_med_18.avi
+walking/hmdb-return-of-the-king-5__01.avi,hmdb51,movie; static camera; back view; med quality,Return_of_the_King_5_walk_f_nm_np1_ba_med_1.avi
+walking/hmdb-return-of-the-king__01.avi,hmdb51,movie; moving camera; back view; med quality,RETURN_OF_THE_KING_walk_f_cm_np1_ba_med_3.avi
+walking/hmdb-return-of-the-king__02.avi,hmdb51,movie; moving camera; back view; med quality,RETURN_OF_THE_KING_walk_f_cm_np1_ba_med_50.avi
+walking/hmdb-return-of-the-king__03.avi,hmdb51,movie; moving camera; front view; med quality,RETURN_OF_THE_KING_walk_f_cm_np1_fr_med_28.avi
+walking/hmdb-rushhour2__01.avi,hmdb51,movie; static camera; front view; med quality,RushHour2_walk_f_nm_np1_fr_med_10.avi
+walking/hmdb-safeinport__01.avi,hmdb51,movie; static camera; back view; med quality,SafeInPort_walk_f_nm_np1_ba_med_2.avi
+walking/hmdb-safetyharmhidesathome__01.avi,hmdb51,movie; moving camera; back view; med quality,SafetyHarmHidesatHome_walk_f_cm_np1_ba_med_0.avi
+walking/hmdb-schoolruleshowtheyhelpus__01.avi,hmdb51,movie; moving camera; front view; med quality,SchoolRulesHowTheyHelpUs_walk_f_cm_np1_fr_med_2.avi
+walking/hmdb-sellingasacareer__01.avi,hmdb51,movie; static camera; front view; med quality,SellingasaCareer_walk_f_nm_np1_fr_med_0.avi
+walking/hmdb-shadow-of-a-doubt__01.avi,hmdb51,movie; moving camera; front view; med quality,Shadow_of_a_Doubt_walk_f_cm_np1_fr_med_10.avi
+walking/hmdb-shadow-of-a-doubt__02.avi,hmdb51,movie; static camera; back view; med quality,Shadow_of_a_Doubt_walk_f_nm_np1_ba_med_15.avi
+walking/hmdb-sixthsense__01.avi,hmdb51,movie; static camera; back view; med quality,Sixthsense_walk_f_nm_np1_ba_med_5.avi
+walking/hmdb-sixthsense__02.avi,hmdb51,movie; static camera; front view; med quality,Sixthsense_walk_f_nm_np1_fr_med_8.avi
+walking/hmdb-strangerthanfiction__01.avi,hmdb51,movie; static camera; front view; med quality,StrangerThanFiction_walk_f_nm_np1_fr_med_1.avi
+walking/hmdb-strangerthanfiction__02.avi,hmdb51,movie; static camera; front view; med quality,StrangerThanFiction_walk_f_nm_np1_fr_med_2.avi
+walking/hmdb-sweeneytodd__01.avi,hmdb51,movie; moving camera; front view; med quality,SweeneyTodd_walk_f_cm_np1_fr_med_31.avi
+walking/hmdb-sweeneytodd__02.avi,hmdb51,movie; moving camera; left view; med quality,SweeneyTodd_walk_f_cm_np1_le_med_7.avi
+walking/hmdb-sweeneytodd__03.avi,hmdb51,movie; static camera; front view; med quality,SweeneyTodd_walk_f_nm_np1_fr_med_29.avi
+walking/hmdb-the-fugitive-2__01.avi,hmdb51,movie; moving camera; back view; med quality,The_Fugitive_2_walk_f_cm_np1_ba_med_6.avi
+walking/hmdb-the-fugitive-2__02.avi,hmdb51,movie; moving camera; front view; med quality,The_Fugitive_2_walk_f_cm_np1_fr_med_5.avi
+walking/hmdb-the-fugitive-3__01.avi,hmdb51,movie; moving camera; back view; med quality,The_Fugitive_3_walk_f_cm_np1_ba_med_7.avi
+walking/hmdb-the-fugitive-3__02.avi,hmdb51,movie; moving camera; front view; med quality,The_Fugitive_3_walk_f_cm_np1_fr_med_8.avi
+walking/hmdb-the-fugitive-4__01.avi,hmdb51,movie; moving camera; back view; med quality,The_Fugitive_4_walk_f_cm_np1_ba_med_6.avi
+walking/hmdb-the-fugitive-5__01.avi,hmdb51,movie; moving camera; front view; med quality,The_Fugitive_5_walk_f_cm_np1_fr_med_4.avi
+walking/hmdb-the-house-on-haunted-hill__01.avi,hmdb51,movie; moving camera; front view; med quality,The_House_on_Haunted_Hill_walk_f_cm_np1_fr_med_18.avi
+walking/hmdb-the-house-on-haunted-hill__02.avi,hmdb51,movie; moving camera; front view; med quality,The_House_on_Haunted_Hill_walk_f_cm_np1_fr_med_7.avi
+walking/hmdb-the-house-on-haunted-hill__03.avi,hmdb51,movie; moving camera; front view; med quality,The_House_on_Haunted_Hill_walk_f_cm_np1_fr_med_9.avi
+walking/hmdb-the-matrix-revolutions-5__01.avi,hmdb51,movie; static camera; left view; med quality,The_Matrix_Revolutions_5_walk_f_nm_np1_le_med_1.avi
+walking/hmdb-the-protector__01.avi,hmdb51,movie; moving camera; back view; med quality,THE_PROTECTOR_walk_f_cm_np1_ba_med_27.avi
+walking/hmdb-the-protector__02.avi,hmdb51,movie; moving camera; front view; med quality,THE_PROTECTOR_walk_f_cm_np1_fr_med_0.avi
+walking/hmdb-the-protector__03.avi,hmdb51,movie; moving camera; right view; med quality,THE_PROTECTOR_walk_f_cm_np1_ri_med_34.avi
+walking/hmdb-thebigbangs01e02thebigbranhypothesis__01.avi,hmdb51,movie; moving camera; front view; med quality,TheBigBangS01E02TheBigBranHypothesis_walk_f_cm_np1_fr_med_0.avi
+walking/hmdb-thebigbangs01e02thebigbranhypothesis__02.avi,hmdb51,movie; static camera; left view; med quality,TheBigBangS01E02TheBigBranHypothesis_walk_f_nm_np1_le_med_3.avi
+walking/hmdb-theboondocksaints__01.avi,hmdb51,movie; moving camera; back view; med quality,TheBoondockSaints_walk_f_cm_np1_ba_med_23.avi
+walking/hmdb-theboondocksaints__02.avi,hmdb51,movie; static camera; back view; med quality,TheBoondockSaints_walk_f_nm_np1_ba_med_2.avi
+walking/hmdb-theboondocksaints__03.avi,hmdb51,movie; static camera; front view; med quality,TheBoondockSaints_walk_f_nm_np1_fr_med_21.avi
+walking/hmdb-thelastmanonearth__01.avi,hmdb51,movie; moving camera; back view; med quality,TheLastManOnearth_walk_f_cm_np1_ba_med_25.avi
+walking/hmdb-thelastmanonearth__02.avi,hmdb51,movie; moving camera; back view; med quality,TheLastManOnearth_walk_f_cm_np1_ba_med_27.avi
+walking/hmdb-thelastmanonearth__03.avi,hmdb51,movie; moving camera; back view; med quality,TheLastManOnearth_walk_f_cm_np1_ba_med_28.avi
+walking/hmdb-thelittleshopofhorrors__01.avi,hmdb51,movie; moving camera; front view; med quality,TheLittleShopofHorrors_walk_f_cm_np1_fr_med_12.avi
+walking/hmdb-thelittleshopofhorrors__02.avi,hmdb51,movie; static camera; back view; med quality,TheLittleShopofHorrors_walk_f_nm_np1_ba_med_3.avi
+walking/hmdb-thelittleshopofhorrors__03.avi,hmdb51,movie; static camera; left view; med quality,TheLittleShopofHorrors_walk_f_nm_np1_le_med_6.avi
+walking/hmdb-theroyaltenenbaums__01.avi,hmdb51,movie; static camera; left view; med quality,TheRoyalTenenbaums_walk_f_nm_np1_le_med_3.avi
+walking/hmdb-trumanshow__01.avi,hmdb51,movie; moving camera; back view; med quality,TrumanShow_walk_f_cm_np1_ba_med_12.avi
+walking/hmdb-trumanshow__02.avi,hmdb51,movie; moving camera; back view; med quality,TrumanShow_walk_f_cm_np1_ba_med_17.avi
+walking/hmdb-trumanshow__03.avi,hmdb51,movie; moving camera; back view; med quality,TrumanShow_walk_f_cm_np1_ba_med_5.avi
+walking/hmdb-two-towers-7__01.avi,hmdb51,movie; moving camera; front view; med quality,Two_Towers_7_walk_f_cm_np1_fr_med_2.avi
+walking/hmdb-unrepeatable__01.avi,hmdb51,movie; static camera; left view; med quality,UNREPEATABLE_walk_f_nm_np1_le_med_0.avi
+walking/hmdb-veoh-alpha-dog-1__01.avi,hmdb51,movie; moving camera; back view; med quality,Veoh_Alpha_Dog_1_walk_f_cm_np1_ba_med_7.avi
+walking/hmdb-veoh-alpha-dog-1__02.avi,hmdb51,movie; static camera; back view; med quality,Veoh_Alpha_Dog_1_walk_f_nm_np1_ba_med_32.avi
+walking/hmdb-veoh-alpha-dog-1__03.avi,hmdb51,movie; static camera; back view; med quality,Veoh_Alpha_Dog_1_walk_f_nm_np1_ba_med_36.avi
+walking/hmdb-veoh-alpha-dog-2__01.avi,hmdb51,movie; moving camera; right view; med quality,Veoh_Alpha_Dog_2_walk_f_cm_np1_ri_med_25.avi
+walking/hmdb-veoh-alpha-dog-2__02.avi,hmdb51,movie; static camera; front view; med quality,Veoh_Alpha_Dog_2_walk_f_nm_np1_fr_med_9.avi
+walking/hmdb-veoh-alpha-dog-2__03.avi,hmdb51,movie; static camera; right view; med quality,Veoh_Alpha_Dog_2_walk_f_nm_np1_ri_med_8.avi
+walking/hmdb-weddingcrashers__01.avi,hmdb51,movie; static camera; front view; med quality,WeddingCrashers_walk_f_nm_np1_fr_med_19.avi

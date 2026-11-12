@@ -1,4 +1,8 @@
 source,split,clips
+gmdcsa-s1,train,32
+gmdcsa-s2,val,48
+gmdcsa-s3,test,43
+gmdcsa-s4,train,37
 hmdb-20060723sfjffangelina,train,2
 hmdb-20060723sfjffbartsinger,train,1
 hmdb-20060723sfjffinallseriousness,train,1

@@ -29,6 +29,12 @@ def source_of(path: Path) -> str:
     return path.stem.split("__")[0]
 
 
+def dataset_of(source: str) -> str:
+    """'hmdb-batman' -> 'hmdb', 'gmdcsa-s1' -> 'gmdcsa'; our own sessions ('s01-...') -> 'own'."""
+    prefix = source.split("-")[0]
+    return prefix if prefix in ("hmdb", "gmdcsa", "kth") else "own"
+
+
 def main():
     clips = [p for p in (DATA / "raw").rglob("*") if p.suffix.lower() in VIDEO_EXTS]
     if not clips:
@@ -47,14 +53,31 @@ def main():
     counts = defaultdict(int)
     for src, split in assigned.items():
         counts[split] += len(by_source.get(src, []))
-    new_sources = sorted(s for s in by_source if s not in assigned)
-    random.Random(SEED).shuffle(new_sources)
-    total = len(clips)
-    for src in new_sources:
-        # Put the source where the split is furthest below its target share.
-        split = min(RATIOS, key=lambda s: counts[s] / total - RATIOS[s])
-        assigned[src] = split
-        counts[split] += len(by_source[src])
+
+    # Split each dataset on its own, so every split gets some of each kind of
+    # footage (e.g. the 4 GMDCSA subjects must not all land in train).
+    groups = defaultdict(list)
+    for src in sorted(by_source):
+        groups[dataset_of(src)].append(src)
+    for group, sources in groups.items():
+        g_counts = defaultdict(int)
+        for s in sources:
+            if s in assigned:
+                g_counts[assigned[s]] += len(by_source[s])
+        new_sources = [s for s in sources if s not in assigned]
+        random.Random(f"{SEED}-{group}").shuffle(new_sources)
+        g_total = sum(len(by_source[s]) for s in sources)
+        for src in new_sources:
+            # With 3+ sources, test and val each get at least one; after that,
+            # the split furthest below its target share gets the next source.
+            empty = [s for s in ("test", "val") if g_counts[s] == 0]
+            if empty and len(sources) >= 3:
+                split = empty[0]
+            else:
+                split = min(RATIOS, key=lambda s: g_counts[s] / g_total - RATIOS[s])
+            assigned[src] = split
+            g_counts[split] += len(by_source[src])
+            counts[split] += len(by_source[src])
 
     for split in RATIOS:
         shutil.rmtree(DATA / split, ignore_errors=True)
@@ -72,7 +95,7 @@ def main():
         for src in sorted(assigned):
             w.writerow([src, assigned[src], len(by_source.get(src, []))])
 
-    print(f"{total} clips from {len(by_source)} sources")
+    print(f"{len(clips)} clips from {len(by_source)} sources")
     for split in RATIOS:
         per_class = defaultdict(int)
         for c in (DATA / split).rglob("*"):

@@ -45,6 +45,10 @@ def draw_result(frame, r: dict):
         f"Motion: {'YES' if r['moving'] else 'no'}  {r['motion_ratio']:.1%}   events: {r['motion_events']}",
         f"FPS: {r['fps']:.1f}",
     ]
+    if "activity_baseline" in r:
+        other = "activity_baseline" if r["activity"] == r.get("activity_main") else "activity_main"
+        name = "Baseline (MOG2 blob)" if other == "activity_baseline" else "Main (pose)"
+        lines.insert(2, f"{name}: {r[other]}")
     width = max(cv2.getTextSize(t, cv2.FONT_HERSHEY_SIMPLEX, 0.55, 2)[0][0] for t in lines) + 16
     cv2.rectangle(out, (0, 0), (width, 22 * len(lines) + 10), (0, 0, 0), -1)
     for i, text in enumerate(lines):

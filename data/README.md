@@ -1,70 +1,65 @@
 # Data card
 
-The video files are not in git. Rebuild them with the commands in the main README (HMDB51 import), or download
-our recordings from the Google Drive link given there.
+The video files are not in git. Rebuild them with the commands in the main README; `data/splits.csv` is committed,
+so every machine gets the same split.
 
 ## Sources and licences
-- **HMDB51** (Kuehne et al., "HMDB: A Large Video Database for Human Motion Recognition", ICCV 2011, Brown
-  University), classes `walk` and `run`. Free for non-commercial research use. We downloaded the copy at
-  huggingface.co/datasets/jili5044/hmdb51 and imported it with
-  `python scripts/import_public.py hmdb51 <folder> --limit-per-source 3`.
-- **Own recordings** (in progress) by the three team members, made with `scripts/record_clips.py` on laptop
-  webcams and phone cameras. Everyone filmed agreed to appear. For course use only.
-
-## Naming and splitting
-- `data/raw/<activity>/<source>__<NN>.<ext>`. A **source** is the original video: the movie for HMDB51
-  (`hmdb-<movie>`), or one recording session for our own clips (one person, place and camera, e.g.
-  `s01-wilmark-room-webcam`).
-- The data is **split by source, not by file**. All clips of a source go to the same split, so test never holds
-  near-copies of training footage. A movie with both walking and running clips is still one source. The target
-  is 70 / 15 / 15 by clip count, with a fixed seed of 106. The assignment is in `data/splits.csv`.
-- **The test split is locked.** Re-running `make_splits.py` only places new sources. We do not look at test
-  results while tuning thresholds.
+- **GMDCSA24** (Alam et al., "GMDCSA-24: A dataset for human fall detection in videos", *Data in Brief* 2024),
+  **MIT licence**, from github.com/ekramalam/GMDCSA24-A-Dataset-for-Human-Fall-Detection-in-Videos. One room, a
+  **fixed camera**, 4 subjects, **day, night and lights-off** recordings, 1280×720 at about 30 fps. 160 videos
+  (79 daily activities, 81 falls). This is the closest public match to our use case: a fixed camera watching a room.
+- **HMDB51** (Kuehne et al., ICCV 2011, Brown University), classes `walk` and `run`, for non-commercial research.
+  Copy from huggingface.co/datasets/jili5044/hmdb51. Movie and web clips, often with a **moving camera**.
+- **Own recordings**: not recorded yet. `scripts/record_clips.py` is ready, and new sources join the split
+  without moving existing ones.
 
 ## Labels
-- One activity per clip, taken from the folder name: `standing`, `sitting`, `walking`, `running`, `lying`.
-- **HMDB51:** the original HMDB labels (manually annotated by the dataset authors). We mapped `walk → walking` and
-  `run → running`. Using HMDB's own metadata in the file names, we kept only clips with the **full body visible**
-  (`f`), **one person** (`np1`) and quality not `bad`, and at most 3 clips per movie so no film dominates.
-  Of 780 walk/run clips, 294 were kept.
-- **Own recordings:** the activity is chosen before recording and done for the whole clip, after a 3-second
-  countdown. A second member watches each clip and deletes any that mix activities.
-- HMDB51 `sit` and `stand` were **not used**: they show the *motion* of sitting down or standing up, not the
-  posture.
-- `data/annotations/motion_counts.csv` will hold hand-counted motion events for 3 static-camera clips, for the
-  MOG2 baseline. An event is the person starting to move after being still.
+- **GMDCSA24:** each video comes with the authors' **time-segment labels**, e.g. `Sitting[0 to 3.4]; Walking[3.4 to
+  6]`. We map Sitting → sitting, Sleeping → lying, Walking → walking, Standing → standing. Falling, Reading,
+  Drinking, Eating, Writing and Exercising are not our classes and are ignored; Reading etc. overlap a posture label
+  anyway. `scripts/import_public.py` parses the CSVs. It tolerates rows with several ranges in one bracket and
+  missing `]`, both of which occur. One row has an impossible range (`9.7 to 3`, subject 2 ADL 06), and it is
+  dropped. Segments go to `data/annotations/segments.csv`.
+- **HMDB51:** the dataset authors' clip labels. We keep only full-body (`f`), single-person (`np1`), non-`bad`
+  clips, at most 3 per movie (294 of 780). HMDB's `sit` and `stand` are the motions of sitting down and standing
+  up, not postures, so they are not used.
+- Each clip's recording **condition** (day/night, static or moving camera, view, quality, description) is in
+  `data/annotations/clip_info.csv` and appears in the test log.
 
-## Counts
+## Splitting (by source, no leakage)
+- Source = **movie** for HMDB51, **subject** for GMDCSA24. All clips of a source are in one split.
+- Each dataset is split on its own (`scripts/make_splits.py`), so each split has both kinds of footage.
+- GMDCSA24 has only 4 subjects. **Before computing any result on them**, we chose test = subject 3 and
+  val = subject 2, because both were filmed in day **and** night; subject 1 is daylight only. Train = subjects 1
+  and 4. Putting the daylight-only subject in test would have left the hardest condition out of the test set.
+- **The test split is locked** and was used once, for the final Milestone 3 table, after tuning on val.
+- The method has no trained model (pretrained YOLO and MediaPipe plus rules). **Train is not used** for fitting. It
+  is kept as a reserve for a learned classifier later. Thresholds are tuned on **val**.
 
-| split | standing | sitting | walking | running | lying | total | sources |
-|-------|---------:|--------:|--------:|--------:|------:|------:|--------:|
-| train | 0 | 0 | 127 | 78 | 0 | 205 | 79 |
-| val   | 0 | 0 | 32 | 12 | 0 | 44 | 20 |
-| test  | 0 | 0 | 27 | 18 | 0 | 45 | 20 |
-| **total** | 0 | 0 | 186 | 108 | 0 | **294** | **119** |
+## Counts (labelled segments ≥ 1 s that are scored)
 
-Standing, sitting and lying will be filled with our own recordings, which are being added as new sources.
+| split | standing | sitting | walking | running | lying | segments | GMDCSA videos | HMDB clips | sources |
+|-------|---------:|--------:|--------:|--------:|------:|---------:|--------------:|-----------:|--------:|
+| train | 7 | 37 | 149 | 78 | 9 | 280 | 60 (2 subjects) | 205 | 81 |
+| val   | 23 | 15 | 55 | 12 | 3 | 108 | 44 (subject 2) | 44 | 21 |
+| test  | 15 | 18 | 36 | 18 | 3 | 90 | 37 (subject 3) | 45 | 21 |
+
+GMDCSA videos with no posture segment of at least 1 s (e.g. a fall straight from the start) are not counted.
 
 ## Image properties
-- HMDB51 clips are **240 px tall**, 320–560 px wide (320×240 is the most common), at **30 fps**. They last
-  0.8–17.8 s, with a median of 2.7 s, for 15 minutes in total.
-- Webcams record 640×480 or 1280×720, and phones 1920×1080.
-- Every frame is resized so the long side is at most 640 before processing (`src/preprocess.py`). HMDB51 clips are
-  already smaller, so they are not resized.
+- GMDCSA24: 1280×720, about 30 fps, 3–17 s per video. HMDB51: 240 px tall, 320–560 px wide, 30 fps, median 2.7 s.
+- Every frame is resized so the long side is at most 640 before processing (`src/preprocess.py`).
 
-## Preprocessing applied (in `src/preprocess.py`, shared by prediction and evaluation)
+## Preprocessing applied (in `src/preprocess.py`, shared by run.py, evaluate.py and tune.py)
 1. Resize so the long side is at most 640 (INTER_AREA).
 2. CLAHE on the L channel of Lab, with clip 2.0 and an 8×8 grid, for low light.
-3. Grayscale and a 5×5 Gaussian blur, applied only to the input of MOG2.
-No augmentation is applied because nothing is trained. The rule thresholds are tuned on `val` only.
-See `docs/figures/preprocessing.jpg`.
+3. Grayscale and a 5×5 Gaussian blur, used for MOG2 and the camera-motion optical flow.
+No augmentation, because nothing is trained. See `docs/figures/preprocessing.jpg`.
 
 ## Known gaps
-- **No standing, sitting or lying clips yet.** This is the main gap until our own recordings are in.
-- **Moving cameras:** most HMDB51 clips are movie shots where the camera follows the actor. That breaks
-  frame-relative speed and background subtraction.
-- **Low resolution and short clips:** 240 px tall and often under 3 s, while the pose model and the 0.5 s speed
-  window need a few seconds.
-- Mostly daylight scenes: there is little night or backlit footage. Mostly side and back views.
-- One person per clip. With several people in frame, we track the largest (closest) one.
-- `lying` is only a posture. Falls are not detected yet.
+- **Lying: 3 val and 3 test segments.** Any lying number is unreliable. The lying-on-the-floor part at the end of
+  the fall videos is not labelled by the authors.
+- **Standing: only 7 train segments**, which doesn't matter now because train is unused.
+- Only 4 people in the room footage, one room, and one camera angle per subject.
+- HMDB51 clips are low resolution and short, and two-thirds have a moving camera.
+- No footage of our own yet (laptop webcam or phone), which is the real use case.

@@ -1,0 +1,91 @@
+﻿id,input,condition,expected,got,ok,baseline_got,m2_got,frame_acc,duration_s,pose_found,legs_visible,body_height_px,camera_px_per_s,people
+T001,_segments/gmdcsa-s3__adl-01.mp4 [0-8s],"room, static camera; Day; Full T-shirt & Trousers; Writing something in the notebook while sitting on the bed",sitting,walking,✘,standing,sitting,0.172,8.02,1.0,1.0,62.4,0.0,1
+T002,_segments/gmdcsa-s3__adl-02.mp4 [0-9s],"room, static camera; Day; Full T-shirt & Trousers; Exercise (Hand up & down)",standing,standing,✔,standing,standing,0.851,9.0,1.0,1.0,228.4,0.0,1
+T003,_segments/gmdcsa-s3__adl-03.mp4 [3-7.4s],"room, static camera; Day; Full T-shirt & Trousers; Getting up from the sleeping position from the bed; Putting a mask on the face; then walking",sitting,walking,✘,standing,walking,0.023,4.39,1.0,1.0,108.7,0.0,1
+T004,_segments/gmdcsa-s3__adl-03.mp4 [0-1s],"room, static camera; Day; Full T-shirt & Trousers; Getting up from the sleeping position from the bed; Putting a mask on the face; then walking",lying,lying,✔,standing,lying,0.867,1.01,1.0,1.0,131.4,0.0,1
+T005,_segments/gmdcsa-s3__adl-04.mp4 [2.4-3.6s],"room, static camera; Day; Full T-shirt & Trousers; Picking a book from the floor and putting it on the bed; sitting on the bed",standing,standing,✔,standing,standing,0.528,1.21,1.0,1.0,202.3,0.0,1
+T006,_segments/gmdcsa-s3__adl-04.mp4 [6.6-7.9s],"room, static camera; Day; Full T-shirt & Trousers; Picking a book from the floor and putting it on the bed; sitting on the bed",standing,standing,✔,standing,standing,0.816,1.27,1.0,1.0,185.0,0.0,1
+T007,_segments/gmdcsa-s3__adl-04.mp4 [3.6-5.2s],"room, static camera; Day; Full T-shirt & Trousers; Picking a book from the floor and putting it on the bed; sitting on the bed",walking,walking,✔,standing,standing,0.625,1.61,1.0,1.0,187.5,0.0,1
+T008,_segments/gmdcsa-s3__adl-04.mp4 [7.9-9.2s],"room, static camera; Day; Full T-shirt & Trousers; Picking a book from the floor and putting it on the bed; sitting on the bed",walking,walking,✔,standing,walking,1.0,1.31,1.0,1.0,182.5,0.0,1
+T009,_segments/gmdcsa-s3__adl-05.mp4 [0-5s],"room, static camera; Day; Full T-shirt & Trousers; Exercising (hand down & up with body bending)",standing,walking,✘,standing,lying,0.208,5.0,1.0,1.0,238.7,0.0,1
+T010,_segments/gmdcsa-s3__adl-06.mp4 [5.1-8s],"room, static camera; Day; Full T-shirt & Trousers; Exercising then sitting down on the floor",sitting,sitting,✔,lying,sitting,0.616,2.88,1.0,1.0,198.5,0.0,1
+T011,_segments/gmdcsa-s3__adl-08.mp4 [0.8-4s],"room, static camera; Day; Full T-shirt & Trousers; Sitting to sleeping on the floor",lying,lying,✔,standing,lying,0.708,3.22,1.0,1.0,181.5,0.0,1
+T012,_segments/gmdcsa-s3__adl-09.mp4 [2.5-6s],"room, static camera; Day; Full T-shirt & Trousers; Sleeping on the floor to sitting and then standing",sitting,walking,✘,standing,walking,0.333,3.52,1.0,1.0,127.4,0.0,2
+T013,_segments/gmdcsa-s3__adl-09.mp4 [0-2.2s],"room, static camera; Day; Full T-shirt & Trousers; Sleeping on the floor to sitting and then standing",lying,lying,✔,standing,lying,0.879,2.21,1.0,1.0,186.8,0.0,2
+T014,_segments/gmdcsa-s3__adl-10.mp4 [0-12s],"room, static camera; Day; Full shirt & Trousers; Opening the window curtain and the window",standing,standing,✔,standing,standing,0.507,12.03,1.0,1.0,195.7,0.0,1
+T015,_segments/gmdcsa-s3__adl-11.mp4 [2.7-12s],"room, static camera; Day; Full shirt & Trousers; Closing the window curtain and the window",standing,walking,✘,standing,standing,0.478,9.3,1.0,1.0,180.9,0.0,1
+T016,_segments/gmdcsa-s3__adl-11.mp4 [0-2.7s],"room, static camera; Day; Full shirt & Trousers; Closing the window curtain and the window",walking,walking,✔,walking,walking,0.815,2.71,1.0,1.0,196.9,0.0,1
+T017,_segments/gmdcsa-s3__adl-12.mp4 [0.8-8.1s],"room, static camera; Night; Full T-shirt 2 & Trousers; Changing pages of a book while sitting on the bed; standing",sitting,walking,✘,standing,walking,0.027,7.34,0.7,1.0,108.8,0.0,1
+T018,_segments/gmdcsa-s3__adl-12.mp4 [8.1-9.2s],"room, static camera; Night; Full T-shirt 2 & Trousers; Changing pages of a book while sitting on the bed; standing",standing,walking,✘,standing,walking,0.0,1.07,1.0,1.0,159.7,0.0,2
+T019,_segments/gmdcsa-s3__adl-13.mp4 [0-8s],"room, static camera; Night; Full T-shirt (different) & Trousers; Sitting on the floor",sitting,sitting,✔,standing,sitting,0.603,8.04,0.901,0.991,142.9,0.0,1
+T020,_segments/gmdcsa-s3__adl-14.mp4 [0-8s],"room, static camera; Night; Full T-shirt (different) & Trousers; Sitting on the floor & drinking water from the water bottle",sitting,sitting,✔,standing,sitting,0.504,8.07,0.983,1.0,175.7,0.0,2
+T021,_segments/gmdcsa-s3__adl-15.mp4 [0-7s],"room, static camera; Night; Full T-shirt (different) & Trousers; Reading newspaper while sitting on the floor",sitting,walking,✘,standing,walking,0.075,7.07,1.0,1.0,119.2,0.0,2
+T022,_segments/gmdcsa-s3__adl-16.mp4 [0-10s],"room, static camera; Day; Kurta & Trousers; Eating while sitting on the ground",sitting,sitting,✔,standing,sitting,0.769,10.02,1.0,1.0,107.1,0.0,1
+T023,_segments/gmdcsa-s3__adl-17.mp4 [0-12s],"room, static camera; Night; Full T-shirt (different) & Trousers; Drinking water from a water bottle while sitting on the bed Putting the water bottle on the bed",sitting,standing,✘,standing,sitting,0.022,12.06,1.0,1.0,122.6,0.0,2
+T024,_segments/gmdcsa-s3__adl-18.mp4 [0.6-11s],"room, static camera; Night; Full T-shirt (different) & Trousers; Walking; sitting on the bed and eating biscuits",sitting,walking,✘,standing,sitting,0.019,10.39,0.994,1.0,161.9,0.0,2
+T025,_segments/gmdcsa-s3__adl-19.mp4 [1.8-5s],"room, static camera; Night; Full T-shirt (different) & Trousers; Picking the pen from the floor and putting it on the bed",walking,walking,✔,standing,walking,0.792,3.19,0.875,1.0,236.3,0.0,1
+T026,_segments/gmdcsa-s3__adl-20.mp4 [0-9s],"room, static camera; Night; Full T-shirt (different) & Trousers; Talking on the phone while sitting on the bed",sitting,walking,✘,standing,sitting,0.007,9.06,1.0,1.0,161.1,0.0,2
+T027,_segments/gmdcsa-s3__adl-21.mp4 [0-10s],"room, static camera; Day; Kurta & Trousers; Drinking while sitting on the bed",sitting,walking,✘,standing,sitting,0.431,10.02,1.0,1.0,110.8,0.0,1
+T028,_segments/gmdcsa-s3__adl-22.mp4 [0-9s],"room, static camera; Day; Kurta & Trousers; Writing while sitting on the bed",sitting,sitting,✔,standing,sitting,0.952,9.02,1.0,1.0,114.1,0.0,1
+T029,_segments/gmdcsa-s3__fall-02.mp4 [0-1.3s],"room, static camera; Day; Full T-shirt & Trouser; Falling on the bed (forward)",walking,walking,✔,standing,walking,0.923,1.31,1.0,1.0,188.4,0.0,1
+T030,_segments/gmdcsa-s3__fall-03.mp4 [0-1.5s],"room, static camera; Day; Full T-shirt & Trouser; Falling backward on the floor",standing,standing,✔,standing,standing,0.733,1.51,1.0,1.0,190.3,0.1,2
+T031,_segments/gmdcsa-s3__fall-04.mp4 [0-1.2s],"room, static camera; Day; Full T-shirt & Trouser; Walking and then falling backward on the floor",walking,running,✘,standing,walking,0.472,1.21,1.0,1.0,243.9,0.1,1
+T032,_segments/gmdcsa-s3__fall-05.mp4 [0-3s],"room, static camera; Day; Full T-shirt & Trouser; Falling slowly from standing position to the floor",standing,standing,✔,standing,standing,0.544,3.01,1.0,1.0,195.9,0.0,1
+T033,_segments/gmdcsa-s3__fall-07.mp4 [0-1s],"room, static camera; Day; Full T-shirt & Trouser; Falling on the floor from the standing position",standing,standing,✔,standing,standing,0.8,1.01,1.0,1.0,192.1,0.0,1
+T034,_segments/gmdcsa-s3__fall-09.mp4 [0-3.4s],"room, static camera; Day; Full T-shirt & Trouser; Reading the book while sitting on the ground; then falling backward",sitting,sitting,✔,standing,sitting,0.775,3.41,1.0,1.0,130.4,0.0,1
+T035,_segments/gmdcsa-s3__fall-11.mp4 [0-4.6s],"room, static camera; Day; Kurta & Trouser; Eating in standing position then falling forward",standing,standing,✔,standing,standing,0.812,4.62,1.0,1.0,222.9,0.0,1
+T036,_segments/gmdcsa-s3__fall-13.mp4 [0-1.4s],"room, static camera; Day; Full T-shirt & Trouser; Writing something in a notebook while sitting position on the floor; then falling backward",sitting,sitting,✔,standing,sitting,1.0,1.41,1.0,1.0,165.9,0.0,1
+T037,_segments/gmdcsa-s3__fall-14.mp4 [4.6-8.1s],"room, static camera; Day; Full T-shirt; Shirt  & Trouser; Falling backward on the floor while removing the shirt and trying to hang it on the hangar",standing,walking,✘,standing,standing,0.212,3.49,1.0,1.0,208.6,0.0,1
+T038,_segments/gmdcsa-s3__fall-14.mp4 [0-4.6s],"room, static camera; Day; Full T-shirt; Shirt  & Trouser; Falling backward on the floor while removing the shirt and trying to hang it on the hangar",walking,walking,✔,walking,walking,0.775,4.63,0.877,0.959,222.5,0.1,2
+T039,_segments/gmdcsa-s3__fall-15.mp4 [0-1.8s],"room, static camera; Night; Full T-shirt (different) & Trouser; Trying to drink water from the water bottle and then falling on the floor",standing,standing,✔,standing,sitting,0.643,1.86,0.107,1.0,247.6,0.0,1
+T040,_segments/gmdcsa-s3__fall-16.mp4 [0-1.7s],"room, static camera; Night; Full T-shirt (different) & Trouser; Walking and then falling left side on the floor",walking,walking,✔,standing,walking,0.923,1.74,1.0,1.0,312.2,0.1,2
+T041,_segments/gmdcsa-s3__fall-17.mp4 [0-1.4s],"room, static camera; Night; Full T-shirt (different) & Trouser; Reading newspaper then falling Backward on the bed",sitting,standing,✘,standing,sitting,0.0,1.46,0.909,1.0,127.2,0.0,1
+T042,_segments/gmdcsa-s3__fall-18.mp4 [0-3.2s],"room, static camera; Night; Full T-shirt (different) & Trouser; Sitting on the bed; then falling on the floor",sitting,standing,✘,standing,sitting,0.042,3.2,1.0,1.0,120.8,0.0,1
+T043,_segments/gmdcsa-s3__fall-19.mp4 [0-1.9s],"room, static camera; Night; Full T-shirt (different) & Trouser; Falling on the floor from the standing position",standing,standing,✔,standing,standing,0.828,1.93,1.0,1.0,256.6,0.0,2
+T044,_segments/gmdcsa-s3__fall-20.mp4 [0-2.2s],"room, static camera; Night; Full T-shirt (different) & Trouser; Walking then falling forward on the floor",walking,walking,✔,standing,standing,0.706,2.26,1.0,1.0,379.8,0.0,2
+T045,_segments/gmdcsa-s3__fall-21.mp4 [0-4.4s],"room, static camera; Day; Kurta & Trouser; Drinking in standing position then falling sideways",standing,standing,✔,standing,standing,0.917,4.42,1.0,1.0,202.4,0.0,1
+T046,running/hmdb-20060723sfjffsomelikeitwarmed__01.avi,movie; static camera; front view; med quality,running,standing,✘,standing,sitting,0.414,1.93,0.5,1.0,139.2,9.1,1
+T047,running/hmdb-a-beautiful-mind-4__01.avi,movie; moving camera; back view; med quality,running,walking,✘,standing,walking,0.087,3.47,0.923,1.0,62.4,1.6,7
+T048,running/hmdb-americangangster__01.avi,movie; moving camera; left view; med quality,running,running,✔,lying,lying,0.571,1.63,0.878,1.0,146.4,205.5,1
+T049,running/hmdb-longestyard__01.avi,movie; moving camera; back view; med quality,running,running,✔,standing,running,0.958,1.6,0.938,1.0,109.5,109.2,10
+T050,running/hmdb-longestyard__02.avi,movie; moving camera; left view; med quality,running,running,✔,standing,running,0.917,0.8,0.958,1.0,136.5,58.0,7
+T051,running/hmdb-longestyard__03.avi,movie; moving camera; left view; med quality,running,running,✔,standing,running,0.54,1.67,0.64,1.0,119.3,263.7,8
+T052,running/hmdb-metacafe-coolsoccer__01.avi,movie; moving camera; back view; med quality,running,running,✔,lying,running,0.75,2.8,0.833,1.0,95.9,12.5,2
+T053,running/hmdb-nameunknown256kb__01.avi,movie; moving camera; front view; med quality,running,running,✔,standing,standing,0.208,2.57,0.39,0.6,90.1,40.2,1
+T054,running/hmdb-return-of-the-king-4__01.avi,movie; moving camera; right view; med quality,running,no person,✘,standing,no person,0.0,4.0,0.0,0.0,0.0,106.4,4
+T055,running/hmdb-the-fugitive-5__01.avi,movie; moving camera; front view; med quality,running,walking,✘,standing,walking,0.143,2.8,0.988,0.723,135.9,78.7,4
+T056,running/hmdb-the-fugitive-5__02.avi,movie; static camera; back view; med quality,running,walking,✘,standing,walking,0.37,2.43,0.63,1.0,78.6,13.4,1
+T057,running/hmdb-the-matrix-1__01.avi,movie; moving camera; front view; med quality,running,standing,✘,standing,sitting,0.0,1.73,0.231,1.0,83.7,32.1,1
+T058,running/hmdb-the-matrix-3__01.avi,movie; moving camera; back view; med quality,running,running,✔,standing,running,0.907,1.43,0.953,1.0,86.9,13.7,1
+T059,running/hmdb-the-matrix-3__02.avi,movie; moving camera; right view; med quality,running,running,✔,standing,running,0.75,1.47,0.864,1.0,113.6,97.5,1
+T060,running/hmdb-the-protector__01.avi,movie; moving camera; back view; med quality,running,walking,✘,standing,walking,0.0,0.77,0.913,0.429,129.0,4.5,1
+T061,running/hmdb-the-protector__02.avi,movie; moving camera; back view; med quality,running,running,✔,lying,walking,0.5,1.67,0.8,1.0,100.1,10.2,5
+T062,running/hmdb-the-protector__03.avi,movie; moving camera; back view; med quality,running,running,✔,lying,walking,0.857,1.63,0.878,1.0,84.7,85.1,2
+T063,running/hmdb-veoh-alpha-dog-1__01.avi,movie; moving camera; back view; med quality,running,walking,✘,standing,walking,0.061,3.27,0.765,0.893,141.0,67.4,1
+T064,walking/hmdb-20060723sfjffjewgotmail__01.avi,movie; static camera; front view; med quality,walking,walking,✔,standing,sitting,0.713,2.67,1.0,0.212,185.9,0.1,3
+T065,walking/hmdb-20060723sfjffsomelikeitwarmed__01.avi,movie; moving camera; back view; med quality,walking,walking,✔,running,walking,0.59,2.6,0.962,0.853,174.3,28.8,2
+T066,walking/hmdb-20060723sfjffsomelikeitwarmed__02.avi,movie; static camera; back view; med quality,walking,walking,✔,standing,sitting,0.745,1.57,0.809,1.0,158.5,19.6,2
+T067,walking/hmdb-a-beautiful-mind-2__01.avi,movie; moving camera; front view; med quality,walking,walking,✔,standing,walking,0.8,2.83,1.0,0.988,115.0,13.3,2
+T068,walking/hmdb-americangangster__01.avi,movie; moving camera; front view; med quality,walking,walking,✔,standing,walking,0.538,2.6,1.0,1.0,119.3,65.7,6
+T069,walking/hmdb-americangangster__02.avi,movie; moving camera; front view; med quality,walking,walking,✔,standing,walking,0.72,3.57,0.757,1.0,138.8,14.2,2
+T070,walking/hmdb-americangangster__03.avi,movie; moving camera; left view; med quality,walking,walking,✔,running,standing,0.687,2.77,0.988,1.0,183.5,116.3,1
+T071,walking/hmdb-eddieizzardcircle__01.avi,movie; static camera; left view; med quality,walking,standing,✘,standing,standing,0.351,2.47,1.0,1.0,133.9,0.0,1
+T072,walking/hmdb-eurotrip__01.avi,movie; static camera; front view; med quality,walking,walking,✔,standing,standing,0.776,3.57,0.879,1.0,136.1,0.7,1
+T073,walking/hmdb-eurotrip__02.avi,movie; static camera; front view; med quality,walking,standing,✘,standing,standing,0.49,3.47,0.99,0.68,209.1,7.2,1
+T074,walking/hmdb-longestyard__01.avi,movie; moving camera; left view; med quality,walking,walking,✔,standing,walking,0.792,1.6,0.958,1.0,100.8,52.3,11
+T075,walking/hmdb-longestyard__02.avi,movie; moving camera; right view; med quality,walking,walking,✔,standing,sitting,0.975,2.67,1.0,1.0,88.9,15.3,8
+T076,walking/hmdb-longestyard__03.avi,movie; static camera; front view; med quality,walking,walking,✔,standing,standing,0.45,3.63,0.991,0.787,122.1,4.5,1
+T077,walking/hmdb-oceans12__01.avi,movie; moving camera; front view; med quality,walking,standing,✘,standing,standing,0.358,1.77,0.906,0.771,129.4,6.5,2
+T078,walking/hmdb-oceans12__02.avi,movie; moving camera; front view; med quality,walking,standing,✘,standing,standing,0.08,3.33,0.88,0.148,115.2,0.3,2
+T079,walking/hmdb-sellingasacareer__01.avi,movie; static camera; front view; med quality,walking,walking,✔,standing,standing,0.419,6.77,0.591,0.567,145.2,0.5,1
+T080,walking/hmdb-sweeneytodd__01.avi,movie; moving camera; front view; med quality,walking,walking,✔,standing,standing,0.962,1.77,1.0,1.0,129.1,12.7,1
+T081,walking/hmdb-sweeneytodd__02.avi,movie; moving camera; left view; med quality,walking,running,✘,standing,walking,0.34,1.77,0.698,1.0,159.3,28.1,1
+T082,walking/hmdb-sweeneytodd__03.avi,movie; static camera; front view; med quality,walking,walking,✔,standing,walking,0.52,1.67,0.88,1.0,111.5,0.1,2
+T083,walking/hmdb-the-fugitive-5__01.avi,movie; moving camera; front view; med quality,walking,walking,✔,standing,walking,0.857,5.13,1.0,1.0,135.1,1.8,4
+T084,walking/hmdb-the-matrix-revolutions-5__01.avi,movie; static camera; left view; med quality,walking,standing,✘,standing,sitting,0.0,5.5,0.018,1.0,46.4,51.3,2
+T085,walking/hmdb-the-protector__01.avi,movie; moving camera; back view; med quality,walking,walking,✔,running,walking,0.628,2.6,1.0,0.872,164.4,8.2,8
+T086,walking/hmdb-the-protector__02.avi,movie; moving camera; front view; med quality,walking,walking,✔,standing,standing,0.293,4.67,0.257,1.0,143.3,0.1,1
+T087,walking/hmdb-the-protector__03.avi,movie; moving camera; right view; med quality,walking,running,✘,standing,running,0.02,1.63,0.918,1.0,113.3,97.3,2
+T088,walking/hmdb-veoh-alpha-dog-1__01.avi,movie; moving camera; back view; med quality,walking,walking,✔,walking,walking,0.89,7.0,0.995,0.995,153.5,27.0,2
+T089,walking/hmdb-veoh-alpha-dog-1__02.avi,movie; static camera; back view; med quality,walking,walking,✔,standing,walking,0.652,2.2,0.97,0.797,133.4,23.1,2
+T090,walking/hmdb-veoh-alpha-dog-1__03.avi,movie; static camera; back view; med quality,walking,walking,✔,standing,walking,0.976,2.83,1.0,1.0,139.4,14.2,2

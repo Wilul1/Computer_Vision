@@ -5,15 +5,16 @@ Alabat Cindy I · Porcopio Zheniel Ivan · Veridiano Wilmark
 
 The system detects people and classifies **standing, sitting, walking, running and lying** from a laptop
 webcam, phone camera or recorded video. It uses pretrained models and rule-based geometry, with no custom
-training:
+training. The rule thresholds are tuned on the validation split.
 
 ```
-frame ─► preprocess ─┬─► MOG2 background subtraction ─► motion boxes / motion events
- (resize 640,        ├─► YOLO11n ─────────────────────► person boxes (primary = largest)
-  CLAHE, blur)       └─► MediaPipe Pose (33 landmarks) ─► joint angles, thigh ratio, torso tilt,
-                                                          hip & leg speed (body-heights/s)
-                                                          ─► rules + 9-frame majority vote
-                                                          ─► label + skeleton + boxes + FPS overlay
+frame ─► preprocess() ─► infer() ─────────────────────────────► postprocess() ─────────────────► render()
+         resize ≤640     ├ MOG2 background subtraction ──► blob shape + speed ─► BASELINE rules ┐  boxes, skeleton,
+         CLAHE (Lab L)   ├ YOLO11n person boxes                                                  ├► label, FPS,
+         gray + blur     ├ MediaPipe Pose, 33 landmarks ─► angles, thigh ratio, torso tilt,      │  CSV row
+                         └ LK optical flow (background) ─► hip speed minus camera motion, leg    │
+                                                           swing ─► MAIN rules ─► smoothing +   ─┘
+                                                           persistence
 ```
 
 ## Setup (CPU only, Python 3.10–3.13)
@@ -26,51 +27,62 @@ pip install -r requirements.txt
 
 The first run downloads two model files into `models/`: the MediaPipe pose model (~6 MB) and YOLO11n (~6 MB).
 
-## Run the prototype
+## Run: one command, raw input to visible output
 
 ```bash
-python src/predict.py --input data/test/walking/<clip>.mp4 --output outputs/
-python src/predict.py --input path/to/photo.jpg --output outputs/
-python src/predict.py --input 0                 # live webcam, press q to stop
+python src/run.py --input data/test/ --output outputs/run_2026-11-12/   # every image/video in a folder
+python src/run.py --input demo.mp4 --output outputs/demo_annotated.mp4    # one video
+python src/run.py --input photo.jpg --output outputs/                      # one image
+python src/run.py --webcam 0                                               # live webcam, press q to stop
 ```
 
-Each run writes `outputs/<name>_annotated.mp4` (or `.jpg`) and `outputs/<name>_log.csv`, a per-frame log with the
-activity, angles, speeds and FPS. Options: `--show` (live window for files), `--no-yolo` (faster), `--no-enhance`
-(skip CLAHE), `--max-seconds N`.
+Each input gives an annotated video or image plus `<name>_log.csv`, a per-frame log with the activity, the
+baseline's activity, angles, speeds and FPS. A folder run also writes `summary.csv` with one row per input.
+Options: `--method baseline` (show the baseline's label), `--show`, `--no-yolo` (faster), `--max-seconds N`,
+`--params <file>`. Without `--params`, the values tuned on val are used (`configs/tuned_params.json`).
 
 ## Dataset
 
-The videos are not in git. Download them from **Google Drive: `<PASTE LINK>`** and unzip into `data/raw/`, or
-record your own:
+The videos are not in git. Rebuild them from the public sources (≈3.2 GB of downloads), then split:
 
 ```bash
-python scripts/record_clips.py --activity walking --source s01-wilmark-room-webcam --seconds 10 --count 3
-python scripts/import_public.py hmdb51 <folder>   # optional: add public clips (see the script's docstring)
-python scripts/make_splits.py        # 70/15/15 split BY SOURCE -> data/train|val|test, data/splits.csv
+# HMDB51: https://huggingface.co/datasets/jili5044/hmdb51 -> unzip, keep walk/ and run/
+python scripts/import_public.py hmdb51 D:/datasets/hmdb51/hmdb51 --limit-per-source 3
+# GMDCSA24: git clone https://github.com/ekramalam/GMDCSA24-A-Dataset-for-Human-Fall-Detection-in-Videos
+python scripts/import_public.py gmdcsa24 D:/datasets/GMDCSA24
+python scripts/make_splits.py        # split BY SOURCE (movie / subject) -> data/train|val|test, data/splits.csv
 ```
 
-See [data/README.md](data/README.md) for the data card.
+`data/splits.csv` is committed, so the split is the same on every machine. Own clips can be added with
+`scripts/record_clips.py`; new sources join the split without moving existing ones. See
+[data/README.md](data/README.md) for the data card.
 
-## Evaluate
+## Evaluate, tune, analyse
 
 ```bash
-python scripts/run_all_eval.py                       # every val number in one go -> outputs/metrics/summary.md
-python scripts/preprocess_strip.py --input data/val  # before/after figure, one row per activity -> docs/figures/
+python src/evaluate.py --split test         # baseline vs main on the held-out test set, per-class report,
+                                            # confusion matrices, speed, test log -> docs/results_test.md
+python scripts/tune.py                      # tunes thresholds on VAL only -> configs/tuned_params.json
+python scripts/failure_gallery.py           # failure frames + suggested causes -> docs/error_analysis.md
+python scripts/preprocess_strip.py --input data/val   # before/after preprocessing figure
+python scripts/eval_motion_baseline.py      # MOG2 motion events vs hand count (static-camera clips)
 ```
 
-`run_all_eval.py` runs `eval_activity.py --split val` (accuracy, macro-F1, confusion matrix, FPS) and
-`eval_motion_baseline.py` (MOG2 events vs hand count, FPS). Results are saved to `outputs/metrics/`. The test split
-is only used for the final evaluation. The reasons behind every setting are in
+The first `evaluate.py` run processes every clip through the full pipeline and caches the per-frame features in
+`outputs/cache/`; later runs reuse them (`--rerun` to start over). The three methods are scored on exactly the same
+frames. Results: [docs/results_test.md](docs/results_test.md), error analysis and improvement plan:
+[docs/error_analysis.md](docs/error_analysis.md), reasons for each setting:
 [docs/design_choices.md](docs/design_choices.md).
 
 ## Layout
 
 ```
-src/            config.py (all thresholds) · preprocess.py · motion.py · detector.py · pose.py
-                features.py · classifier.py · visualize.py · pipeline.py · predict.py
-scripts/        record_clips.py · import_public.py · make_splits.py · run_all_eval.py · eval_activity.py
-                eval_motion_baseline.py · preprocess_strip.py
-data/           raw/<activity>/<source>__NN.mp4 · train|val|test/<activity>/ · splits.csv · annotations/
-docs/           progress_report.md · figures/
-outputs/        annotated results and metrics
+src/        run.py (entry point) · pipeline.py (4 stages) · preprocess.py · motion.py · detector.py · pose.py
+            camera_motion.py · features.py · classifier.py · params.py · visualize.py · evaluate.py · config.py
+scripts/    import_public.py · make_splits.py · tune.py · failure_gallery.py · record_clips.py
+            preprocess_strip.py · eval_motion_baseline.py · make_report_pdf.py
+configs/    tuned_params.json (tuned on val)
+data/       raw/ · train|val|test/ · splits.csv · annotations/ (segments.csv, clip_info.csv, motion_counts.csv)
+docs/       results_test.md · error_analysis.md · design_choices.md · progress_report.md · figures/ · failures/
+outputs/    annotated results, metrics, cache
 ```

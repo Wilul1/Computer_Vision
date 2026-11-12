@@ -37,17 +37,9 @@ POSE_MIN_CONFIDENCE = 0.5
 LANDMARK_MIN_VISIBILITY = 0.5
 
 # --- Rule-based activity classifier -------------------------------------------
-# Angles in degrees; speeds in body-heights per second, so they do not depend on
-# how far the person stands from the camera.
-SIT_KNEE_ANGLE_MAX = 130        # knee bent more than this -> leg is folded
-SIT_HIP_ANGLE_MAX = 140         # torso-thigh angle closed -> sitting posture
-SIT_THIGH_RATIO_MAX = 0.45      # thigh nearly horizontal (front view of sitting)
-LYING_TORSO_ANGLE_MIN = 60      # torso tilted more than this from vertical
-WALK_HIP_SPEED_MIN = 0.25       # body travel speed that counts as walking
-WALK_LEG_SPEED_MIN = 0.60       # ankle swing speed (walking toward the camera)
-RUN_HIP_SPEED_MIN = 1.20
-RUN_LEG_SPEED_MIN = 2.20
-SPEED_WINDOW_SEC = 0.5          # speeds are averaged over this window
-SMOOTHING_WINDOW = 9            # majority vote over the last N frame labels
+# The rule thresholds are tunable parameters: see src/params.py (defaults = the
+# Milestone 2 values) and configs/tuned_params.json (tuned on val by scripts/tune.py).
+# Speeds are in body-heights per second, so they do not depend on distance.
+SPEED_WINDOW_SEC = 0.5          # speeds are measured over this window (fixed, not tuned)
 
 ACTIVITIES = ["standing", "sitting", "walking", "running", "lying"]

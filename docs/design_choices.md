@@ -1,6 +1,8 @@
 # Design choices and why
 
-Every number here lives in [src/config.py](../src/config.py). Thresholds are tuned on the **val** split only.
+Fixed settings live in [src/config.py](../src/config.py). The rule thresholds are **parameters**
+([src/params.py](../src/params.py)): they are tuned on the **val** split only by `scripts/tune.py`, and the result is
+saved to [configs/tuned_params.json](../configs/tuned_params.json).
 
 ## 1. Preprocessing ([src/preprocess.py](../src/preprocess.py))
 
@@ -52,27 +54,78 @@ All features are **angles or ratios**, so they do not change with distance from 
 
 Speeds are divided by body height so a person far away (small in pixels) and a person close up give the same number. Leg swing uses the *range* over the window, not the summed path, because summing frame-to-frame jitter labelled walkers as runners.
 
+### Camera-motion compensation ([src/camera_motion.py](../src/camera_motion.py)), added in Milestone 3
+
+In Milestone 2, 11 of 32 walking clips were called "standing". These were movie shots where **the camera follows
+the actor**, so the hips stay in the same place *in the frame*. The fix:
+1. Find up to 150 corner points (`goodFeaturesToTrack`) on the background, with the person's box (+15%) masked out.
+2. Track them into the next frame with **Lucas–Kanade optical flow** and take the **median** shift. The median
+   ignores the few points that land on other moving things.
+3. Add up those shifts into a camera offset, and compute `hip_speed_comp` = hip travel **minus** camera travel.
+   When the camera pans right to follow a walker, the background moves left, and subtracting it gives back the
+   walker's real speed.
+4. If fewer than 12 points can be tracked (a plain wall, darkness), the shift is taken as 0.
+Whether to use `hip_speed_comp` instead of `hip_speed` is itself a parameter (`camera_compensation`), so tuning
+decides whether it helps. Tuning turned it on, but its effect is small: on val, switching it off changes 1 of 108
+segments. See [error_analysis.md](error_analysis.md).
+
 ## 6. Classifier ([src/classifier.py](../src/classifier.py))
 
-Rules are checked in this order. The first match wins:
+Rules are checked in this order. The first match wins (the values are in `configs/tuned_params.json`; the names
+are the fields in `src/params.py`):
 1. Hips not visible → `unknown`
-2. Torso tilted ≥ 60° → `lying`
+2. Torso tilted ≥ `lying_torso_angle_min` → `lying`
 3. No thigh visible → `unknown`
-4. Leg folded (knee < 130° and hip < 140°, or thigh ratio < 0.45) **and** slow → `sitting`
-5. Hip speed ≥ 1.2 or leg swing ≥ 2.2 → `running`
-6. Hip speed ≥ 0.25 or leg swing ≥ 0.6 → `walking`
+4. Leg folded (knee < `sit_knee_angle_max` and hip < `sit_hip_angle_max`, or thigh ratio < `sit_thigh_ratio_max`)
+   **and** slow → `sitting`
+5. Hip speed ≥ `run_hip_speed_min` or leg swing ≥ `run_leg_speed_min` → `running`
+6. Hip speed ≥ `walk_hip_speed_min` or leg swing ≥ `walk_leg_speed_min` → `walking`
 7. Otherwise → `standing`
 
-Then a **majority vote over the last 9 frames** (≈0.3 s) removes one-frame flicker. This is the "temporal smoothing" from risk 1 in the proposal.
+**Post-processing** ([`TemporalFilter`](../src/classifier.py)):
+- **Majority vote** over the last `smoothing_window` frames removes one-frame flicker. This is the "temporal
+  smoothing" from risk 1 in the proposal.
+- **Persistence:** the shown label only changes once a new label has won `persist_frames` votes in a row, and
+  `sit_persist_frames` for sitting. A running stride bends the knee below the sitting angle for a few frames, so
+  sitting has to last longer before it is shown. This is the guide's "a detection must persist for N frames".
+- `no person` / `unknown` frames keep the last label instead of resetting it.
 
-**Why rules and not an SVM?** With a few dozen clips, a trained classifier would overfit. Every rule can be explained and fixed separately, and the thresholds are physical quantities we can measure. An SVM on the same features is an option for Phase 3 once we have more data, and we would compare it against these rules on val.
+**Why rules and not an SVM?** We have no labelled frame-level training data of our own, only clip and segment
+labels. Every rule can be explained and fixed separately, and the thresholds are physical quantities (degrees,
+body-heights per second) that we can check on a single frame. With 13 parameters and about 200 val segments,
+tuning is much less likely to overfit than training a classifier.
+
+### Baseline: MOG2 blob rules
+
+To show what pose adds, the baseline sees **only** the MOG2 foreground. It takes the largest moving blob's shape
+(height/width) and the speed of its centre (blob-heights per second): wide → lying, squarish → sitting, tall →
+standing, walking or running by speed. If there is no blob, the person is taken to be standing still (MOG2 absorbs
+a still person into the background). It is tuned on val with the same number of trials as the main method, so the
+comparison is fair.
+
+### Tuning ([scripts/tune.py](../scripts/tune.py))
+
+Random search with 1500 trials per method, seed 106. Each trial draws a full parameter set within physically
+sensible ranges (e.g. sitting knee angle between 100° and 160°), replays the **cached val features** through the
+rules, and keeps the set with the best **macro-F1** (accuracy breaks ties). The neural networks are not re-run, so a
+trial takes milliseconds. The **test split is never read**: `tune.py` only calls `evaluate("val")`.
 
 ## 7. Evaluation choices
 
-- **Split by source** (person + place + camera), 70/15/15. Frames from one recording are near-duplicates. If they were in both train and test, every number would be too high.
-- **Macro-F1**: the average F1 across classes, so a rare class such as `lying` counts as much as a common one. Accuracy alone would hide a class that always fails.
-- **Clip-level label** = majority of the per-frame labels in the clip, excluding `no person` and `unknown`. Each clip has one true activity.
-- **FPS** is measured inside the pipeline (preprocessing to overlay), excluding video decoding.
+- **Split by source:** the movie for HMDB51, the subject for GMDCSA24. Frames from one recording are
+  near-duplicates, so if they were in both train and test, every number would be too high. Each dataset is split
+  on its own so every split gets both kinds of footage. For GMDCSA24 (4 subjects), we chose **before computing any
+  result on them** that test gets a subject filmed in both day and night (subject 3). Subject 1 was only filmed in
+  daylight, so putting it in test would have left out the hardest condition on purpose.
+- **Segments, not clips:** a GMDCSA24 video contains several activities with time ranges ("Sitting[0 to 3];
+  Walking[3 to 6]"). Each range is scored separately, as the majority of its frame labels. Frames that also fall
+  inside a range with a *different* label (transitions) are left out. Ranges shorter than 1 s are skipped.
+- **Macro-F1:** the average F1 across classes, so a rare class such as `lying` (few segments) counts as much as a
+  common one. Accuracy alone would hide a class that always fails.
+- **Same frames for every method:** each video goes through the full pipeline once, and the baseline, the M2 rules
+  and the tuned main method are all scored from the same cached features.
+- **Speed** is the median time per frame from preprocessing to overlay, excluding video decoding. It is measured
+  after a 30-frame warm-up per clip, with YOLO on, on the named laptop CPU.
 
 ## Likely questions, by owner
 

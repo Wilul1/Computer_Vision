@@ -1,4 +1,6 @@
 """Baseline motion detector: MOG2 background subtraction + contours."""
+from collections import deque
+
 import cv2
 import numpy as np
 
@@ -31,6 +33,29 @@ class MotionDetector:
             "ratio": float(np.count_nonzero(mask)) / mask.size,
             "moving": len(boxes) > 0,
         }
+
+
+class BlobFeatures:
+    """Baseline features from the largest MOG2 blob: its shape (height/width) and
+    how fast its centre moves, in blob-heights per second."""
+
+    def __init__(self):
+        self.history = deque()
+
+    def update(self, t: float, boxes: list) -> dict | None:
+        if not boxes:
+            self.history.clear()
+            return None
+        x, y, w, h = max(boxes, key=lambda b: b[2] * b[3])
+        self.history.append((t, x + w / 2, h))
+        while self.history and t - self.history[0][0] > config.SPEED_WINDOW_SEC:
+            self.history.popleft()
+        speed = 0.0
+        if len(self.history) >= 3:
+            (t0, c0, _), (t1, c1, _) = self.history[0], self.history[-1]
+            scale = float(np.median([hh for _, _, hh in self.history]))
+            speed = abs(c1 - c0) / max(scale, 1.0) / max(t1 - t0, 1e-3)
+        return {"aspect": h / max(w, 1), "speed": float(speed), "box": (x, y, w, h)}
 
 
 class MotionEventCounter:
