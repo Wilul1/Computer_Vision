@@ -22,11 +22,20 @@ def classify_pose(f: dict, p: Params) -> str:
     knee, hip, thigh = f["knee_angle"], f["hip_angle"], f["thigh_ratio"]
     side_view_sit = knee is not None and hip is not None and knee < p.sit_knee_angle_max and hip < p.sit_hip_angle_max
     front_view_sit = thigh is not None and thigh < p.sit_thigh_ratio_max
-    slow = hip_speed < p.walk_hip_speed_min and f["leg_speed"] < p.walk_leg_speed_min
-    if (side_view_sit or front_view_sit) and slow:
+    # Leg swing only counts if it is a real stride (ankles moving apart and
+    # together), not both feet jiggling in place. walk_stride_min = 0 disables
+    # the check (Milestone 2/3 behaviour).
+    striding = f.get("stride", 0.0) >= p.walk_stride_min
+    leg_walk = f["leg_speed"] >= p.walk_leg_speed_min and striding
+    leg_run = f["leg_speed"] >= p.run_leg_speed_min and striding
+    hips_still = hip_speed < p.walk_hip_speed_min
+    slow = hips_still and not leg_walk
+    # seated_first: a folded leg is sitting as long as the body does not travel,
+    # whatever the feet are doing (Milestone 4 fix for 11 test failures).
+    if (side_view_sit or front_view_sit) and (hips_still if p.seated_first else slow):
         return "sitting"
 
-    if hip_speed >= p.run_hip_speed_min or f["leg_speed"] >= p.run_leg_speed_min:
+    if hip_speed >= p.run_hip_speed_min or leg_run:
         return "running"
     if not slow:
         return "walking"
@@ -93,7 +102,9 @@ def replay(trace: list[dict], p: Params, method: str = "main") -> list[str]:
     for f in trace:
         if method == "baseline":
             raw = classify_blob(f["blob"], p)
+        elif f["pose"] is None or (p.require_person_box and f.get("n_people", -1) == 0):
+            raw = NO_PERSON
         else:
-            raw = NO_PERSON if f["pose"] is None else classify_pose(f["pose"], p)
+            raw = classify_pose(f["pose"], p)
         out.append(filt(raw)[0])
     return out

@@ -75,7 +75,7 @@ class MotionFeatures:
         while self.history and t - self.history[0][0] > config.SPEED_WINDOW_SEC:
             self.history.popleft()
         if len(self.history) < 3:
-            return {"hip_speed": 0.0, "hip_speed_comp": 0.0, "leg_speed": 0.0}
+            return {"hip_speed": 0.0, "hip_speed_comp": 0.0, "leg_speed": 0.0, "stride": 0.0}
 
         (t0, f0), (t1, f1) = self.history[0], self.history[-1]
         dt = max(t1 - t0, 1e-3)
@@ -95,6 +95,14 @@ class MotionFeatures:
         if len(ankles) >= 3:
             a = np.stack(ankles)
             leg_speed = float((a.max(axis=0) - a.min(axis=0)).sum()) / scale / dt
+            # Stride (added in Milestone 4): how much the GAP between the two
+            # ankles changes over the window, in body-heights. In a real step the
+            # feet move in opposite directions, so the gap swings by a large
+            # amount; a seated person jiggling both feet moves them together and
+            # the gap hardly changes. Leg swing alone cannot tell these apart.
+            gap = a[:, 0] - a[:, 1]
+            stride = float((gap.max(axis=0) - gap.min(axis=0)).sum()) / scale
         else:
-            leg_speed = 0.0
-        return {"hip_speed": float(hip_speed), "hip_speed_comp": float(hip_speed_comp), "leg_speed": float(leg_speed)}
+            leg_speed = stride = 0.0
+        return {"hip_speed": float(hip_speed), "hip_speed_comp": float(hip_speed_comp),
+                "leg_speed": float(leg_speed), "stride": float(stride)}

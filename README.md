@@ -27,6 +27,17 @@ pip install -r requirements.txt
 
 The first run downloads two model files into `models/`: the MediaPipe pose model (~6 MB) and YOLO11n (~6 MB).
 
+## The app
+
+```bash
+python app.py                     # then open http://127.0.0.1:7860
+```
+
+A browser interface with three tabs: **Video** (upload, get the annotated video, the main activity, confidence,
+time per activity, a timeline, motion events and ms per frame), **Photo**, and **Webcam (live)**. The test-case
+clips are built in as examples. Models are loaded once at start-up. For a desktop window instead of the browser:
+`python src/run.py --webcam 0`.
+
 ## Run: one command, raw input to visible output
 
 ```bash
@@ -43,7 +54,14 @@ Options: `--method baseline` (show the baseline's label), `--show`, `--no-yolo` 
 
 ## Dataset
 
-The videos are not in git. Rebuild them from the public sources (≈3.2 GB of downloads), then split:
+The videos are not in git. **You don't need them to reproduce the reported numbers** (see below). To rebuild them
+(≈3.2 GB of downloads) in one command:
+
+```bash
+python scripts/get_data.py --root D:/datasets
+```
+
+which does the following:
 
 ```bash
 # HMDB51: https://huggingface.co/datasets/jili5044/hmdb51 -> unzip, keep walk/ and run/
@@ -56,6 +74,29 @@ python scripts/make_splits.py        # split BY SOURCE (movie / subject) -> data
 `data/splits.csv` is committed, so the split is the same on every machine. Own clips can be added with
 `scripts/record_clips.py`; new sources join the split without moving existing ones. See
 [data/README.md](data/README.md) for the data card.
+
+## Reproduce the reported numbers
+
+```bash
+python src/evaluate.py --split test         # prints the table in docs/results_test.md and the report
+```
+
+This works on a fresh clone **without the videos**: the per-frame features of every val and test video are
+committed in `outputs/cache/` (≈14 MB), and `evaluate.py` scores them with the committed parameter files
+(`configs/tuned_params.json`, and `configs/tuned_params_m3.json` for the Milestone 3 row). Accuracy, F1, the
+per-condition table and the speed (measured on the machine named in the output) all come out identical. With the
+videos present, `--rerun` re-runs the whole pipeline instead. Tuning is seeded (`--seed 106`).
+
+## Test cases
+
+```bash
+python scripts/run_test_cases.py             # 13 file-based cases -> docs/test_cases.md
+python scripts/run_test_cases.py --webcam 0  # plus the 2 live webcam cases
+```
+
+The cases, with their expected labels written before running, are in `tests/test_cases.csv`, and the clips in
+`tests/cases/` (cut from MIT-licensed GMDCSA24 by `scripts/make_test_cases.py`). 7 of them are hard cases taken
+from the Milestone 3 error analysis.
 
 ## Evaluate, tune, analyse
 
@@ -79,9 +120,11 @@ frames. Results: [docs/results_test.md](docs/results_test.md), error analysis an
 ```
 src/        run.py (entry point) · pipeline.py (4 stages) · preprocess.py · motion.py · detector.py · pose.py
             camera_motion.py · features.py · classifier.py · params.py · visualize.py · evaluate.py · config.py
-scripts/    import_public.py · make_splits.py · tune.py · failure_gallery.py · record_clips.py
-            preprocess_strip.py · eval_motion_baseline.py · make_report_pdf.py
-configs/    tuned_params.json (tuned on val)
+app.py      the browser app (Gradio)
+scripts/    get_data.py · import_public.py · make_splits.py · tune.py · failure_gallery.py · record_clips.py
+            run_test_cases.py · make_test_cases.py · preprocess_strip.py · eval_motion_baseline.py · make_report_pdf.py
+configs/    tuned_params.json (tuned on val) · tuned_params_m3.json (Milestone 3 values, for comparison)
+tests/      test_cases.csv · cases/ (test-case clips and photos)
 data/       raw/ · train|val|test/ · splits.csv · annotations/ (segments.csv, clip_info.csv, motion_counts.csv)
 docs/       results_test.md · error_analysis.md · design_choices.md · progress_report.md · figures/ · failures/
 outputs/    annotated results, metrics, cache

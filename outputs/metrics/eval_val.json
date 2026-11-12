@@ -14,30 +14,151 @@
     "gmdcsa24": 64,
     "hmdb51": 44
   },
-  "machine": "Intel(R) Core(TM) i7-6700HQ CPU @ 2.60GHz, Windows 10, CPU only",
   "speed": {
-    "ms_per_frame": 61.6,
-    "fps": 16.2,
+    "ms_per_frame": 64.5,
+    "fps": 15.5,
     "stage_ms": {
-      "preprocess": 9.3,
-      "infer": 50.2,
-      "postprocess": 0.6,
-      "render": 0.7
+      "preprocess": 9.0,
+      "infer": 52.8,
+      "postprocess": 0.7,
+      "render": 0.6
     },
     "frames_timed": 12215,
     "yolo": true
+  },
+  "machine": "Intel(R) Core(TM) i7-6700HQ CPU @ 2.60GHz, Windows 10, CPU only",
+  "model_sizes": {
+    "YOLO11n": "5.6 MB",
+    "MediaPipe pose lite": "5.8 MB"
+  },
+  "by_condition": {
+    "dataset": {
+      "GMDCSA24 room": {
+        "n": 64,
+        "baseline": 27,
+        "main_m2": 36,
+        "main_m3": 40,
+        "main": 48
+      },
+      "HMDB51 movie": {
+        "n": 44,
+        "baseline": 7,
+        "main_m2": 20,
+        "main_m3": 27,
+        "main": 24
+      }
+    },
+    "class": {
+      "sitting": {
+        "n": 15,
+        "baseline": 0,
+        "main_m2": 10,
+        "main_m3": 7,
+        "main": 13
+      },
+      "walking": {
+        "n": 55,
+        "baseline": 7,
+        "main_m2": 24,
+        "main_m3": 43,
+        "main": 38
+      },
+      "lying": {
+        "n": 3,
+        "baseline": 1,
+        "main_m2": 2,
+        "main_m3": 1,
+        "main": 3
+      },
+      "standing": {
+        "n": 23,
+        "baseline": 23,
+        "main_m2": 17,
+        "main_m3": 11,
+        "main": 14
+      },
+      "running": {
+        "n": 12,
+        "baseline": 3,
+        "main_m2": 3,
+        "main_m3": 5,
+        "main": 4
+      }
+    },
+    "lighting": {
+      "day": {
+        "n": 43,
+        "baseline": 18,
+        "main_m2": 23,
+        "main_m3": 29,
+        "main": 32
+      },
+      "night": {
+        "n": 21,
+        "baseline": 9,
+        "main_m2": 13,
+        "main_m3": 11,
+        "main": 16
+      }
+    },
+    "camera": {
+      "static": {
+        "n": 87,
+        "baseline": 31,
+        "main_m2": 47,
+        "main_m3": 55,
+        "main": 59
+      },
+      "moving": {
+        "n": 21,
+        "baseline": 3,
+        "main_m2": 9,
+        "main_m3": 12,
+        "main": 13
+      }
+    },
+    "person size": {
+      "medium (90-150 px)": {
+        "n": 39,
+        "baseline": 6,
+        "main_m2": 19,
+        "main_m3": 23,
+        "main": 26
+      },
+      "large (\u2265 150 px)": {
+        "n": 61,
+        "baseline": 26,
+        "main_m2": 33,
+        "main_m3": 40,
+        "main": 42
+      },
+      "small (< 90 px)": {
+        "n": 7,
+        "baseline": 2,
+        "main_m2": 4,
+        "main_m3": 4,
+        "main": 4
+      },
+      "not found": {
+        "n": 1,
+        "baseline": 0,
+        "main_m2": 0,
+        "main_m3": 0,
+        "main": 0
+      }
+    }
   },
   "params_file": "configs/tuned_params.json",
   "methods": {
     "baseline": {
       "name": "MOG2 blob + rules (baseline)",
       "accuracy": 0.3148,
-      "macro_f1": 0.2684,
+      "macro_f1": 0.2544,
       "per_class": {
         "standing": {
-          "precision": 0.247,
-          "recall": 0.957,
-          "f1-score": 0.393,
+          "precision": 0.25,
+          "recall": 1.0,
+          "f1-score": 0.4,
           "support": 23.0
         },
         "sitting": {
@@ -47,52 +168,15 @@
           "support": 15.0
         },
         "walking": {
-          "precision": 0.778,
+          "precision": 0.875,
           "recall": 0.127,
-          "f1-score": 0.219,
+          "f1-score": 0.222,
           "support": 55.0
         },
         "running": {
-          "precision": 0.667,
-          "recall": 0.333,
-          "f1-score": 0.444,
-          "support": 12.0
-        },
-        "lying": {
-          "precision": 0.25,
-          "recall": 0.333,
-          "f1-score": 0.286,
-          "support": 3.0
-        }
-      }
-    },
-    "main_m2": {
-      "name": "Pose + rules, M2 hand-set values",
-      "accuracy": 0.537,
-      "macro_f1": 0.5109,
-      "per_class": {
-        "standing": {
-          "precision": 0.362,
-          "recall": 0.739,
-          "f1-score": 0.486,
-          "support": 23.0
-        },
-        "sitting": {
-          "precision": 0.909,
-          "recall": 0.667,
-          "f1-score": 0.769,
-          "support": 15.0
-        },
-        "walking": {
-          "precision": 0.694,
-          "recall": 0.455,
-          "f1-score": 0.549,
-          "support": 55.0
-        },
-        "running": {
-          "precision": 0.625,
-          "recall": 0.417,
-          "f1-score": 0.5,
+          "precision": 1.0,
+          "recall": 0.25,
+          "f1-score": 0.4,
           "support": 12.0
         },
         "lying": {
@@ -103,15 +187,52 @@
         }
       }
     },
-    "main": {
-      "name": "Pose + rules, tuned + camera compensation (main)",
-      "accuracy": 0.6481,
-      "macro_f1": 0.6068,
+    "main_m2": {
+      "name": "Pose + rules, M2 hand-set values",
+      "accuracy": 0.5185,
+      "macro_f1": 0.5244,
       "per_class": {
         "standing": {
-          "precision": 0.55,
+          "precision": 0.347,
+          "recall": 0.739,
+          "f1-score": 0.472,
+          "support": 23.0
+        },
+        "sitting": {
+          "precision": 0.909,
+          "recall": 0.667,
+          "f1-score": 0.769,
+          "support": 15.0
+        },
+        "walking": {
+          "precision": 0.667,
+          "recall": 0.436,
+          "f1-score": 0.527,
+          "support": 55.0
+        },
+        "running": {
+          "precision": 0.6,
+          "recall": 0.25,
+          "f1-score": 0.353,
+          "support": 12.0
+        },
+        "lying": {
+          "precision": 0.4,
+          "recall": 0.667,
+          "f1-score": 0.5,
+          "support": 3.0
+        }
+      }
+    },
+    "main_m3": {
+      "name": "Pose + rules, M3 tuned values",
+      "accuracy": 0.6204,
+      "macro_f1": 0.5384,
+      "per_class": {
+        "standing": {
+          "precision": 0.478,
           "recall": 0.478,
-          "f1-score": 0.512,
+          "f1-score": 0.478,
           "support": 23.0
         },
         "sitting": {
@@ -121,21 +242,58 @@
           "support": 15.0
         },
         "walking": {
-          "precision": 0.688,
-          "recall": 0.8,
-          "f1-score": 0.739,
+          "precision": 0.672,
+          "recall": 0.782,
+          "f1-score": 0.723,
           "support": 55.0
         },
         "running": {
-          "precision": 0.462,
-          "recall": 0.5,
-          "f1-score": 0.48,
+          "precision": 0.5,
+          "recall": 0.417,
+          "f1-score": 0.455,
           "support": 12.0
         },
         "lying": {
+          "precision": 0.5,
+          "recall": 0.333,
+          "f1-score": 0.4,
+          "support": 3.0
+        }
+      }
+    },
+    "main": {
+      "name": "Pose + rules, M4: re-tuned, stride + person-box checks (main)",
+      "accuracy": 0.6667,
+      "macro_f1": 0.622,
+      "per_class": {
+        "standing": {
+          "precision": 0.438,
+          "recall": 0.609,
+          "f1-score": 0.509,
+          "support": 23.0
+        },
+        "sitting": {
+          "precision": 0.929,
+          "recall": 0.867,
+          "f1-score": 0.897,
+          "support": 15.0
+        },
+        "walking": {
+          "precision": 0.844,
+          "recall": 0.691,
+          "f1-score": 0.76,
+          "support": 55.0
+        },
+        "running": {
           "precision": 0.667,
-          "recall": 0.667,
-          "f1-score": 0.667,
+          "recall": 0.333,
+          "f1-score": 0.444,
+          "support": 12.0
+        },
+        "lying": {
+          "precision": 0.333,
+          "recall": 1.0,
+          "f1-score": 0.5,
           "support": 3.0
         }
       }

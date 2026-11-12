@@ -27,6 +27,14 @@ class Params:
     # Subtract the camera's own movement (background optical flow) from the
     # hip speed. False reproduces the Milestone 2 behaviour.
     camera_compensation: bool = False
+    # Milestone 4 fixes for "limb motion in place read as walking" (defaults =
+    # off, so the M2/M3 parameter sets still score exactly as before):
+    seated_first: bool = False          # a folded-leg posture is sitting unless the HIPS travel
+    walk_stride_min: float = 0.0        # leg swing only counts as walking if the ankle gap
+                                        # also changes this much (body-heights)
+    # Milestone 4: trust a pose only if YOLO also sees a person in the frame
+    # (test case TC13: MediaPipe drew a skeleton on a flower-patterned curtain).
+    require_person_box: bool = False
 
     # --- Baseline: MOG2 foreground blob rules ---------------------------------
     # Blob aspect = height / width of the largest moving blob's bounding box.

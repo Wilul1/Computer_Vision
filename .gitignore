@@ -1,8 +1,9 @@
 .venv/
 __pycache__/
 *.pyc
+.gradio/
 
-# Videos and weights are too big for git: they are shared through Google Drive (see README).
+# Videos and weights are too big for git: rebuild them with scripts/get_data.py.
 data/raw/*
 data/train/*
 data/val/*
@@ -14,6 +15,14 @@ outputs/*
 !outputs/metrics/
 !outputs/samples/
 !outputs/.gitkeep
+# Per-frame features of the val/test videos (~14 MB): lets evaluate.py reproduce
+# every reported number from the tag without the 3 GB of videos.
+!outputs/cache/
+outputs/cache/*
+!outputs/cache/val/
+!outputs/cache/test/
 *.mp4
 *.avi
 *.mov
+# Test-case clips are small (1.4 MB in total, MIT-licensed GMDCSA24 cuts).
+!tests/cases/*.mp4

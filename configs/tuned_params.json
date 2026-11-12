@@ -1,35 +1,43 @@
 {
   "tuned_on": "val",
   "date": "2026-11-12",
-  "trials": 1500,
   "seed": 106,
-  "val_segments": 108,
+  "trials": 1500,
+  "objective": "mean of per-dataset macro-F1",
+  "selection": "best val score among: A = first M4 random search; B = A + require_person_box; C = re-run of the search with require_person_box in the space (configs/tuned_params_retune_rejected.json). Chosen: B",
+  "val_balanced_macro_f1": {
+    "main": 0.6614,
+    "baseline": 0.303
+  },
   "val_macro_f1": {
-    "main": 0.6068,
-    "baseline": 0.2684
+    "main": 0.622,
+    "baseline": 0.2544
   },
   "val_accuracy": {
-    "main": 0.6481,
+    "main": 0.6667,
     "baseline": 0.3148
   },
   "params": {
-    "sit_knee_angle_max": 110.084,
-    "sit_hip_angle_max": 105.984,
-    "sit_thigh_ratio_max": 0.237,
-    "lying_torso_angle_min": 77.427,
-    "walk_hip_speed_min": 0.124,
-    "walk_leg_speed_min": 0.354,
-    "run_hip_speed_min": 0.7,
-    "run_leg_speed_min": 2.082,
+    "sit_knee_angle_max": 124.539,
+    "sit_hip_angle_max": 119.009,
+    "sit_thigh_ratio_max": 0.51,
+    "lying_torso_angle_min": 47.173,
+    "walk_hip_speed_min": 0.086,
+    "walk_leg_speed_min": 0.851,
+    "run_hip_speed_min": 1.074,
+    "run_leg_speed_min": 1.881,
     "camera_compensation": true,
-    "base_upright_aspect_min": 1.115,
-    "base_lying_aspect_max": 0.946,
-    "base_walk_speed_min": 0.182,
-    "base_run_speed_min": 1.065,
+    "seated_first": false,
+    "walk_stride_min": 0.711,
+    "require_person_box": true,
+    "base_upright_aspect_min": 1.1,
+    "base_lying_aspect_max": 1.138,
+    "base_walk_speed_min": 0.176,
+    "base_run_speed_min": 1.47,
     "smoothing_window": 1,
     "persist_frames": 1,
     "sit_persist_frames": 1,
     "base_smoothing_window": 5,
-    "base_persist_frames": 1
+    "base_persist_frames": 5
   }
 }

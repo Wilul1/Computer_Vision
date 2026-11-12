@@ -1,0 +1,43 @@
+{
+  "tuned_on": "val",
+  "date": "2026-11-12",
+  "trials": 1500,
+  "seed": 106,
+  "objective": "mean of per-dataset macro-F1",
+  "val_segments": 108,
+  "val_balanced_macro_f1": {
+    "main": 0.6497,
+    "baseline": 0.313
+  },
+  "val_macro_f1": {
+    "main": 0.6272,
+    "baseline": 0.2594
+  },
+  "val_accuracy": {
+    "main": 0.6667,
+    "baseline": 0.3148
+  },
+  "params": {
+    "sit_knee_angle_max": 111.579,
+    "sit_hip_angle_max": 152.331,
+    "sit_thigh_ratio_max": 0.572,
+    "lying_torso_angle_min": 49.453,
+    "walk_hip_speed_min": 0.1,
+    "walk_leg_speed_min": 1.077,
+    "run_hip_speed_min": 0.606,
+    "run_leg_speed_min": 2.44,
+    "camera_compensation": false,
+    "seated_first": true,
+    "walk_stride_min": 0.134,
+    "require_person_box": true,
+    "base_upright_aspect_min": 1.065,
+    "base_lying_aspect_max": 1.024,
+    "base_walk_speed_min": 0.085,
+    "base_run_speed_min": 1.562,
+    "smoothing_window": 9,
+    "persist_frames": 3,
+    "sit_persist_frames": 1,
+    "base_smoothing_window": 5,
+    "base_persist_frames": 5
+  }
+}

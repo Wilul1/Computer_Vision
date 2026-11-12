@@ -1,0 +1,16 @@
+id,input,condition,expected,hard,source
+TC01,cases/tc01_sit_floor_eating.mp4,"Day, sitting on the floor eating, side view",sitting,no,GMDCSA24 subject 3 ADL 16 [0-10 s]
+TC02,cases/tc02_stand_window.mp4,"Day, standing at the window opening the curtain",standing,no,GMDCSA24 subject 3 ADL 10 [0-12 s]
+TC03,cases/tc03_walk_room.mp4,"Day, walking across the room",walking,no,GMDCSA24 subject 3 Fall 14 [0-4.6 s]
+TC04,cases/tc04_lie_floor.mp4,"Day, lying down on the floor",lying,no,GMDCSA24 subject 3 ADL 08 [0.8-4 s]
+TC05,cases/tc05_sit_talk_night.mp4,"HARD: night, seated on the bed talking on the phone (M3 failure T026: limb motion read as walking)",sitting,yes,GMDCSA24 subject 3 ADL 20 [0-9 s]
+TC06,cases/tc06_sit_bed_drink.mp4,"HARD: day, seated on the bed drinking (M3 failure T027: limb motion read as walking)",sitting,yes,GMDCSA24 subject 3 ADL 21 [0-10 s]
+TC07,cases/tc07_sit_bed_edge_front.mp4,"HARD: night, sitting on the bed edge facing the camera (M3 failure T042: looks like standing in 2D)",sitting,yes,GMDCSA24 subject 3 Fall 18 [0-3.2 s]
+TC08,cases/tc08_stand_arm_exercise.mp4,"HARD: standing while exercising the arms and bending (M3 failure T009)",standing,yes,GMDCSA24 subject 3 ADL 05 [0-5 s]
+TC09,cases/tc09_walk_very_dark.mp4,"HARD: night clip darkened (gamma 2.2 and x0.35 brightness), walking",walking,yes,GMDCSA24 subject 3 ADL 19 [1.8-5 s] darkened
+TC10,cases/tc10_sit_half_res.mp4,"HARD: half resolution (320x180), sitting on the floor at night",sitting,yes,GMDCSA24 subject 3 ADL 13 [0-8 s] downscaled
+TC11,cases/tc11_stand_portrait.mp4,"HARD: portrait 9:16 frame like a phone video, standing",standing,yes,GMDCSA24 subject 3 ADL 02 [0-9 s] cropped to 9:16
+TC12,cases/tc12_sit_photo.jpg,"Edge: a single photo instead of a video, sitting on the bed",sitting,no,GMDCSA24 subject 3 ADL 22 frame at 4 s
+TC13,cases/tc13_empty_room.jpg,"Edge: photo of the room with nobody in it",no person,no,GMDCSA24 subject 3 ADL 22 frame at 4 s, cropped to the door (no person)
+TC14,webcam,"Live: laptop webcam, person seated at the desk, only the upper body visible",unknown,no,live in class
+TC15,webcam,"Live: laptop webcam, person 2-3 m away walking across the room, full body",walking,no,live in class

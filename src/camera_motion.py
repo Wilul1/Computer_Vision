@@ -2,8 +2,10 @@
 following (common in movies and hand-held phone video) is not read as standing.
 
 Method: track corner points on the background with Lucas-Kanade optical flow,
-ignoring points on the person, and take the median shift. The median is robust
-to the few points that land on other moving things.
+ignoring points on the person, then fit the camera's motion (shift + rotation +
+zoom) with RANSAC, which ignores points that land on other moving things.
+Milestone 3 used the plain median shift; on val it changed only 1 of 108
+segments, which is why it was replaced.
 """
 import cv2
 import numpy as np
@@ -40,6 +42,16 @@ class CameraMotion:
             nxt, status, _ = cv2.calcOpticalFlowPyrLK(self.prev, gray, pts, None, winSize=(15, 15), maxLevel=2)
             good = status.ravel() == 1
             if good.sum() >= MIN_POINTS:
-                self.offset += np.median((nxt[good] - pts[good]).reshape(-1, 2), axis=0)
+                a, b = pts[good].reshape(-1, 2), nxt[good].reshape(-1, 2)
+                # Milestone 4: fit translation + rotation + zoom with RANSAC, so
+                # points on other moving things (and a zooming camera) are
+                # rejected as outliers instead of pulling a median around.
+                m, inliers = cv2.estimateAffinePartial2D(a, b, method=cv2.RANSAC, ransacReprojThreshold=2.0)
+                if m is not None and inliers is not None and inliers.sum() >= MIN_POINTS:
+                    # Shift of the frame centre under the fitted motion.
+                    c = np.array([gray.shape[1] / 2, gray.shape[0] / 2], np.float32)
+                    self.offset += (m[:, :2] @ c + m[:, 2]) - c
+                else:
+                    self.offset += np.median(b - a, axis=0)
         self.prev = gray
         return self.offset.copy()

@@ -8,4 +8,8 @@ ultralytics==8.4.192
 numpy==2.5.4
 scikit-learn==1.9.1       # src/evaluate.py: classification report, confusion matrix
 matplotlib==3.11.2
+gradio==6.31.0            # app.py
+pandas==3.1.1
+imageio==2.38.1           # H.264 video output (plays in the browser)
+imageio-ffmpeg==0.8.1
 markdown==3.11.2          # only for scripts/make_report_pdf.py

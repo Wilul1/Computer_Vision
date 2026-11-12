@@ -35,6 +35,11 @@ POSE_MODEL_URL = (
 POSE_MODEL_PATH = MODELS_DIR / "pose_landmarker_lite.task"
 POSE_MIN_CONFIDENCE = 0.5
 LANDMARK_MIN_VISIBILITY = 0.5
+# Milestone 4: if YOLO's person box is shorter than this, or the full-frame pose
+# finds nobody while YOLO does, run pose on the box crop upscaled to CROP_TARGET_H.
+POSE_CROP_BELOW_PX = 120
+POSE_CROP_TARGET_H = 256
+POSE_CROP_MARGIN = 0.25
 
 # --- Rule-based activity classifier -------------------------------------------
 # The rule thresholds are tunable parameters: see src/params.py (defaults = the

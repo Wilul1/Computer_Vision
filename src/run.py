@@ -28,7 +28,7 @@ IMAGE_EXTS = {".jpg", ".jpeg", ".png", ".bmp", ".webp"}
 VIDEO_EXTS = {".mp4", ".avi", ".mov", ".mkv", ".webm"}
 LOG_FIELDS = ["frame", "time", "activity", "activity_baseline", "raw_activity", "confidence", "moving",
               "motion_ratio", "motion_events", "knee_angle", "hip_angle", "thigh_ratio", "torso_angle",
-              "hip_speed", "hip_speed_comp", "leg_speed", "fps"]
+              "hip_speed", "hip_speed_comp", "leg_speed", "stride", "fps"]
 
 
 def majority(labels):

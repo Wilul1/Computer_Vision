@@ -20,7 +20,7 @@ from .classifier import NO_PERSON, TemporalFilter, classify_blob, classify_pose
 from .features import MotionFeatures, posture_features
 from .motion import BlobFeatures, MotionDetector, MotionEventCounter
 from .params import Params
-from .pose import PoseEstimator
+from .pose import PoseEstimator, pose_on_crop
 from .preprocess import preprocess
 from .visualize import draw_result
 
@@ -36,6 +36,8 @@ class MonitorPipeline:
         self.events = MotionEventCounter()
         self.blobs = BlobFeatures()
         self.pose = PoseEstimator()
+        self.crop_pose = PoseEstimator(video=False)
+        self.pose_source = "frame"
         self.camera = CameraMotion()
         self.detector = None
         if use_yolo:
@@ -57,7 +59,15 @@ class MonitorPipeline:
         m = self.motion(x["motion"])
         if self.detector is not None and self.frame_idx % config.YOLO_EVERY_N_FRAMES == 0:
             self.people = self.detector(x["bgr"])
-        lm = self.pose(x["rgb"], int(t * 1000))
+        lm, self.pose_source = None, "frame"
+        person = self.people[0]["box"] if self.people else None
+        small = person is not None and person[3] - person[1] < config.POSE_CROP_BELOW_PX
+        if not small:
+            lm = self.pose(x["rgb"], int(t * 1000))
+        if person is not None and (small or lm is None):
+            # Small or missed person: pose on the upscaled YOLO crop.
+            lm = pose_on_crop(self.crop_pose, x["rgb"], person, config.POSE_CROP_TARGET_H, config.POSE_CROP_MARGIN)
+            self.pose_source = "crop"
         # Mask the person out of the camera-motion estimate: pose box if we have
         # one, else the largest YOLO box.
         box = None
@@ -89,7 +99,8 @@ class MonitorPipeline:
             f["cam_offset"] = raw["cam_offset"]
             f.update(self.speeds.update(t, f))
             pose_feats = {k: v for k, v in f.items() if k not in ("mid_hip", "ankles_rel", "cam_offset")}
-            main_raw = classify_pose(pose_feats, p)
+            no_box = self.detector is not None and not raw["people"]
+            main_raw = NO_PERSON if (p.require_person_box and no_box) else classify_pose(pose_feats, p)
         main_label, conf = self.filter_main(main_raw)
 
         visible = 0 if lm is None else int((lm[:, 2] >= VIS).sum())
@@ -101,7 +112,9 @@ class MonitorPipeline:
             "visible_landmarks": visible,
             "cam_offset_x": float(raw["cam_offset"][0]),
             "motion_ratio": m["ratio"],
-            "n_people": len(raw["people"]),
+            # -1 = YOLO not running, so "no box" says nothing about the frame.
+            "n_people": len(raw["people"]) if self.detector is not None else -1,
+            "pose_source": self.pose_source,
         }
         return {
             "time": t,
@@ -145,13 +158,14 @@ class MonitorPipeline:
 
     def reset(self):
         """Fresh state for a new input (keeps the loaded YOLO model)."""
-        self.pose.close()
+        self.close()
         detector = self.detector
         self.__init__(self.params, self.method, use_yolo=False, enhance=self.enhance)
         self.detector = detector
 
     def close(self):
         self.pose.close()
+        self.crop_pose.close()
 
 
 def to_jsonable(trace: list[dict]) -> list[dict]:

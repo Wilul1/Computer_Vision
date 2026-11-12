@@ -45,11 +45,13 @@ FIGURES = ROOT / "docs" / "figures"
 VIDEO_EXTS = {".mp4", ".avi", ".mov", ".mkv", ".webm"}
 MIN_SEGMENT_SEC = 1.0
 WARMUP_FRAMES = 30          # timing ignores the first frames of each clip (model warm-up)
-CACHE_VERSION = 3           # bump when the trace format changes
+CACHE_VERSION = 4           # bump when the trace format changes
 CLASSES = ["standing", "sitting", "walking", "running", "lying"]
 METHODS = {"baseline": "MOG2 blob + rules (baseline)",
            "main_m2": "Pose + rules, M2 hand-set values",
-           "main": "Pose + rules, tuned + camera compensation (main)"}
+           "main_m3": "Pose + rules, M3 tuned values",
+           "main": "Pose + rules, M4: re-tuned, stride + person-box checks (main)"}
+PARAM_FILES = {"main_m3": ROOT / "configs" / "tuned_params_m3.json"}
 
 
 # ---------------------------------------------------------------- ground truth
@@ -67,7 +69,14 @@ def load_segments(split: str) -> list[dict]:
             info = {row["clip"]: row for row in csv.DictReader(f)}
 
     segments = []
-    for clip in sorted(p for p in (DATA / split).rglob("*") if p.suffix.lower() in VIDEO_EXTS):
+    videos = sorted(p for p in (DATA / split).rglob("*") if p.suffix.lower() in VIDEO_EXTS)
+    if not videos and (CACHE / split).exists():
+        # No videos on this machine (they are not in git): evaluate from the
+        # committed per-frame features instead. Same numbers, no 3 GB download.
+        videos = sorted(ROOT / json.loads(p.read_text())["clip"].replace("\\", "/")
+                        for p in (CACHE / split).glob("*.json"))
+        print(f"(no videos in data/{split}: scoring the cached features in outputs/cache/{split}/)")
+    for clip in videos:
         cond = info.get(f"{clip.parent.name}/{clip.name}", {}).get("condition", "own recording" if clip.name[:1] == "s" else "")
         if clip.parent.name == "_segments":
             rows = seg_rows.get(clip.name, [])
@@ -102,12 +111,15 @@ def get_traces(split: str, clips: list[Path], rerun: bool, use_yolo: bool) -> di
     for i, clip in enumerate(clips, 1):
         cp = cache_path(split, clip)
         if clip in todo:
+            if not clip.exists():
+                sys.exit(f"{clip} is missing and has no cached features. Rebuild the data: python scripts/get_data.py")
             if pipe is None:
                 pipe = MonitorPipeline(Params(), use_yolo=use_yolo)
             pipe.reset()
             t0 = time.perf_counter()
             res = run_stream(str(clip), None, None, pipe)
-            data = {"version": CACHE_VERSION, "clip": str(clip.relative_to(ROOT)), "yolo": use_yolo,
+            data = {"version": CACHE_VERSION, "clip": clip.relative_to(ROOT).as_posix(), "yolo": use_yolo,
+                    "machine": machine_name(),
                     "fps_source": res["fps_source"], "trace": to_jsonable(res["trace"]), "timings": res["timings"]}
             cp.parent.mkdir(parents=True, exist_ok=True)
             cp.write_text(json.dumps(data))
@@ -211,7 +223,32 @@ def save_confusion(y_true, y_pred, title: str, path: Path):
 
 
 # ---------------------------------------------------------------- main
-def evaluate(split: str, rerun: bool = False, use_yolo: bool = True, write: bool = True):
+def condition_groups(seg: dict, diag: dict) -> dict:
+    """Which condition bucket a segment falls in, for the per-condition table."""
+    cond = seg["condition"].lower()
+    name = seg["clip"].name
+    dataset = "GMDCSA24 room" if name.startswith("gmdcsa") else "HMDB51 movie" if name.startswith("hmdb") else "own"
+    g = {"dataset": dataset, "class": seg["label"]}
+    if dataset == "GMDCSA24 room":
+        g["lighting"] = "night" if "night" in cond else "lights off" if "lights off" in cond else "day"
+    if "moving camera" in cond:
+        g["camera"] = "moving"
+    elif "static camera" in cond:
+        g["camera"] = "static"
+    h = diag["body_height_px"]
+    g["person size"] = ("not found" if h == 0 else "small (< 90 px)" if h < 90
+                        else "medium (90-150 px)" if h < 150 else "large (≥ 150 px)")
+    return g
+
+
+def model_sizes() -> dict:
+    out = {}
+    for name, path in {"YOLO11n": config.MODELS_DIR / config.YOLO_WEIGHTS, "MediaPipe pose lite": config.POSE_MODEL_PATH}.items():
+        out[name] = f"{path.stat().st_size / 1e6:.1f} MB" if path.exists() else "not downloaded"
+    return out
+
+
+def evaluate(split: str, rerun: bool = False, use_yolo: bool = True, write: bool = True, params_file=None):
     segments = load_segments(split)
     if not segments:
         sys.exit(f"No labelled clips in data/{split}. Run scripts/make_splits.py first.")
@@ -219,8 +256,10 @@ def evaluate(split: str, rerun: bool = False, use_yolo: bool = True, write: bool
     print(f"{split}: {len(segments)} segments in {len(clips)} videos", flush=True)
     traces = get_traces(split, clips, rerun, use_yolo)
 
-    tuned = Params.load()
+    tuned = Params.load(params_file)
     params = {"baseline": tuned, "main_m2": Params(), "main": tuned}
+    if PARAM_FILES["main_m3"].exists():
+        params = {"baseline": tuned, "main_m2": Params(), "main_m3": Params.load(PARAM_FILES["main_m3"]), "main": tuned}
     y_true = [s["label"] for s in segments]
     results = {}
     for m, p in params.items():
@@ -244,16 +283,25 @@ def evaluate(split: str, rerun: bool = False, use_yolo: bool = True, write: bool
             "ok": "✔" if got == seg["label"] else "✘",
             "baseline_got": results["baseline"]["preds"][i]["pred"],
             "m2_got": results["main_m2"]["preds"][i]["pred"],
+            "m3_got": results["main_m3"]["preds"][i]["pred"] if "main_m3" in results else "",
             "frame_acc": round(results["main"]["preds"][i]["frame_acc"], 3),
             **diagnostics(seg, d["trace"], d["fps_source"]),
         })
+    # Accuracy per condition bucket (lighting, camera, person size, class, dataset).
+    by_condition = {}
+    for i, seg in enumerate(segments):
+        for group, value in condition_groups(seg, log_rows[i]).items():
+            cell = by_condition.setdefault(group, {}).setdefault(value, {"n": 0, **{m: 0 for m in results}})
+            cell["n"] += 1
+            for m in results:
+                cell[m] += results[m]["preds"][i]["pred"] == seg["label"]
     log_path = METRICS / f"test_log_{split}.csv"
     with open(log_path, "w", newline="", encoding="utf-8-sig") as f:
         w = csv.DictWriter(f, fieldnames=list(log_rows[0]))
         w.writeheader()
         w.writerows(log_rows)
 
-    for m in METHODS:
+    for m in results:
         save_confusion(y_true, [x["pred"] for x in results[m]["preds"]],
                        f"{METHODS[m]} - {split}", FIGURES / f"confusion_{split}_{m}.png")
 
@@ -262,8 +310,10 @@ def evaluate(split: str, rerun: bool = False, use_yolo: bool = True, write: bool
                          "hmdb51" if s["clip"].name.startswith("hmdb") else "own" for s in segments)
     summary = {
         "split": split, "date": str(date.today()), "segments": len(segments), "videos": len(clips),
-        "per_class": dict(by_class), "per_dataset": dict(by_dataset), "machine": machine_name(), "speed": spd,
-        "params_file": "configs/tuned_params.json" if (ROOT / "configs" / "tuned_params.json").exists() else "defaults",
+        "per_class": dict(by_class), "per_dataset": dict(by_dataset), "speed": spd,
+        "machine": Counter(d.get("machine", "unknown") for d in traces.values()).most_common(1)[0][0],
+        "model_sizes": model_sizes(), "by_condition": by_condition,
+        "params_file": str(params_file or "configs/tuned_params.json"),
         "methods": {m: {"name": METHODS[m], "accuracy": round(r["accuracy"], 4), "macro_f1": round(r["macro_f1"], 4),
                         "per_class": {c: {k: round(v, 3) for k, v in r["report"][c].items()}
                                       for c in r["report"] if c in CLASSES}}
@@ -297,13 +347,21 @@ def write_markdown(split, summary, results, log_rows):
     lines += ["", f"**Speed:** {sp['ms_per_frame']} ms per frame = **{sp['fps']} FPS** (median over "
                   f"{sp['frames_timed']} frames after a {WARMUP_FRAMES}-frame warm-up per clip, "
                   f"{'YOLO on' if sp['yolo'] else 'YOLO off'}) on {s['machine']}. "
-                  "Per stage: " + ", ".join(f"{k} {v} ms" for k, v in sp["stage_ms"].items()) + ".",
-              "", "## Main method, per class", "", "| Class | Precision | Recall | F1 | Support |",
+                  "Per stage: " + ", ".join(f"{k} {v} ms" for k, v in sp["stage_ms"].items()) + ". "
+                  "Model sizes: " + ", ".join(f"{k} {v}" for k, v in s["model_sizes"].items()) + ".",
+              "", "## Accuracy by condition", "",
+              "| Group | Condition | Segments | " + " | ".join(results) + " |",
+              "|---|---|---:|" + "---:|" * len(results)]
+    for group, cells in s["by_condition"].items():
+        for value, c in sorted(cells.items()):
+            lines.append(f"| {group} | {value} | {c['n']} | "
+                         + " | ".join(f"{c[m] / c['n']:.0%} ({c[m]})" for m in results) + " |")
+    lines += ["", "## Main method, per class", "", "| Class | Precision | Recall | F1 | Support |",
               "|---|---:|---:|---:|---:|"]
     for c, v in s["methods"]["main"]["per_class"].items():
         lines.append(f"| {c} | {v['precision']:.3f} | {v['recall']:.3f} | {v['f1-score']:.3f} | {int(v['support'])} |")
     lines += ["", "## Confusion matrices", ""]
-    for m in METHODS:
+    for m in results:
         lines.append(f"![{METHODS[m]}](figures/confusion_{split}_{m}.png)")
     fails = [r for r in log_rows if r["ok"] == "✘"]
     lines += ["", f"## Test log ({len(log_rows) - len(fails)} ✔ / {len(fails)} ✘)", "",
@@ -320,8 +378,9 @@ def main():
     ap.add_argument("--split", default="test", choices=["train", "val", "test"])
     ap.add_argument("--rerun", action="store_true", help="ignore cached runs and process every clip again")
     ap.add_argument("--no-yolo", action="store_true")
+    ap.add_argument("--params", default=None, help="parameter file (default: configs/tuned_params.json)")
     args = ap.parse_args()
-    evaluate(args.split, args.rerun, not args.no_yolo)
+    evaluate(args.split, args.rerun, not args.no_yolo, params_file=args.params)
 
 
 if __name__ == "__main__":

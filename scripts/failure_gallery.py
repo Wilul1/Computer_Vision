@@ -89,6 +89,13 @@ def grab_frame(r: dict) -> "cv2.Mat | None":
 
 
 def main():
+    import argparse
+    global OUT_DIR, DOC
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--out-dir", default=str(OUT_DIR), help="folder for the failure frames")
+    ap.add_argument("--doc", default=str(DOC), help="markdown file that gets the gallery block")
+    args = ap.parse_args()
+    OUT_DIR, DOC = Path(args.out_dir), Path(args.doc)
     if not LOG.exists():
         sys.exit("Run python src/evaluate.py --split test first.")
     with open(LOG, newline="", encoding="utf-8-sig") as f:
@@ -108,7 +115,7 @@ def main():
             img = cv2.resize(img, (360, int(h * 360 / w)))
             cv2.imwrite(str(OUT_DIR / f"{r['id']}.jpg"), img, [cv2.IMWRITE_JPEG_QUALITY, 85])
         print(f"[{i}/{len(fails)}] {r['id']} {r['expected']} -> {r['got']}: {cause}", flush=True)
-        lines.append(f"| {r['id']} | ![{r['id']}](failures/{r['id']}.jpg) | {r['input']} | {r['expected']} | "
+        lines.append(f"| {r['id']} | ![{r['id']}]({OUT_DIR.name}/{r['id']}.jpg) | {r['input']} | {r['expected']} | "
                      f"{r['got']} | {cause} | pose {float(r['pose_found']):.0%}, legs {float(r['legs_visible']):.0%}, "
                      f"{float(r['body_height_px']):.0f} px tall, camera {float(r['camera_px_per_s']):.0f} px/s, "
                      f"{float(r['duration_s']):.1f} s | {r['condition'][:60]} |")
