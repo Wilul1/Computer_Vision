@@ -1,7 +1,7 @@
 # Real-Time and Video-Based Motion Detection and Activity Monitoring System Using Computer Vision
 
 **Final report (Milestone 5).**<br>
-Alabat Cindy I · Porcopio Zheniel Ivan · Veridiano Wilmark — CSST 106 Computer Vision, Jeremy C. Reyes<br>
+Porcopio Zheniel Ivan · Veridiano Wilmark — CSST 106 Computer Vision, Jeremy C. Reyes<br>
 Laguna State Polytechnic University · Repository: https://github.com/Wilul1/Computer_Vision (tag `v1.0`)
 
 ## Abstract
@@ -203,13 +203,13 @@ Git history on the shared remote is under one push account; module ownership for
 
 | Module / deliverable | Primary | Support |
 |---|---|---|
-| Pipeline core (`src/pipeline.py`, features, classifier, params) | Veridiano Wilmark | Porcopio |
-| Detection / pose / camera motion | Veridiano Wilmark | Alabat |
-| Evaluation, tuning, cache reproducibility | Veridiano Wilmark | — |
-| Dataset import & splits | Veridiano Wilmark | Porcopio |
-| Gradio app (`app.py`) | Veridiano Wilmark | Alabat |
-| Test cases & backup demo reel | Veridiano Wilmark | Alabat |
-| Report / limitations / slides | Alabat Cindy I | Porcopio Zheniel Ivan |
+| Pipeline core (`src/pipeline.py`, features, classifier, params) | Veridiano Wilmark | Porcopio Zheniel Ivan |
+| Detection / pose / camera motion | Porcopio Zheniel Ivan | Veridiano Wilmark |
+| Evaluation, tuning, cache reproducibility | Veridiano Wilmark | Porcopio Zheniel Ivan |
+| Dataset import & splits | Porcopio Zheniel Ivan | Veridiano Wilmark |
+| Gradio app (`app.py`) | Veridiano Wilmark | Porcopio Zheniel Ivan |
+| Test cases & backup demo reel | Porcopio Zheniel Ivan | Veridiano Wilmark |
+| Report / limitations / slides | Porcopio Zheniel Ivan | Veridiano Wilmark |
 | Live demo drive & presentation | Porcopio Zheniel Ivan | All |
 | Remaining: own clips, falls, final polish | All (see `docs/remaining.md`) | |
 

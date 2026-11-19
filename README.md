@@ -1,7 +1,7 @@
 # Real-Time and Video-Based Motion Detection and Activity Monitoring
 
 CSST 106 Computer Vision final project · Laguna State Polytechnic University  
-**Alabat Cindy I · Porcopio Zheniel Ivan · Veridiano Wilmark** · tag **`v1.0`**
+**Porcopio Zheniel Ivan · Veridiano Wilmark** · tag **`v1.0`**
 
 Detects a person in a laptop webcam, phone video or recorded file and classifies **standing, sitting,
 walking, running or lying**. Pretrained YOLO11n + MediaPipe Pose + geometric rules tuned on validation
@@ -91,7 +91,7 @@ outputs/cache/  features that make evaluate.py reproducible offline
 
 | File | What |
 |---|---|
-| [docs/final_report.pdf](docs/final_report.pdf) | Final report |
+| [docs/Final_Report_v1.0.pdf](docs/Final_Report_v1.0.pdf) / [docs/final_report.pdf](docs/final_report.pdf) | Final report |
 | [docs/slides_final.pptx](docs/slides_final.pptx) | Presentation slides (PDF next to it if present) |
 | [docs/backup_demo_m4.mp4](docs/backup_demo_m4.mp4) | ≤5 min backup demo reel |
 | [outputs/final/](outputs/final/) | Sample outputs / screenshots |
@@ -100,8 +100,7 @@ outputs/cache/  features that make evaluate.py reproducible offline
 
 | Member | Focus |
 |---|---|
-| Veridiano Wilmark | Pipeline, eval/tune, app, reproducibility |
-| Alabat Cindy I | Report, documentation, backup recording |
-| Porcopio Zheniel Ivan | Slides, live demo, dataset labelling support |
+| Veridiano Wilmark | Pipeline core, eval/tune, Gradio app, reproducibility |
+| Porcopio Zheniel Ivan | Detection/pose, dataset splits, test cases & backup demo, report, slides, live demo |
 
 Details: Appendix C of the final report and `docs/remaining.md`.

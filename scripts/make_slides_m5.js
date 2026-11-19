@@ -36,7 +36,7 @@ async function main() {
     });
   };
   pres.layout = "LAYOUT_16x9";
-  pres.author = "CSST 106 — Alabat · Porcopio · Veridiano";
+  pres.author = "CSST 106 — Porcopio · Veridiano";
   pres.title = "Milestone 5 — Activity Monitor (Final)";
   pres.subject = "Motion Detection and Activity Monitoring";
 
@@ -59,7 +59,7 @@ async function main() {
       fontFace: "Arial", fontSize: 15, color: C.muted,
       margin: 0, isTextBox: true,
     });
-    s.addText("Alabat Cindy I  ·  Porcopio Zheniel Ivan  ·  Veridiano Wilmark\nCSST 106 · tag v1.0", {
+    s.addText("Porcopio Zheniel Ivan  ·  Veridiano Wilmark\nCSST 106 · tag v1.0", {
       x: 0.55, y: 4.5, w: 8.5, h: 0.6,
       fontFace: "Arial", fontSize: 13, color: C.muted,
       margin: 0, isTextBox: true,
