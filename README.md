@@ -126,6 +126,7 @@ scripts/    get_data.py · import_public.py · make_splits.py · tune.py · fail
 configs/    tuned_params.json (tuned on val) · tuned_params_m3.json (Milestone 3 values, for comparison)
 tests/      test_cases.csv · cases/ (test-case clips and photos)
 data/       raw/ · train|val|test/ · splits.csv · annotations/ (segments.csv, clip_info.csv, motion_counts.csv)
-docs/       results_test.md · error_analysis.md · design_choices.md · progress_report.md · figures/ · failures/
+docs/       results_test.md · error_analysis.md · design_choices.md · report_draft.md · limitations.md
+            slides_m4.pptx · backup_demo_m4.mp4 · remaining.md · figures/ · failures/
 outputs/    annotated results, metrics, cache
 ```
