@@ -27,6 +27,8 @@ outputs/cache/*
 *.mov
 # Test-case clips are small (1.4 MB in total, MIT-licensed GMDCSA24 cuts).
 !tests/cases/*.mp4
+# Demo pack for presentation Analyze (~17 MB; Subject 4 + HMDB cuts).
+!tests/demo_tomorrow/*.mp4
 # Milestone 4 backup demo reel (annotated test cases, <10 MB).
 !docs/backup_demo_m4.mp4
 node_modules/

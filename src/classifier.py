@@ -13,10 +13,12 @@ def classify_pose(f: dict, p: Params) -> str:
     then lying, then sitting, then the upright activities by speed."""
     if not f["hips_visible"]:
         return UNKNOWN
-    if f["torso_angle"] >= p.lying_torso_angle_min:
-        return "lying"
+    # Legs required before lying/sitting: a hand close to the lens can make
+    # MediaPipe invent a tilted "torso" with no real legs and used to return lying.
     if not f["legs_visible"]:
         return UNKNOWN
+    if f["torso_angle"] >= p.lying_torso_angle_min:
+        return "lying"
 
     hip_speed = f["hip_speed_comp"] if p.camera_compensation else f["hip_speed"]
     knee, hip, thigh = f["knee_angle"], f["hip_angle"], f["thigh_ratio"]
@@ -72,11 +74,21 @@ class TemporalFilter:
         self.recent = deque(maxlen=max(1, int(window)))
         self.current = None
         self.candidate, self.streak = None, 0
+        self.ignore_streak = 0
+        # After this many no-person/unknown frames, drop a sticky wrong label
+        # (e.g. hand-as-lying lingering at 0% confidence).
+        self.clear_after = 4
 
     def __call__(self, raw: str) -> tuple[str, float]:
         if raw in IGNORED:
-            # Nothing reliable this frame: keep showing the last label if we have one.
+            self.ignore_streak += 1
+            if self.ignore_streak >= self.clear_after:
+                self.current = raw
+                self.recent.clear()
+                self.candidate, self.streak = None, 0
+            # Nothing reliable this frame: keep showing the last label briefly.
             return (self.current or raw), 0.0
+        self.ignore_streak = 0
         self.recent.append(raw)
         winner, votes = Counter(self.recent).most_common(1)[0]
         conf = votes / len(self.recent)
@@ -102,7 +114,11 @@ def replay(trace: list[dict], p: Params, method: str = "main") -> list[str]:
     for f in trace:
         if method == "baseline":
             raw = classify_blob(f["blob"], p)
-        elif f["pose"] is None or (p.require_person_box and f.get("n_people", -1) == 0):
+        elif f["pose"] is None:
+            # Match live pipeline: person visible but no usable pose → unknown.
+            n = f.get("n_people", -1)
+            raw = UNKNOWN if n > 0 else NO_PERSON
+        elif p.require_person_box and f.get("n_people", -1) == 0:
             raw = NO_PERSON
         else:
             raw = classify_pose(f["pose"], p)

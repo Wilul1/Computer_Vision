@@ -13,7 +13,7 @@ COLORS = {
     "no person": (150, 150, 150),
     "unknown": (150, 150, 150),
 }
-DISPLAY = {"unknown": "UNKNOWN - legs not visible"}
+DISPLAY = {"unknown": "UNKNOWN - full body needed (move back ~2-5 m)"}
 
 
 def draw_result(frame, r: dict):

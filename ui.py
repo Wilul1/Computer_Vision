@@ -78,8 +78,10 @@ body{font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-ser
 .media-panel{min-width:0!important}
 .large-viewer{min-height:520px!important}
 .large-viewer .wrap{min-height:520px!important}
-.live-camera-viewer .image-container{min-height:520px!important}
-.live-camera-viewer img{display:block!important;width:100%!important;height:390px!important;max-height:none!important;object-fit:cover!important;object-position:center center!important}
+.live-camera-viewer .image-container{min-height:420px!important}
+.live-camera-viewer img,.live-camera-viewer video{display:block!important;width:100%!important;max-height:420px!important;object-fit:contain!important;object-position:center center!important}
+/* Keep Gradio webcam / record controls clickable (do not cover them). */
+.live-camera-viewer button,.live-camera-viewer .source-selection,.live-camera-viewer [class*="toolbar"],.live-camera-viewer [class*="icon-button"]{pointer-events:auto!important;z-index:5!important;opacity:1!important;visibility:visible!important}
 .primary-action button,button.primary{background:linear-gradient(135deg,#d9bf7c,#b89650)!important;color:#17150f!important;border:1px solid #e1c985!important;font-weight:700!important}
 .secondary button,button.secondary{background:#1a1b19!important;border:1px solid #3a3b36!important;color:#e5e3db!important}
 button{border-radius:8px!important;transition:filter .15s ease,transform .15s ease!important}
@@ -107,8 +109,9 @@ def show_page(page):
     return [gr.update(visible=page == name) for name in PAGE_NAMES]
 
 
-def build_ui(analyse_video, analyse_image, webcam_step, examples_dir):
-    with gr.Blocks(title="MotionSense | Activity Monitor", theme=gr.themes.Base(), css=APP_CSS) as demo:
+def build_ui(analyse_video, analyse_image, webcam_step, stop_webcam, stop_camera_js, start_camera_js, examples_dir):
+    # Gradio 6+: theme/css belong on launch(), not Blocks().
+    with gr.Blocks(title="MotionSense | Activity Monitor") as demo:
         with gr.Row(elem_id="app-shell"):
             with gr.Column(elem_id="sidebar", scale=0, min_width=205):
                 gr.HTML("""
@@ -209,6 +212,10 @@ def build_ui(analyse_video, analyse_image, webcam_step, examples_dir):
                                     gr.Examples(examples, inputs=vin, label="Project Test Clips")
                                 else:
                                     gr.Markdown("No sample clips are available in this project folder.")
+                                demo_dir = examples_dir.parent / "demo_tomorrow"
+                                demo_clips = sorted(str(path) for path in demo_dir.glob("*.mp4")) if demo_dir.is_dir() else []
+                                if demo_clips:
+                                    gr.Examples(demo_clips, inputs=vin, label="Tomorrow Demo Pack")
                         with gr.Column(scale=1, min_width=420, elem_classes=["content-card", "media-panel"]):
                             vhead = gr.Markdown("Your annotated result will appear here after analysis.")
                             vout = gr.Video(label="Annotated Video", height=520)
@@ -245,17 +252,30 @@ def build_ui(analyse_video, analyse_image, webcam_step, examples_dir):
                 with gr.Group(visible=False) as live_page:
                     gr.HTML("""
                     <div class="section-title"><div class="eyebrow">Live Workspace</div><h1>Live Camera</h1>
-                    <p>Start the camera stream and allow your browser to use the webcam. Keep your full body in view for the clearest estimate.</p></div>
+                    <p>Click <b>Start camera</b>, allow the browser permission, then press the orange <b>record</b> button on the preview if it appears. Keep your full body in view. Use <b>Stop camera</b> when finished.</p></div>
                     """)
                     gr.Markdown("The app analyzes incoming frames about four times per second. Keep the camera stationary and stand roughly 2-5 m away.")
                     with gr.Row(elem_classes=["media-row"]):
                         with gr.Column(scale=1, min_width=420, elem_classes=["content-card", "media-panel"]):
-                            win = gr.Image(label="Camera Preview | Click To Start", sources=["webcam"], streaming=True, type="numpy", height=520, elem_classes=["large-viewer", "live-camera-viewer"])
+                            win = gr.Image(
+                                label="Camera Preview",
+                                sources=["webcam"],
+                                streaming=True,
+                                type="numpy",
+                                height=480,
+                                elem_classes=["large-viewer", "live-camera-viewer"],
+                                webcam_options=gr.WebcamOptions(mirror=True),
+                            )
                         with gr.Column(scale=1, min_width=420, elem_classes=["content-card", "media-panel"]):
-                            wout = gr.Image(label="Live Annotated View", height=520, elem_classes=["large-viewer", "live-camera-viewer"])
-                    whead = gr.Markdown("The current activity estimate will appear here.")
+                            wout = gr.Image(label="Live Annotated View", height=480, elem_classes=["large-viewer", "live-camera-viewer"])
+                    with gr.Row():
+                        wstart = gr.Button("Start camera", variant="primary", elem_classes=["primary-action"], scale=0, min_width=140)
+                        wstop = gr.Button("Stop camera", elem_classes=["secondary"], scale=0, min_width=140)
+                        whead = gr.Markdown("Click **Start camera**, allow access, then the orange record button if shown.")
                     wstate = gr.State(None)
                     win.stream(webcam_step, [win, wstate], [wout, whead, wstate], stream_every=0.25, concurrency_limit=1)
+                    wstart.click(None, None, None, js=start_camera_js)
+                    wstop.click(stop_webcam, [wstate], [win, wout, whead, wstate], js=stop_camera_js)
                 with gr.Group(visible=False) as model_page:
                     gr.HTML("""
                     <div class="section-title"><div class="eyebrow">System Details</div><h1>About The Model</h1>

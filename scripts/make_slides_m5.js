@@ -37,14 +37,14 @@ async function main() {
   };
   pres.layout = "LAYOUT_16x9";
   pres.author = "CSST 106 — Porcopio · Veridiano";
-  pres.title = "Milestone 5 — Activity Monitor (Final)";
+  pres.title = "Final Project Presentation — Activity Monitor";
   pres.subject = "Motion Detection and Activity Monitoring";
 
   // 1. Title / problem
   {
     const s = pres.addSlide();
     s.addShape(S.RECTANGLE, { x: 0, y: 0, w: 10, h: 5.625, fill: { color: C.bg } });
-    s.addText("MILESTONE 5 · FINAL PRESENTATION", {
+    s.addText("CSST 106 · FINAL PROJECT PRESENTATION", {
       x: 0.55, y: 1.1, w: 9, h: 0.35,
       fontFace: "Arial", fontSize: 14, color: C.accent, bold: true,
       margin: 0, isTextBox: true,
@@ -64,6 +64,42 @@ async function main() {
       fontFace: "Arial", fontSize: 13, color: C.muted,
       margin: 0, isTextBox: true,
     });
+    s.addNotes("WILMARK (15s): Introduce names, one-sentence what the system does, tag v1.0.");
+  }
+
+  // Agenda
+  {
+    const s = pres.addSlide();
+    s.addShape(S.RECTANGLE, { x: 0, y: 0, w: 10, h: 5.625, fill: { color: C.bg } });
+    s.addText("Agenda", {
+      x: 0.5, y: 0.35, w: 9, h: 0.5,
+      fontFace: "Arial", fontSize: 32, color: C.ink, bold: true, margin: 0, isTextBox: true,
+    });
+    const agenda = [
+      ["1 min", "Problem & objectives", "Wilmark"],
+      ["2 min", "Dataset, approach, pipeline", "Porcopio"],
+      ["2 min", "Results & samples", "Wilmark"],
+      ["4 min", "Live demo", "Porcopio drives · Wilmark narrates"],
+      ["1 min", "Limitations & future work", "Porcopio"],
+      ["—", "Q&A / technical defense", "Both"],
+    ];
+    agenda.forEach((row, i) => {
+      const y = 1.1 + i * 0.65;
+      card(s, 0.5, y, 9, 0.55);
+      s.addText(row[0], {
+        x: 0.7, y: y + 0.12, w: 1.2, h: 0.3,
+        fontFace: "Arial", fontSize: 14, color: C.accent, bold: true, margin: 0, isTextBox: true,
+      });
+      s.addText(row[1], {
+        x: 2.1, y: y + 0.12, w: 4.5, h: 0.3,
+        fontFace: "Arial", fontSize: 16, color: C.ink, margin: 0, isTextBox: true,
+      });
+      s.addText(row[2], {
+        x: 6.7, y: y + 0.12, w: 2.6, h: 0.3,
+        fontFace: "Arial", fontSize: 13, color: C.muted, margin: 0, isTextBox: true,
+      });
+    });
+    s.addNotes("Leave this up 5 seconds so the teacher sees the plan, then go.");
   }
 
   // 2. Objectives (1 min)
@@ -325,10 +361,11 @@ async function main() {
       x: 5.4, y: 1.2, w: 3.9, h: 0.4,
       fontFace: "Arial", fontSize: 18, color: C.accent, bold: true, margin: 0, isTextBox: true,
     });
-    s.addText("1. python app.py\n2. TC01 sit · TC03 walk · TC05 night sit\n3. Show a hard fail (TC08 or TC09)\n4. Webcam: full-body walk\n5. Teacher inputs\n6. evaluate.py numbers vs report", {
+    s.addText("1. Video: TC01 sit · TC03 walk\n2. Hard pass: TC05 night sit\n3. Honest fail: TC08 or TC09\n4. Webcam: 2–3 m, side view, full body\n5. Stop camera when done\n6. Backup: backup_demo_m4.mp4", {
       x: 5.4, y: 1.75, w: 3.9, h: 2.5,
       fontFace: "Arial", fontSize: 14, color: C.ink, margin: 0, isTextBox: true,
     });
+    s.addNotes("PORCOPIO drives app. WILMARK narrates. Side-view only for lying. Stop camera after.");
   }
 
   // Future work + thank you

@@ -16,8 +16,8 @@ import numpy as np
 
 from . import config
 from .camera_motion import CameraMotion
-from .classifier import NO_PERSON, TemporalFilter, classify_blob, classify_pose
-from .features import MotionFeatures, posture_features
+from .classifier import NO_PERSON, UNKNOWN, TemporalFilter, classify_blob, classify_pose
+from .features import MotionFeatures, pose_plausible, posture_features
 from .motion import BlobFeatures, MotionDetector, MotionEventCounter
 from .params import Params
 from .pose import PoseEstimator, pose_on_crop
@@ -91,9 +91,17 @@ class MonitorPipeline:
 
         # Main: pose features.
         pose_feats = None
-        if lm is None:
+        person_box = raw["people"][0]["box"] if raw["people"] else None
+        frame_hw = raw.get("frame_shape")
+        if lm is None or not pose_plausible(lm, person_box, frame_hw):
+            # No pose, or a hallucinated one (hand/face close-up, fake skeleton).
+            # YOLO may still see a person (desk webcam: face only) — that is
+            # "unknown" (body incomplete), not an empty room.
+            if lm is not None:
+                lm = None
+                raw = {**raw, "landmarks": None}
             self.speeds.reset()
-            main_raw = NO_PERSON
+            main_raw = UNKNOWN if raw["people"] else NO_PERSON
         else:
             f = posture_features(lm)
             f["cam_offset"] = raw["cam_offset"]
@@ -143,6 +151,7 @@ class MonitorPipeline:
         x = self.preprocess(frame)
         t1 = time.perf_counter()
         raw = self.infer(x, t)
+        raw["frame_shape"] = x["bgr"].shape[:2]
         t2 = time.perf_counter()
         result = self.postprocess(raw, t)
         t3 = time.perf_counter()

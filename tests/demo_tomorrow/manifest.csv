@@ -1,0 +1,15 @@
+id,file,expected,condition,source,notes
+D01,d01_sit_chair_day.mp4,sitting,"Day lights on, sitting on chair writing",GMDCSA24 Subject 4 ADL 13 [0-5s],Easy room — new person vs TC01–13
+D02,d02_sit_bed_laptop_dark.mp4,sitting,"Day lights off, sitting on bed with laptop",GMDCSA24 Subject 4 ADL 04 [0-8s],Harder lighting
+D03,d03_walk_pick_book_day.mp4,walking,"Day lights on, walking then picking up a book",GMDCSA24 Subject 4 ADL 17 [0-6s],Full-body room walk
+D04,d04_walk_phone_dark.mp4,walking,"Day lights off, walking while on phone",GMDCSA24 Subject 4 ADL 02 [0-8s],Dark walk
+D05,d05_stand_with_jar_day.mp4,standing,"Day lights on, standing holding biscuit jar",GMDCSA24 Subject 4 ADL 19 [3-6.4s],Short stand segment
+D06,d06_stand_drink_day.mp4,standing,"Day lights on, standing and drinking",GMDCSA24 Subject 4 ADL 14 [1.5-7s],Stand + small arm motion
+D07,d07_lie_bed_day.mp4,lying,"Day lights on, lying/sleeping on bed",GMDCSA24 Subject 4 ADL 16 [3-7s],Side/bed lie
+D08,d08_lie_bed_from_sit.mp4,lying,"Day lights on, lying on bed after sitting",GMDCSA24 Subject 4 ADL 15 [1.6-5s],Lie after sit transition
+D09,d09_sit_floor_write_dark.mp4,sitting,"Day lights off, sitting on floor writing",GMDCSA24 Subject 4 ADL 11 [0-8s],Floor sit dark
+D10,d10_stand_brief_day.mp4,standing,"Day lights on, brief standing before sit",GMDCSA24 Subject 4 ADL 20 [0.7-2.6s],Very short stand
+D11,d11_run_longestyard.mp4,running,Movie clip — person running,HMDB51 longest yard,Best for showing running in Analyze
+D12,d12_run_fugitive.mp4,running,Movie clip — person running,HMDB51 the fugitive,Running backup
+D13,d13_run_protector.mp4,running,Movie clip — person running,HMDB51 the protector,Running backup
+D14,d14_walk_movie_eurotrip.mp4,walking,Movie clip — person walking,HMDB51 eurotrip,Moving-camera walk (harder)

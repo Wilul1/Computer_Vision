@@ -26,7 +26,7 @@ from src.classifier import IGNORED  # noqa: E402
 from src.detector import PersonDetector  # noqa: E402
 from src.params import Params  # noqa: E402
 from src.pipeline import MonitorPipeline  # noqa: E402
-from ui import build_ui  # noqa: E402
+from ui import APP_CSS, build_ui  # noqa: E402
 
 PARAMS = Params.load()
 print("Loading models once...")
@@ -158,11 +158,23 @@ def analyse_image(image):
 
 
 # ---------------------------------------------------------------- webcam
+def _close_webcam_state(state):
+    """Release the per-session pipeline so the next Start is a clean slate."""
+    if isinstance(state, dict):
+        pipe = state.get("pipe")
+        if pipe is not None:
+            try:
+                pipe.close()
+            except Exception:
+                pass
+    return None
+
+
 def webcam_step(frame, state):
     """Called for every webcam frame the browser streams. One pipeline per
     browser session, kept in `state`, so tracking and smoothing carry over."""
     if frame is None:
-        return None, "", state
+        return None, "", _close_webcam_state(state)
     if state is None:
         state = {"pipe": new_pipeline(), "start": time.perf_counter()}
     bgr = cv2.cvtColor(frame, cv2.COLOR_RGB2BGR)
@@ -175,8 +187,63 @@ def webcam_step(frame, state):
     return cv2.cvtColor(r["annotated"], cv2.COLOR_BGR2RGB), text, state
 
 
+def stop_webcam(state):
+    """Drop the pipeline and clear the result panel. Do NOT replace the Camera
+    Image with None — that breaks Gradio's webcam control until a full refresh."""
+    _close_webcam_state(state)
+    return (
+        gr.skip(),
+        None,
+        "### Camera off — click **Start camera**, then the orange record button if shown.",
+        None,
+    )
+
+
+# Browser-side: Gradio leaves getUserMedia running after the stream UI stops.
+STOP_CAMERA_JS = """
+() => {
+  document.querySelectorAll('video').forEach(v => {
+    const s = v.srcObject;
+    if (s && s.getTracks) {
+      s.getTracks().forEach(t => { try { t.stop(); } catch (e) {} });
+    }
+    v.srcObject = null;
+  });
+}
+"""
+
+# Click Gradio's built-in webcam / record controls inside the live preview card.
+START_CAMERA_JS = """
+() => {
+  const root = document.querySelector('.live-camera-viewer') || document;
+  const pick = (sel) => root.querySelector(sel) || document.querySelector(sel);
+  const labels = ['webcam', 'Webcam', 'camera', 'Camera', 'record', 'Record'];
+  const buttons = Array.from(document.querySelectorAll('button, [role="button"]'));
+  for (const b of buttons) {
+    const t = ((b.getAttribute('aria-label') || '') + ' ' + (b.innerText || '')).toLowerCase();
+    if (labels.some(l => t.includes(l.toLowerCase()))) {
+      // Prefer controls near the live preview
+      if (!root.contains(b) && root !== document) continue;
+      b.click();
+      return [];
+    }
+  }
+  // Fallback: any webcam-looking control on the page
+  for (const b of buttons) {
+    const t = ((b.getAttribute('aria-label') || '') + ' ' + (b.innerText || '')).toLowerCase();
+    if (t.includes('webcam') || t.includes('camera')) { b.click(); break; }
+  }
+  return [];
+}
+"""
+
+
 # ---------------------------------------------------------------- layout
-demo = build_ui(analyse_video, analyse_image, webcam_step, EXAMPLES)
+demo = build_ui(
+    analyse_video, analyse_image, webcam_step, stop_webcam,
+    STOP_CAMERA_JS, START_CAMERA_JS, EXAMPLES,
+)
 
 if __name__ == "__main__":
-    demo.launch()
+    # Gradio 6 moved theme/css from Blocks() to launch(); without this the dark UI is unstyled.
+    demo.launch(theme=gr.themes.Base(), css=APP_CSS)

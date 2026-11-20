@@ -6,7 +6,10 @@ from collections import deque
 import numpy as np
 
 from . import config
-from .pose import L_ANKLE, L_HIP, L_KNEE, L_SHOULDER, R_ANKLE, R_HIP, R_KNEE, R_SHOULDER
+from .pose import (
+    L_ANKLE, L_HIP, L_KNEE, L_SHOULDER,
+    R_ANKLE, R_HIP, R_KNEE, R_SHOULDER,
+)
 
 
 def angle(a, b, c) -> float:
@@ -24,6 +27,55 @@ def _side_mean(lm, left: tuple, right: tuple, fn):
     """Average a measurement over the body sides whose joints are visible."""
     vals = [fn(*(lm[i, :2] for i in side)) for side in (left, right) if _visible(lm, *side)]
     return float(np.mean(vals)) if vals else None
+
+
+def pose_plausible(lm: np.ndarray, person_box=None, frame_shape=None) -> bool:
+    """Reject MediaPipe hallucinations (hand/face close-ups, curtains).
+
+    A real body needs shoulders + hips + at least one knee/ankle, a torso that
+    is not almost the entire skeleton span, and — when YOLO has a box — a
+    landmark cloud that roughly matches that box (not a tiny fingertip box with
+    a full fake skeleton around the hand).
+    """
+    sh_ok = _visible(lm, L_SHOULDER) or _visible(lm, R_SHOULDER)
+    hip_ok = _visible(lm, L_HIP) or _visible(lm, R_HIP)
+    leg_ok = any(_visible(lm, i) for i in (L_KNEE, R_KNEE, L_ANKLE, R_ANKLE))
+    if not (sh_ok and hip_ok and leg_ok):
+        return False
+    vis = lm[:, 2] >= config.LANDMARK_MIN_VISIBILITY
+    if int(vis.sum()) < 6:
+        return False
+    pts = lm[vis, :2]
+    x0, y0 = pts.min(axis=0)
+    x1, y1 = pts.max(axis=0)
+    lm_w, lm_h = float(max(x1 - x0, 1.0)), float(max(y1 - y0, 1.0))
+    lm_area = lm_w * lm_h
+    sh = np.mean([lm[i, :2] for i in (L_SHOULDER, R_SHOULDER) if lm[i, 2] >= config.LANDMARK_MIN_VISIBILITY], axis=0)
+    hip = np.mean([lm[i, :2] for i in (L_HIP, R_HIP) if lm[i, 2] >= config.LANDMARK_MIN_VISIBILITY], axis=0)
+    torso = float(np.linalg.norm(sh - hip)) + 1e-6
+    diag = float(np.hypot(lm_w, lm_h))
+    # Hand/face fakes: almost every landmark sits inside a blob the size of the "torso".
+    if torso / diag > 0.72:
+        return False
+    if person_box is not None:
+        bx1, by1, bx2, by2 = person_box
+        box_w, box_h = float(max(bx2 - bx1, 1.0)), float(max(by2 - by1, 1.0))
+        box_area = box_w * box_h
+        # Skeleton much larger than the YOLO person box → not the same object.
+        if lm_area > 3.5 * box_area:
+            return False
+        lm_cx, lm_cy = (x0 + x1) / 2.0, (y0 + y1) / 2.0
+        bx_cx, bx_cy = (bx1 + bx2) / 2.0, (by1 + by2) / 2.0
+        if float(np.hypot(lm_cx - bx_cx, lm_cy - bx_cy)) > 0.8 * max(box_w, box_h, lm_w, lm_h):
+            return False
+        if frame_shape is not None:
+            fh, fw = int(frame_shape[0]), int(frame_shape[1])
+            fill = box_area / float(fw * fh)
+            aspect = lm_h / lm_w
+            # Filling the lens with a compact blob (hand) — not a full body at 2–5 m.
+            if fill > 0.40 and 0.5 < aspect < 2.0:
+                return False
+    return True
 
 
 def posture_features(lm: np.ndarray) -> dict:
