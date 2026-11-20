@@ -44,8 +44,7 @@ Weights are also suitable to attach on the GitHub `v1.0` release.
 python app.py                     # then open http://127.0.0.1:7860
 ```
 
-Tabs: **Video** (annotated mp4, confidence, timeline, ms/frame), **Photo**, **Webcam (live)**. Test-case
-clips are built-in examples. Models load **once** at start-up. Desktop window alternative:
+The sidebar dashboard has **Overview**, **Video Analysis**, **Photo Analysis**, **Live Camera**, and **About The Model** pages. Video analysis returns an annotated clip, activity timeline, summary, and processing details. Test-case clips and photos are built-in examples. Models load **once** at start-up. Desktop window alternative:
 `python src/run.py --webcam 0`.
 
 ```bash

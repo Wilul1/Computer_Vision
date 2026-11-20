@@ -26,6 +26,7 @@ from src.classifier import IGNORED  # noqa: E402
 from src.detector import PersonDetector  # noqa: E402
 from src.params import Params  # noqa: E402
 from src.pipeline import MonitorPipeline  # noqa: E402
+from ui import build_ui  # noqa: E402
 
 PARAMS = Params.load()
 print("Loading models once...")
@@ -175,44 +176,7 @@ def webcam_step(frame, state):
 
 
 # ---------------------------------------------------------------- layout
-with gr.Blocks(title="Activity Monitor") as demo:
-    gr.Markdown("# Motion Detection and Activity Monitoring\n"
-                "Detects a person and classifies **standing, sitting, walking, running or lying** "
-                "(YOLO11n + MediaPipe Pose + rules tuned on validation data). "
-                "Works best with a **fixed camera** and the **whole body in view**, 2–5 m away.")
-    with gr.Tab("Video"):
-        with gr.Row():
-            vin = gr.Video(label="Video (mp4, avi, mov)", sources=["upload"])
-            vout = gr.Video(label="Result")
-        vbtn = gr.Button("Analyse video", variant="primary")
-        vhead = gr.Markdown()
-        with gr.Row():
-            vsum = gr.Dataframe(label="Time per activity", interactive=False)
-            vtl = gr.Dataframe(label="Timeline", interactive=False)
-        vjson = gr.JSON(label="Details")
-        examples = sorted(str(p) for p in EXAMPLES.glob("*.mp4"))
-        if examples:
-            gr.Examples(examples, inputs=vin, label="Test-case clips")
-        vbtn.click(analyse_video, vin, [vout, vhead, vsum, vtl, vjson])
-    with gr.Tab("Photo"):
-        with gr.Row():
-            iin = gr.Image(label="Photo", type="numpy", sources=["upload"])
-            iout = gr.Image(label="Result")
-        ibtn = gr.Button("Analyse photo", variant="primary")
-        ihead = gr.Markdown()
-        ijson = gr.JSON(label="Details")
-        photos = sorted(str(p) for p in EXAMPLES.glob("*.jpg"))
-        if photos:
-            gr.Examples(photos, inputs=iin, label="Test-case photos")
-        ibtn.click(analyse_image, iin, [iout, ihead, ijson])
-    with gr.Tab("Webcam (live)"):
-        gr.Markdown("Allow the browser to use the camera. Stand 2–3 m back so your whole body is in view.")
-        with gr.Row():
-            win = gr.Image(label="Camera", sources=["webcam"], streaming=True, type="numpy")
-            wout = gr.Image(label="Result")
-        whead = gr.Markdown()
-        wstate = gr.State(None)
-        win.stream(webcam_step, [win, wstate], [wout, whead, wstate], stream_every=0.1, concurrency_limit=1)
+demo = build_ui(analyse_video, analyse_image, webcam_step, EXAMPLES)
 
 if __name__ == "__main__":
     demo.launch()
