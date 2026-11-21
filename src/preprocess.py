@@ -30,9 +30,9 @@ def to_motion_input(frame: np.ndarray) -> np.ndarray:
     return cv2.GaussianBlur(gray, (k, k), 0)
 
 
-def preprocess(frame: np.ndarray, enhance: bool = True) -> dict:
+def preprocess(frame: np.ndarray, enhance: bool = True, max_side: int | None = None) -> dict:
     """Full preprocessing step. Returns every intermediate the later stages need."""
-    resized = resize_max_side(frame)
+    resized = resize_max_side(frame, max_side if max_side is not None else config.PROCESS_MAX_SIDE)
     enhanced = enhance_contrast(resized) if enhance else resized
     return {
         "bgr": enhanced,                                   # for YOLO + drawing

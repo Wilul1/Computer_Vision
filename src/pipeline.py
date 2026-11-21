@@ -28,10 +28,21 @@ VIS = config.LANDMARK_MIN_VISIBILITY
 
 
 class MonitorPipeline:
-    def __init__(self, params: Params | None = None, method: str = "main", use_yolo: bool = True, enhance: bool = True):
+    def __init__(
+        self,
+        params: Params | None = None,
+        method: str = "main",
+        use_yolo: bool = True,
+        enhance: bool = True,
+        live: bool = False,
+    ):
         self.params = params or Params.load()
         self.method = method
         self.enhance = enhance
+        # live=True (webcam only): skip MOG2 + camera optical flow. Same YOLO/pose/rules.
+        # Video Analyze / evaluate keep live=False so reported FPS/accuracy stay unchanged.
+        self.live = live
+        self.max_side = 480 if live else config.PROCESS_MAX_SIDE
         self.motion = MotionDetector()
         self.events = MotionEventCounter()
         self.blobs = BlobFeatures()
@@ -52,11 +63,14 @@ class MonitorPipeline:
 
     # ---- stage 1 -------------------------------------------------------------
     def preprocess(self, frame) -> dict:
-        return preprocess(frame, self.enhance)
+        return preprocess(frame, self.enhance, max_side=self.max_side)
 
     # ---- stage 2 -------------------------------------------------------------
     def infer(self, x: dict, t: float) -> dict:
-        m = self.motion(x["motion"])
+        if self.live:
+            m = {"mask": None, "boxes": [], "ratio": 0.0, "moving": False}
+        else:
+            m = self.motion(x["motion"])
         if self.detector is not None and self.frame_idx % config.YOLO_EVERY_N_FRAMES == 0:
             self.people = self.detector(x["bgr"])
         lm, self.pose_source = None, "frame"
@@ -68,15 +82,18 @@ class MonitorPipeline:
             # Small or missed person: pose on the upscaled YOLO crop.
             lm = pose_on_crop(self.crop_pose, x["rgb"], person, config.POSE_CROP_TARGET_H, config.POSE_CROP_MARGIN)
             self.pose_source = "crop"
-        # Mask the person out of the camera-motion estimate: pose box if we have
-        # one, else the largest YOLO box.
-        box = None
-        if lm is not None and (lm[:, 2] >= VIS).sum() >= 4:
-            pts = lm[lm[:, 2] >= VIS, :2]
-            box = (*pts.min(axis=0), *pts.max(axis=0))
-        elif self.people:
-            box = self.people[0]["box"]
-        cam = self.camera.update(x["motion"], box)
+        if self.live:
+            cam = np.zeros(2, np.float32)
+        else:
+            # Mask the person out of the camera-motion estimate: pose box if we have
+            # one, else the largest YOLO box.
+            box = None
+            if lm is not None and (lm[:, 2] >= VIS).sum() >= 4:
+                pts = lm[lm[:, 2] >= VIS, :2]
+                box = (*pts.min(axis=0), *pts.max(axis=0))
+            elif self.people:
+                box = self.people[0]["box"]
+            cam = self.camera.update(x["motion"], box)
         return {"motion": m, "people": self.people, "landmarks": lm, "cam_offset": cam}
 
     # ---- stage 3 -------------------------------------------------------------
@@ -85,9 +102,13 @@ class MonitorPipeline:
         m, lm = raw["motion"], raw["landmarks"]
         self.events.update(m["moving"])
 
-        # Baseline: blob shape + speed.
-        blob = self.blobs.update(t, m["boxes"])
-        base_label, _ = self.filter_base(classify_blob(blob, p))
+        # Baseline: blob shape + speed (not shown in live UI — skip there).
+        blob = None
+        if self.live:
+            base_label = "standing"
+        else:
+            blob = self.blobs.update(t, m["boxes"])
+            base_label, _ = self.filter_base(classify_blob(blob, p))
 
         # Main: pose features.
         pose_feats = None
@@ -169,7 +190,9 @@ class MonitorPipeline:
         """Fresh state for a new input (keeps the loaded YOLO model)."""
         self.close()
         detector = self.detector
-        self.__init__(self.params, self.method, use_yolo=False, enhance=self.enhance)
+        self.__init__(
+            self.params, self.method, use_yolo=False, enhance=self.enhance, live=self.live,
+        )
         self.detector = detector
 
     def close(self):

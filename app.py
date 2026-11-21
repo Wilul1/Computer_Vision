@@ -36,10 +36,13 @@ LOCK = threading.Lock()       # the shared YOLO model is used by one request at 
 EXAMPLES = ROOT / "tests" / "cases"
 
 
-def new_pipeline() -> MonitorPipeline:
-    """Fresh tracking state (pose tracker, MOG2 background, smoothing) around the
-    already-loaded YOLO model."""
-    pipe = MonitorPipeline(PARAMS, use_yolo=False)
+def new_pipeline(*, live: bool = False) -> MonitorPipeline:
+    """Fresh tracking state around the shared YOLO model.
+
+    live=True only for webcam: skips MOG2/camera-flow to raise live FPS.
+    Video/photo Analyze keep live=False (same path as evaluate).
+    """
+    pipe = MonitorPipeline(PARAMS, use_yolo=False, live=live)
     pipe.detector = DETECTOR
     return pipe
 
@@ -176,14 +179,14 @@ def webcam_step(frame, state):
     if frame is None:
         return None, "", _close_webcam_state(state)
     if state is None:
-        state = {"pipe": new_pipeline(), "start": time.perf_counter()}
+        state = {"pipe": new_pipeline(live=True), "start": time.perf_counter()}
     bgr = cv2.cvtColor(frame, cv2.COLOR_RGB2BGR)
     with LOCK:
         t0 = time.perf_counter()
         r = state["pipe"].process(bgr, time.perf_counter() - state["start"])
         ms = (time.perf_counter() - t0) * 1000
-    text = (f"### {r['activity'].upper()}  ·  {r['confidence']:.0%}  ·  motion events {r['motion_events']}  ·  "
-            f"{ms:.0f} ms/frame")
+    text = (f"### {r['activity'].upper()}  ·  {r['confidence']:.0%}  ·  "
+            f"{ms:.0f} ms/frame ({1000 / max(ms, 1):.0f} FPS)")
     return cv2.cvtColor(r["annotated"], cv2.COLOR_BGR2RGB), text, state
 
 
