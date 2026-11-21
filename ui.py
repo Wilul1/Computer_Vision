@@ -16,12 +16,12 @@ body{font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-ser
 .brand-mark{width:34px;height:34px;display:grid;place-items:center;border:1px solid #78633a;border-radius:10px;background:linear-gradient(145deg,#d8bd78,#8a6a32);color:#17150f;font-size:18px}
 .brand span{color:#d9bd78}.brand small{display:block;color:#81817d;font-size:9px;font-weight:600;letter-spacing:1.8px;margin-top:3px}
 .nav-caption{padding:0 11px 9px;color:#74756f;font-size:9px;font-weight:750;letter-spacing:1.7px}
-#sidebar-nav fieldset{display:grid;gap:5px;min-width:0;border:0!important;padding:0!important}
-#sidebar-nav label{min-height:42px;display:flex;align-items:center;white-space:nowrap;overflow:hidden;padding:0 11px;border:1px solid transparent;border-radius:9px;color:#a7a7a1;cursor:pointer;transition:background .16s ease,border-color .16s ease,color .16s ease}
+#sidebar-nav fieldset{display:flex!important;flex-direction:column!important;gap:5px;width:100%!important;min-width:0;border:0!important;padding:0!important;margin:0!important}
+#sidebar-nav label{width:100%!important;min-height:42px;display:flex!important;align-items:center;justify-content:flex-start;white-space:nowrap;overflow:hidden;padding:0 11px;border:1px solid transparent;border-radius:9px;color:#a7a7a1;cursor:pointer;box-sizing:border-box!important;transition:background .16s ease,border-color .16s ease,color .16s ease}
 #sidebar-nav label:hover{background:#1b1b19;color:#f5f2e9}
 #sidebar-nav label:has(input:checked){background:linear-gradient(90deg,#30291a,#211e17);border-color:#50442a;color:#e5ca83}
 #sidebar-nav label input{width:0;height:0;margin:0;opacity:0;position:absolute}
-#sidebar-nav label span{font-size:12px;line-height:1.2}
+#sidebar-nav label span{font-size:12px;line-height:1.2;width:100%}
 #sidebar::-webkit-scrollbar{width:6px}
 #sidebar::-webkit-scrollbar-track{background:transparent}
 #sidebar::-webkit-scrollbar-thumb{background:#49473a;border-radius:8px}
@@ -45,7 +45,10 @@ body{font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-ser
 .hero-card p{max-width:680px;margin:9px 0 0;color:#c1bcae;font-size:12px;line-height:1.65}
 .hero-meta{position:relative;z-index:1;min-width:185px;padding:12px 14px;border:1px solid rgba(218,190,120,.24);border-radius:10px;background:rgba(13,13,12,.32);color:#d8c99f;font-size:10px;line-height:1.65}
 .hero-meta b{display:block;color:#f0e7d0;font-size:11px;margin-bottom:3px}
-.action-row{display:flex;flex-wrap:wrap;gap:9px;margin:0 0 17px}
+.action-row{display:flex;flex-wrap:nowrap;align-items:stretch;gap:9px;margin:0 0 17px}
+.action-row > *{flex:1 1 0;min-width:0}
+.action-row button,.action-row .primary-action,.action-row .secondary{width:100%!important;height:44px!important;min-height:44px!important;max-height:44px!important}
+.action-row button{display:inline-flex!important;align-items:center!important;justify-content:center!important;padding:0 12px!important;box-sizing:border-box!important;line-height:1.2!important}
 .metric-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-bottom:15px}
 .metric-card,.panel,.content-card{min-width:0;border:1px solid #2d2e2b;border-radius:12px;background:linear-gradient(145deg,#171817,#121313)}
 .metric-card{min-height:118px;padding:15px 16px}
@@ -159,9 +162,9 @@ def build_ui(analyse_video, analyse_image, webcam_step, stop_webcam, stop_camera
                     </div>
                     """)
                     with gr.Row(elem_classes=["action-row"]):
-                        go_video = gr.Button("Analyze A Video", variant="primary", elem_classes=["primary-action"])
-                        go_photo = gr.Button("Analyze A Photo", elem_classes=["secondary"])
-                        go_live = gr.Button("Open Live Camera", elem_classes=["secondary"])
+                        go_video = gr.Button("Analyze Video", variant="primary", elem_classes=["primary-action"])
+                        go_photo = gr.Button("Analyze Photo", variant="primary", elem_classes=["primary-action"])
+                        go_live = gr.Button("Open Live Camera", variant="primary", elem_classes=["primary-action"])
                     gr.HTML("""
                     <div class="metric-grid">
                       <div class="metric-card"><div class="metric-icon">05</div><div class="metric-label">Activity Labels</div><div class="metric-note">Standing, Sitting, Walking, Running, Lying</div></div>
@@ -203,7 +206,7 @@ def build_ui(analyse_video, analyse_image, webcam_step, stop_webcam, stop_camera
                     """)
                     with gr.Row(elem_classes=["media-row"]):
                         with gr.Column(scale=1, min_width=420, elem_classes=["content-card", "media-panel"]):
-                            vin = gr.Video(label="Choose A Video", sources=["upload"], height=520)
+                            vin = gr.Video(label="Choose A Video", sources=["upload"], height=520, elem_classes=["large-viewer"])
                             gr.Markdown("Use a fixed camera and keep the person's full body in view. Common formats include MP4, AVI, MOV, and MKV.")
                             vbtn = gr.Button("Analyze Video", variant="primary", elem_classes=["primary-action"])
                             with gr.Accordion("Try A Sample Clip", open=False):
@@ -218,7 +221,7 @@ def build_ui(analyse_video, analyse_image, webcam_step, stop_webcam, stop_camera
                                     gr.Examples(demo_clips, inputs=vin, label="Tomorrow Demo Pack")
                         with gr.Column(scale=1, min_width=420, elem_classes=["content-card", "media-panel"]):
                             vhead = gr.Markdown("Your annotated result will appear here after analysis.")
-                            vout = gr.Video(label="Annotated Video", height=520)
+                            vout = gr.Video(label="Annotated Video", height=520, elem_classes=["large-viewer"])
                     with gr.Row():
                         with gr.Column(scale=1, min_width=260, elem_classes=["content-card"]):
                             vsum = gr.Dataframe(label="Time By Activity", interactive=False)
@@ -234,7 +237,7 @@ def build_ui(analyse_video, analyse_image, webcam_step, stop_webcam, stop_camera
                     """)
                     with gr.Row(elem_classes=["media-row"]):
                         with gr.Column(scale=1, min_width=420, elem_classes=["content-card", "media-panel"]):
-                            iin = gr.Image(label="Choose A Photo", type="numpy", sources=["upload"], height=520)
+                            iin = gr.Image(label="Choose A Photo", type="numpy", sources=["upload"], height=520, elem_classes=["large-viewer"])
                             gr.Markdown("For best results, include the person's whole body with clear lighting.")
                             ibtn = gr.Button("Analyze Photo", variant="primary", elem_classes=["primary-action"])
                             with gr.Accordion("Try A Sample Photo", open=False):
@@ -245,7 +248,7 @@ def build_ui(analyse_video, analyse_image, webcam_step, stop_webcam, stop_camera
                                     gr.Markdown("No sample photos are available in this project folder.")
                         with gr.Column(scale=1, min_width=420, elem_classes=["content-card", "media-panel"]):
                             ihead = gr.Markdown("Your annotated result will appear here after analysis.")
-                            iout = gr.Image(label="Annotated Photo", height=520)
+                            iout = gr.Image(label="Annotated Photo", height=520, elem_classes=["large-viewer"])
                     with gr.Accordion("Pose And Processing Details", open=False):
                         ijson = gr.JSON(label="Technical Details")
                     ibtn.click(analyse_image, iin, [iout, ihead, ijson])

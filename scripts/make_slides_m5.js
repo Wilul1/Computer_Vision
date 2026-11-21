@@ -67,41 +67,6 @@ async function main() {
     s.addNotes("WILMARK (15s): Introduce names, one-sentence what the system does, tag v1.0.");
   }
 
-  // Agenda
-  {
-    const s = pres.addSlide();
-    s.addShape(S.RECTANGLE, { x: 0, y: 0, w: 10, h: 5.625, fill: { color: C.bg } });
-    s.addText("Agenda", {
-      x: 0.5, y: 0.35, w: 9, h: 0.5,
-      fontFace: "Arial", fontSize: 32, color: C.ink, bold: true, margin: 0, isTextBox: true,
-    });
-    const agenda = [
-      ["1 min", "Problem & objectives", "Wilmark"],
-      ["2 min", "Dataset, approach, pipeline", "Porcopio"],
-      ["2 min", "Results & samples", "Wilmark"],
-      ["4 min", "Live demo", "Porcopio drives · Wilmark narrates"],
-      ["1 min", "Limitations & future work", "Porcopio"],
-      ["—", "Q&A / technical defense", "Both"],
-    ];
-    agenda.forEach((row, i) => {
-      const y = 1.1 + i * 0.65;
-      card(s, 0.5, y, 9, 0.55);
-      s.addText(row[0], {
-        x: 0.7, y: y + 0.12, w: 1.2, h: 0.3,
-        fontFace: "Arial", fontSize: 14, color: C.accent, bold: true, margin: 0, isTextBox: true,
-      });
-      s.addText(row[1], {
-        x: 2.1, y: y + 0.12, w: 4.5, h: 0.3,
-        fontFace: "Arial", fontSize: 16, color: C.ink, margin: 0, isTextBox: true,
-      });
-      s.addText(row[2], {
-        x: 6.7, y: y + 0.12, w: 2.6, h: 0.3,
-        fontFace: "Arial", fontSize: 13, color: C.muted, margin: 0, isTextBox: true,
-      });
-    });
-    s.addNotes("Leave this up 5 seconds so the teacher sees the plan, then go.");
-  }
-
   // 2. Objectives (1 min)
   {
     const s = pres.addSlide();
@@ -400,12 +365,8 @@ async function main() {
     const s = pres.addSlide();
     s.addShape(S.RECTANGLE, { x: 0, y: 0, w: 10, h: 5.625, fill: { color: C.bg } });
     s.addText("Thank you", {
-      x: 0.55, y: 1.8, w: 9, h: 0.7,
-      fontFace: "Arial", fontSize: 40, color: C.ink, bold: true, margin: 0, isTextBox: true, align: "center",
-    });
-    s.addText("Questions?\n\nReproduce: python src/evaluate.py --split test\nDemo: python app.py  ·  backup: docs/backup_demo_m4.mp4", {
-      x: 0.55, y: 2.8, w: 9, h: 1.6,
-      fontFace: "Arial", fontSize: 16, color: C.muted, margin: 0, isTextBox: true, align: "center",
+      x: 0.55, y: 2.2, w: 9, h: 0.9,
+      fontFace: "Arial", fontSize: 44, color: C.ink, bold: true, margin: 0, isTextBox: true, align: "center",
     });
   }
 

@@ -15,7 +15,7 @@
 | Results + sample outputs | ~2 min | **Wilmark** | 6–7 |
 | Live demo | ~4 min | **Porcopio drives**, Wilmark narrates | 8 |
 | Limitations + future work | ~1 min | **Porcopio** | 9–10 |
-| Thank you / Q&A | — | **Both** | 11 |
+| Thank you | — | **Both** | last |
 
 ---
 
@@ -65,7 +65,7 @@ We use **macro-F1** because classes are imbalanced — only 3 lying segments.”
 Future: own webcam dataset, more lying data, **fall detection** (fast torso drop → lying).”
 
 ### 10. Close (both, 15 s)
-“Thank you. Questions?”
+“Thank you.”
 
 ---
 
