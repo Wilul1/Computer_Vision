@@ -197,7 +197,7 @@ def build_ui(analyse_video, analyse_image, webcam_step, stop_webcam, stop_camera
                       <div class="quick-card"><h3>Photo Analysis</h3><p>Estimate posture from one still image. A photo cannot show movement over time.</p></div>
                       <div class="quick-card"><h3>Live Camera</h3><p>Allow camera access to view activity estimates as frames arrive.</p></div>
                     </div>
-                    <div class="section-note">This is a project demo. Activity labels are estimates and can be wrong when the person is partly hidden, too far away, or poorly lit. It does not detect falls.</div>
+                    <div class="section-note">This is a project demo. Activity labels are estimates and can be wrong when the person is partly hidden, too far away, or poorly lit. Extensions: <b>FALL ALERT</b>, <b>INACTIVE</b> (little motion), <b>OUT OF VIEW / PARTIAL BODY</b>, plus a session summary — demo heuristics, not medical devices.</div>
                     """)
                 with gr.Group(visible=False) as video_page:
                     gr.HTML("""
@@ -275,10 +275,11 @@ def build_ui(analyse_video, analyse_image, webcam_step, stop_webcam, stop_camera
                         wstart = gr.Button("Start camera", variant="primary", elem_classes=["primary-action"], scale=0, min_width=140)
                         wstop = gr.Button("Stop camera", elem_classes=["secondary"], scale=0, min_width=140)
                         whead = gr.Markdown("Click **Start camera**, allow access, then the orange record button if shown.")
+                    wsum = gr.Markdown("Session summary will appear here while the camera runs, and again when you stop.")
                     wstate = gr.State(None)
-                    win.stream(webcam_step, [win, wstate], [wout, whead, wstate], stream_every=0.25, concurrency_limit=1)
+                    win.stream(webcam_step, [win, wstate], [wout, whead, wsum, wstate], stream_every=0.25, concurrency_limit=1)
                     wstart.click(None, None, None, js=start_camera_js)
-                    wstop.click(stop_webcam, [wstate], [win, wout, whead, wstate], js=stop_camera_js)
+                    wstop.click(stop_webcam, [wstate], [win, wout, whead, wsum, wstate], js=stop_camera_js)
                 with gr.Group(visible=False) as model_page:
                     gr.HTML("""
                     <div class="section-title"><div class="eyebrow">System Details</div><h1>About The Model</h1>
@@ -290,6 +291,10 @@ def build_ui(analyse_video, analyse_image, webcam_step, stop_webcam, stop_camera
                           <div class="activity-chip"><i></i><b>MediaPipe Pose</b> | estimates 33 body landmarks</div>
                           <div class="activity-chip"><i></i><b>Motion Cues</b> | track movement and background changes</div>
                           <div class="activity-chip"><i></i><b>Rule-Based Classifier</b> | estimates one of five activities</div>
+                          <div class="activity-chip"><i></i><b>Fall Alert (extension)</b> | sudden drop / tilt into lying</div>
+                          <div class="activity-chip"><i></i><b>Inactivity Alert</b> | little motion while still in view</div>
+                          <div class="activity-chip"><i></i><b>Zone Warning</b> | out of view or partial body</div>
+                          <div class="activity-chip"><i></i><b>Session Summary</b> | time by activity + alert counts</div>
                         </div>
                       </div>
                       <div class="panel"><h2>Getting A Useful Result</h2><div class="panel-sub">The system works best when the person is easy to see.</div>
@@ -298,7 +303,7 @@ def build_ui(analyse_video, analyse_image, webcam_step, stop_webcam, stop_camera
                         <div class="pipe-step"><b>Distance And Lighting</b><span>Around 2-5 m away, in a well-lit room.</span></div>
                       </div>
                     </div>
-                    <div class="section-note">A single photo can estimate posture but cannot show motion. This demo classifies basic activity; it is not a fall detector or medical monitoring system.</div>
+                    <div class="section-note">Core labels are standing/sitting/walking/running/lying. Monitoring extensions add fall / inactive / zone banners and a session summary. Demo heuristics — not clinical devices.</div>
                     """)
         pages = [overview_page, video_page, photo_page, live_page, model_page]
         nav.change(show_page, inputs=nav, outputs=pages)

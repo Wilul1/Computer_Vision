@@ -26,6 +26,7 @@ from src.classifier import IGNORED  # noqa: E402
 from src.detector import PersonDetector  # noqa: E402
 from src.params import Params  # noqa: E402
 from src.pipeline import MonitorPipeline  # noqa: E402
+from src.session_summary import session_blurb, session_details  # noqa: E402
 from ui import APP_CSS, build_ui  # noqa: E402
 
 PARAMS = Params.load()
@@ -81,6 +82,9 @@ def analyse_video(path, progress=gr.Progress()):
     n = int(cap.get(cv2.CAP_PROP_FRAME_COUNT)) or 1
     out_path = Path(tempfile.mkdtemp()) / "annotated.mp4"
     writer, labels, base_labels, times, ms, events, confs = None, [], [], [], [], 0, []
+    fall_events = inactive_events = 0
+    inactive_seconds = 0.0
+    zone_out = zone_partial = 0
     with LOCK:
         pipe = new_pipeline()
         i = 0
@@ -105,6 +109,11 @@ def analyse_video(path, progress=gr.Progress()):
                 confs.append(r["confidence"])
                 times.append(t)
                 events = r["motion_events"]
+                fall_events = r.get("fall_events", 0)
+                inactive_events = r.get("inactive_events", 0)
+                inactive_seconds = r.get("inactive_seconds", 0.0)
+                zone_out = r.get("zone_out_frames", 0)
+                zone_partial = r.get("zone_partial_frames", 0)
                 i += 1
                 if i % 10 == 0:
                     progress(min(i / n, 1.0), desc=f"frame {i}/{n}")
@@ -118,18 +127,38 @@ def analyse_video(path, progress=gr.Progress()):
     voting = [l for l in labels if l not in IGNORED]
     main = Counter(voting).most_common(1)[0][0] if voting else labels[-1]
     warm = ms[10:] or ms
-    details = {
-        "main activity": main,
-        "confidence (share of frames)": round(sum(l == main for l in voting) / max(len(voting), 1), 2),
-        "baseline (MOG2 blob) says": Counter(base_labels).most_common(1)[0][0],
-        "motion events": events,
-        "frames": len(labels),
-        "video length (s)": round(len(labels) / fps, 1),
-        "processing (ms per frame, median)": round(float(np.median(warm)), 1),
-        "processing FPS": round(1000 / float(np.median(warm)), 1),
-    }
+    duration_s = len(labels) / fps
+    blurb = session_blurb(
+        labels, duration_s=duration_s, fall_events=fall_events,
+        inactive_events=inactive_events, inactive_seconds=inactive_seconds,
+        zone_out_frames=zone_out, zone_partial_frames=zone_partial, fps=fps,
+    )
+    details = session_details(
+        labels, duration_s=duration_s, fall_events=fall_events,
+        inactive_events=inactive_events, inactive_seconds=inactive_seconds,
+        zone_out_frames=zone_out, zone_partial_frames=zone_partial, fps=fps,
+        extra={
+            "main activity": main,
+            "confidence (share of frames)": round(sum(l == main for l in voting) / max(len(voting), 1), 2),
+            "baseline (MOG2 blob) says": Counter(base_labels).most_common(1)[0][0],
+            "motion events": events,
+            "frames": len(labels),
+            "video length (s)": round(duration_s, 1),
+            "processing (ms per frame, median)": round(float(np.median(warm)), 1),
+            "processing FPS": round(1000 / float(np.median(warm)), 1),
+        },
+    )
+    notes = []
+    if fall_events:
+        notes.append(f"FALL ×{fall_events}")
+    if inactive_events:
+        notes.append(f"INACTIVE ×{inactive_events}")
+    if zone_out or zone_partial:
+        notes.append("ZONE issues")
+    note = ("  ·  " + "  ·  ".join(notes)) if notes else ""
     headline = (f"### {main.upper()}  ·  {details['confidence (share of frames)']:.0%} of frames  ·  "
-                f"{details['processing (ms per frame, median)']} ms/frame ({details['processing FPS']} FPS)")
+                f"{details['processing (ms per frame, median)']} ms/frame ({details['processing FPS']} FPS)"
+                f"{note}\n\n{blurb}")
     return str(out_path), headline, summary_table(labels, fps), timeline(times, labels), details
 
 
@@ -177,27 +206,78 @@ def webcam_step(frame, state):
     """Called for every webcam frame the browser streams. One pipeline per
     browser session, kept in `state`, so tracking and smoothing carry over."""
     if frame is None:
-        return None, "", _close_webcam_state(state)
+        return None, "", "Start a session to build a summary.", _close_webcam_state(state)
     if state is None:
-        state = {"pipe": new_pipeline(live=True), "start": time.perf_counter()}
+        state = {
+            "pipe": new_pipeline(live=True),
+            "start": time.perf_counter(),
+            "labels": [],
+            "fall_events": 0,
+            "inactive_events": 0,
+            "inactive_seconds": 0.0,
+            "zone_out": 0,
+            "zone_partial": 0,
+        }
     bgr = cv2.cvtColor(frame, cv2.COLOR_RGB2BGR)
     with LOCK:
         t0 = time.perf_counter()
         r = state["pipe"].process(bgr, time.perf_counter() - state["start"])
         ms = (time.perf_counter() - t0) * 1000
+    state["labels"].append(r["activity"])
+    state["fall_events"] = r.get("fall_events", 0)
+    state["inactive_events"] = r.get("inactive_events", 0)
+    state["inactive_seconds"] = r.get("inactive_seconds", 0.0)
+    state["zone_out"] = r.get("zone_out_frames", 0)
+    state["zone_partial"] = r.get("zone_partial_frames", 0)
+    flags = []
+    if r.get("fall_alert"):
+        flags.append("**FALL ALERT**")
+    elif r.get("inactive_alert"):
+        flags.append("**INACTIVE**")
+    elif r.get("zone_alert"):
+        flags.append(f"**{r.get('zone_label') or 'ZONE'}**")
+    flag = ("  ·  " + "  ·  ".join(flags)) if flags else ""
     text = (f"### {r['activity'].upper()}  ·  {r['confidence']:.0%}  ·  "
-            f"{ms:.0f} ms/frame ({1000 / max(ms, 1):.0f} FPS)")
-    return cv2.cvtColor(r["annotated"], cv2.COLOR_BGR2RGB), text, state
+            f"{ms:.0f} ms/frame ({1000 / max(ms, 1):.0f} FPS)"
+            f"{flag}")
+    # Live stream ~4 FPS (stream_every=0.25); approximate duration from label count.
+    live_fps = 4.0
+    dur = len(state["labels"]) / live_fps
+    summary = "### Session so far\n" + session_blurb(
+        state["labels"], duration_s=dur,
+        fall_events=state["fall_events"],
+        inactive_events=state["inactive_events"],
+        inactive_seconds=state["inactive_seconds"],
+        zone_out_frames=state["zone_out"],
+        zone_partial_frames=state["zone_partial"],
+        fps=live_fps,
+    )
+    return cv2.cvtColor(r["annotated"], cv2.COLOR_BGR2RGB), text, summary, state
 
 
 def stop_webcam(state):
-    """Drop the pipeline and clear the result panel. Do NOT replace the Camera
+    """Drop the pipeline and show a session summary. Do NOT replace the Camera
     Image with None — that breaks Gradio's webcam control until a full refresh."""
+    summary = "### Camera off — no session data yet."
+    if isinstance(state, dict) and state.get("labels"):
+        live_fps = 4.0
+        dur = len(state["labels"]) / live_fps
+        blurb = session_blurb(
+            state["labels"], duration_s=dur,
+            fall_events=state.get("fall_events", 0),
+            inactive_events=state.get("inactive_events", 0),
+            inactive_seconds=state.get("inactive_seconds", 0.0),
+            zone_out_frames=state.get("zone_out", 0),
+            zone_partial_frames=state.get("zone_partial", 0),
+            fps=live_fps,
+        )
+        summary = f"### Session summary\n{blurb}\n\nClick **Start camera** for another run."
     _close_webcam_state(state)
     return (
         gr.skip(),
         None,
-        "### Camera off — click **Start camera**, then the orange record button if shown.",
+        "### Camera off — session ended.",
+        summary,
         None,
     )
 

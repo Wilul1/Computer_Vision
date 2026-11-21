@@ -27,7 +27,7 @@
 ### 2. Problem & objectives (Wilmark, 45 s)
 “Manual watching is tiring and slow. Cheap motion alarms don’t say *what* the person is doing.  
 We built: live + recorded input; person detect and track; five activity classes; a Gradio UI with boxes and labels; and evaluation for accuracy, FPS, and lighting.  
-**Falls / sudden abnormal motion** from the proposal are **future work** — we detect lying, not a fall event yet.”
+**Extensions:** **FALL ALERT** (sudden drop into lying), **INACTIVE** (little motion while in view), **OUT OF VIEW / PARTIAL BODY** framing warnings, and a **session summary** (time by activity + alert counts). Demo heuristics — not medical devices.”
 
 ### 3. Dataset (Porcopio, 45 s)
 “Two public sources. **GMDCSA24**: fixed room camera, day and night. **HMDB51**: movie clips, often a moving camera.  
@@ -62,7 +62,7 @@ We use **macro-F1** because classes are imbalanced — only 3 lying segments.”
 
 ### 9. Limitations & future (Porcopio, 60 s)
 “Not reliable for: moving cameras, near-darkness, tiny people, arm exercise while standing.  
-Future: own webcam dataset, more lying data, **fall detection** (fast torso drop → lying).”
+Future: own webcam dataset, more lying data, tighter fall-alert thresholds on real falls.”
 
 ### 10. Close (both, 15 s)
 “Thank you.”
@@ -87,5 +87,5 @@ Future: own webcam dataset, more lying data, **fall detection** (fast torso drop
 | Why not 30 FPS? | YOLO+pose on CPU ≈ 66 ms/frame; Gradio webcam ~7–10 FPS. Still usable. |
 | Did you train? | No — pretrained YOLO/MediaPipe; we tune **rules on val**. |
 | Why macro-F1? | Class imbalance (lying=3, walking=36). |
-| Falls? | Future work; lying yes, fall event no. |
+| Falls / other extensions? | FALL ALERT + INACTIVE + zone warnings + session summary (not new evaluate classes). |
 | IoU? | Detector concept; we use YOLO **conf 0.4**, score **activity segments**, not box IoU. |

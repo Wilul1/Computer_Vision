@@ -38,7 +38,7 @@ Study this out loud. Numbers are from tag **`v1.0`**: test macro-F1 **0.772**, a
 **Answer:** Few hundred segments, not frame labels; we need CPU real-time and explainable rules (angles, body-heights/s). Rules overfit less here than training a classifier on this size.
 
 ### A9. What about falls / sudden abnormal motion from the proposal?
-**Answer:** Not implemented. We classify lying, but not “fast drop → fall.” Documented as future work. Scope focus: everyday activities with measurable accuracy.
+**Answer:** Built as an **extension** (`src/fall_alert.py`). Upright → fast hip drop or sharp torso tilt into lying raises a red **FALL ALERT** on the frame and counts events. Not a sixth evaluate class; heuristic demo for Objective 6, not a certified fall detector. See `docs/m6/Extension_Fall_Alert.md`.
 
 ### A10. How do you reproduce the numbers?
 **Answer:** `python src/evaluate.py --split test` from `v1.0`. Uses committed `outputs/cache/` — no need for the 3 GB videos.
@@ -136,7 +136,7 @@ A: Not in our pipeline. HOG = gradient histograms for detection/recognition; Ots
 1. Show me where sitting is decided. → `classifier.py` / thigh ratio + knee-hip angles before speed.  
 2. Why 15 FPS not 30? → Infer (YOLO+pose) ~54 ms of 66 ms/frame on CPU.  
 3. One failure and its cause. → TC08 arm exercise → walking; or T048 moving camera.  
-4. What would you deploy for real? → Fixed camera, full body, room light, alert on lying/fall (fall not built), edge box, not hand-held.  
+4. What would you deploy for real? → Fixed camera, full body, room light, fall alert on sudden drop, edge box, not hand-held.  
 5. Who owns detector.py? → Porcopio. Who owns evaluate.py? → Wilmark.
 
 ---
@@ -153,5 +153,5 @@ A: Not in our pipeline. HOG = gradient histograms for detection/recognition; Ots
 | YOLO conf | **0.4** |
 | Resize | long side **640** |
 | Tune on | **val only**, seed **106** |
-| Not built | **falls** |
+| Extension | **fall alert** (sudden drop → banner; not a 6th class) |
 | Reproduce | `python src/evaluate.py --split test` |

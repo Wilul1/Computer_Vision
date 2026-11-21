@@ -47,7 +47,7 @@ We split **by subject or by movie** so the same person never appears in both tra
 - We did **not** train YOLO or MediaPipe — they’re pretrained.  
 - We did **not** train a deep action classifier (too little data, harder to explain, slower).  
 - We **tune thresholds** (knee angle, hip speed, etc.) on val with a random search.  
-- **Fall detection** from the proposal is **not built** — we can label *lying*, not “sudden fall event.”
+- **Monitoring extensions:** fall alert, inactivity alert, zone (out of view / partial body), session summary. Overlays only — evaluate still uses the five activities.
 
 ---
 
@@ -150,7 +150,7 @@ Practice out loud. Keep answers under ~30–45 seconds unless they dig deeper.
 **A:** We don’t have thousands of labeled frames, we need something explainable for defense, and it has to run on a normal laptop CPU. Rules on angles and speeds fit that better here.
 
 **Q: Does it detect falls?**  
-**A:** Not yet. Lying is one class, but we didn’t implement “sudden drop = fall.” That’s future work from the proposal.
+**A:** Yes as an **extension** — `FallAlertMonitor` watches hip drop / torso tilt into lying and raises a short **FALL ALERT**. Lying is still one of the five activity labels; the alert is an event overlay (proposal Objective 6). Demo heuristic, not a medical device.
 
 **Q: Can it handle multiple people?**  
 **A:** YOLO can detect several boxes, but we only classify the **largest** person — the primary subject. Others may get a gray box with no activity. Multi-person tracking is future work.
@@ -272,7 +272,7 @@ Practice out loud. Keep answers under ~30–45 seconds unless they dig deeper.
 **A:** Moving / handheld cameras, near-total darkness, very small people, arm exercise while standing (looks like walking), close-ups without legs, multi-person scenes beyond the largest person.
 
 **Q: What would you add next?**  
-**A:** Our own webcam dataset, more lying examples, real fall detection (fast torso drop), maybe multi-person IDs — still keeping the fixed-camera setting.
+**A:** Our own webcam dataset, more lying examples, tighter fall-alert thresholds on real falls, maybe multi-person IDs — still keeping the fixed-camera setting.
 
 **Q: Is this ready for hospitals / real security?**  
 **A:** No — it’s a course prototype. Good for a fixed, well-lit room demo with full body in view. Not a medical or safety-certified system.

@@ -17,12 +17,15 @@ import numpy as np
 from . import config
 from .camera_motion import CameraMotion
 from .classifier import NO_PERSON, UNKNOWN, TemporalFilter, classify_blob, classify_pose
+from .fall_alert import FallAlertMonitor
 from .features import MotionFeatures, pose_plausible, posture_features
+from .inactivity_alert import InactivityAlertMonitor
 from .motion import BlobFeatures, MotionDetector, MotionEventCounter
 from .params import Params
 from .pose import PoseEstimator, pose_on_crop
 from .preprocess import preprocess
 from .visualize import draw_result
+from .zone_alert import ZoneAlertMonitor
 
 VIS = config.LANDMARK_MIN_VISIBILITY
 
@@ -55,6 +58,9 @@ class MonitorPipeline:
             from .detector import PersonDetector
             self.detector = PersonDetector()
         self.speeds = MotionFeatures()
+        self.fall_alert = FallAlertMonitor()
+        self.zone_alert = ZoneAlertMonitor()
+        self.inactivity = InactivityAlertMonitor()
         self.filter_main = TemporalFilter(self.params)
         self.filter_base = TemporalFilter(self.params, "baseline")
         self.frame_idx = 0
@@ -114,6 +120,7 @@ class MonitorPipeline:
         pose_feats = None
         person_box = raw["people"][0]["box"] if raw["people"] else None
         frame_hw = raw.get("frame_shape")
+        fall_feats = None
         if lm is None or not pose_plausible(lm, person_box, frame_hw):
             # No pose, or a hallucinated one (hand/face close-up, fake skeleton).
             # YOLO may still see a person (desk webcam: face only) — that is
@@ -127,10 +134,26 @@ class MonitorPipeline:
             f = posture_features(lm)
             f["cam_offset"] = raw["cam_offset"]
             f.update(self.speeds.update(t, f))
+            fall_feats = f
             pose_feats = {k: v for k, v in f.items() if k not in ("mid_hip", "ankles_rel", "cam_offset")}
             no_box = self.detector is not None and not raw["people"]
             main_raw = NO_PERSON if (p.require_person_box and no_box) else classify_pose(pose_feats, p)
         main_label, conf = self.filter_main(main_raw)
+        fall = self.fall_alert.update(t, main_label, fall_feats)
+        n_people = len(raw["people"]) if self.detector is not None else -1
+        zone = self.zone_alert.update(t, main_label, n_people)
+        person_present = n_people > 0 or main_label not in (NO_PERSON,)
+        if n_people == 0:
+            person_present = False
+        elif n_people < 0:
+            person_present = main_label != NO_PERSON
+        hip_speed = None if pose_feats is None else pose_feats.get("hip_speed_comp", pose_feats.get("hip_speed"))
+        inactive = self.inactivity.update(
+            t, main_label,
+            hip_speed=hip_speed,
+            motion_ratio=float(m["ratio"]),
+            person_present=person_present and main_label != UNKNOWN,
+        )
 
         visible = 0 if lm is None else int((lm[:, 2] >= VIS).sum())
         trace = {
@@ -142,8 +165,11 @@ class MonitorPipeline:
             "cam_offset_x": float(raw["cam_offset"][0]),
             "motion_ratio": m["ratio"],
             # -1 = YOLO not running, so "no box" says nothing about the frame.
-            "n_people": len(raw["people"]) if self.detector is not None else -1,
+            "n_people": n_people,
             "pose_source": self.pose_source,
+            "fall_alert": fall["fall_alert"],
+            "zone_alert": zone["zone_alert"],
+            "inactive_alert": inactive["inactive_alert"],
         }
         return {
             "time": t,
@@ -158,6 +184,18 @@ class MonitorPipeline:
             "motion_ratio": m["ratio"],
             "moving": m["moving"],
             "motion_events": self.events.events,
+            "fall_alert": fall["fall_alert"],
+            "fall_events": fall["fall_events"],
+            "fall_reason": fall["fall_reason"],
+            "zone_alert": zone["zone_alert"],
+            "zone_kind": zone["zone_kind"],
+            "zone_label": zone["zone_label"],
+            "zone_out_frames": zone["zone_out_frames"],
+            "zone_partial_frames": zone["zone_partial_frames"],
+            "inactive_alert": inactive["inactive_alert"],
+            "inactive_events": inactive["inactive_events"],
+            "inactive_reason": inactive["inactive_reason"],
+            "inactive_seconds": inactive["inactive_seconds"],
             "trace": trace,
             **(pose_feats or {}),
         }
