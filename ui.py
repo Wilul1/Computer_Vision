@@ -197,7 +197,6 @@ def build_ui(analyse_video, analyse_image, webcam_step, stop_webcam, stop_camera
                       <div class="quick-card"><h3>Photo Analysis</h3><p>Estimate posture from one still image. A photo cannot show movement over time.</p></div>
                       <div class="quick-card"><h3>Live Camera</h3><p>Allow camera access to view activity estimates as frames arrive.</p></div>
                     </div>
-                    <div class="section-note">This is a project demo. Activity labels are estimates and can be wrong when the person is partly hidden, too far away, or poorly lit. Extensions: <b>FALL ALERT</b>, <b>INACTIVE</b> (little motion), <b>OUT OF VIEW / PARTIAL BODY</b>, plus a session summary — demo heuristics, not medical devices.</div>
                     """)
                 with gr.Group(visible=False) as video_page:
                     gr.HTML("""

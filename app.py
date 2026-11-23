@@ -329,4 +329,4 @@ demo = build_ui(
 
 if __name__ == "__main__":
     # Gradio 6 moved theme/css from Blocks() to launch(); without this the dark UI is unstyled.
-    demo.launch(theme=gr.themes.Base(), css=APP_CSS)
+    demo.launch(theme=gr.themes.Base(), css=APP_CSS, footer_links=["runs"])

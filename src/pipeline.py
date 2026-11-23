@@ -217,6 +217,7 @@ class MonitorPipeline:
         elapsed = t3 - t0
         self.fps = 1 / elapsed if self.fps == 0 else 0.9 * self.fps + 0.1 / elapsed
         result["fps"] = self.fps
+        result["live"] = self.live
         result["annotated"] = self.render(x, result)
         t4 = time.perf_counter()
         result["timing_ms"] = {k: round(v * 1000, 2) for k, v in
