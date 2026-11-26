@@ -22,12 +22,12 @@
 ## Script (say this, don’t read slides word-for-word)
 
 ### 1. Title (Wilmark, 15 s)
-“Good day. We’re Porcopio and Veridiano. Our project is a **real-time activity monitor**: from a laptop webcam or video, we find a person and label **standing, sitting, walking, running, or lying** — using YOLO, MediaPipe Pose, and geometric rules. Nothing trained by us. Tag **v1.0**.”
+“Good day. We’re Porcopio and Veridiano. Our project is **MotionSense** — a **room activity monitor**. Classification is the sensor; the goal is **monitoring**: know what someone is doing so a fixed camera can support alerts and a session report. YOLO + MediaPipe + rules. Tag **v1.0**.”
 
 ### 2. Problem & objectives (Wilmark, 45 s)
-“Manual watching is tiring and slow. Cheap motion alarms don’t say *what* the person is doing.  
-We built: live + recorded input; person detect and track; five activity classes; a Gradio UI with boxes and labels; and evaluation for accuracy, FPS, and lighting.  
-**Extensions:** **FALL ALERT** (sudden drop into lying), **INACTIVE** (little motion while in view), **OUT OF VIEW / PARTIAL BODY** framing warnings, and a **session summary** (time by activity + alert counts). Demo heuristics — not medical devices.”
+“**Why bother classifying?** Watching a feed all day is tiring. A simple motion alarm only says ‘something moved,’ not whether the person is sitting safely, walking, lying, or suddenly fell.  
+So we **recognize five activities**, then use those labels to **act**: fall alert, inactivity alert, out-of-view / partial-body warnings, and a **session summary** (time per activity + alert counts).  
+Demo for home / room monitoring with a fixed camera — not face attendance, not a medical device.”
 
 ### 3. Dataset (Porcopio, 45 s)
 “Two public sources. **GMDCSA24**: fixed room camera, day and night. **HMDB51**: movie clips, often a moving camera.  

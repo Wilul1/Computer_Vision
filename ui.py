@@ -101,103 +101,824 @@ button:hover{filter:brightness(1.08);transform:translateY(-1px)}
 @media(max-width:1120px){.metric-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.dashboard-grid{grid-template-columns:1fr}}
 @media(max-width:760px){#app-shell{flex-direction:column!important;flex-wrap:wrap!important;min-height:100vh;padding:9px;gap:10px}#sidebar{position:static;top:auto;width:100%;height:auto;max-height:42vh;min-height:0;flex:0 0 100%;overflow-y:auto!important;overflow-x:hidden!important;padding:12px}.brand{padding-bottom:13px}.nav-caption,.sidebar-foot{display:none}.sidebar-tip{display:block!important;margin:10px 2px 0;min-height:0}#sidebar-nav fieldset{grid-template-columns:repeat(2,minmax(0,1fr))}#main-panel{height:auto;max-height:none;min-height:0;flex:1 1 100%;overflow:visible!important;padding:2px 2px 15px}.page-heading{align-items:flex-start;flex-direction:column}.hero-card{align-items:flex-start;flex-direction:column;padding:20px}.hero-meta{min-width:0;width:100%}.metric-grid{gap:8px}.metric-card{padding:12px;min-height:105px}.quick-actions{grid-template-columns:1fr}.pipeline{flex-wrap:wrap}.pipe-step{flex-basis:42%}.pipe-arrow{display:none}}
 @media(max-width:430px){.metric-grid{grid-template-columns:1fr 1fr}.topbar{align-items:flex-start}.local-badge{font-size:9px}.activity-list{grid-template-columns:1fr 1fr}.live-camera-viewer img{height:320px!important}}
+
+/* ---- CareView product (document scroll — Gradio nested fixed boxes block overflow) ---- */
+html,body{height:auto!important;max-height:none!important;overflow-x:hidden!important;overflow-y:scroll!important}
+.gradio-container,main,.main,.wrap,.app,.fillable,#root{
+  height:auto!important;max-height:none!important;min-height:0!important;overflow:visible!important}
+#care-page-wrap{position:relative!important;inset:auto!important;top:auto!important;left:auto!important;right:auto!important;bottom:auto!important;width:100%!important;height:auto!important;min-height:100vh!important;max-height:none!important;z-index:1;margin:0!important;padding:0!important;max-width:none!important;background:#F1F5F9!important;overflow:visible!important;color-scheme:light}
+#care-page-wrap > .form,#care-page-wrap > div,#care-page-wrap .bubble-wrap,#care-page-wrap .block,
+#cv-layout,#careview-shell,#careview-shell .block,#careview-shell .form{
+  height:auto!important;max-height:none!important;min-height:0!important;overflow:visible!important}
+#cv-layout{display:flex!important;flex-wrap:nowrap!important;align-items:flex-start;min-height:100vh;gap:0!important;margin:0!important}
+#cv-gradio-rail{flex:0 0 232px!important;width:232px!important;min-width:232px!important;max-width:232px!important;background:#15233F!important;background-color:#15233F!important;color:#F8FAFC!important;padding:22px 14px!important;border:0!important;border-radius:0!important;position:sticky;top:0;align-self:flex-start;height:100vh;max-height:100vh;overflow:hidden;z-index:5}
+#cv-gradio-rail,#cv-gradio-rail *{--body-text-color:#F8FAFC!important;--block-background-fill:transparent!important;--background-fill-primary:transparent!important;--background-fill-secondary:transparent!important}
+#cv-gradio-rail .cv-brand{display:flex;gap:12px;align-items:center;padding:2px 8px 24px}
+#cv-gradio-rail .cv-brand-mark{width:38px;height:38px;border-radius:12px;background:#3B82F6;display:grid;place-items:center;color:#fff!important;font-size:17px;font-weight:700}
+#cv-gradio-rail .cv-brand-name{font-size:16px;font-weight:750;color:#FFFFFF!important}
+#cv-gradio-rail .cv-brand-sub{font-size:11px;color:#A8B4C8!important;margin-top:3px}
+#cv-gradio-rail .cv-nav-foot{padding:14px 12px;color:#A8B4C8!important;font-size:12px;font-weight:600;border-top:1px solid rgba(255,255,255,.12);margin-top:16px}
+#cv-side-nav,#cv-side-nav .form,#cv-side-nav .block,#cv-side-nav .wrap,
+#cv-side-nav .panel-wrapper,#cv-side-nav .svelte-frame,
+#cv-gradio-rail .block,#cv-gradio-rail .form,#cv-gradio-rail .wrap{
+  background:transparent!important;background-color:transparent!important;
+  border:0!important;box-shadow:none!important;padding:0!important;margin:0!important;
+  color:#F8FAFC!important}
+#cv-side-nav fieldset{display:flex!important;flex-direction:column!important;gap:8px;border:0!important;padding:0!important;margin:0!important;background:transparent!important}
+#cv-side-nav label{
+  width:100%!important;min-height:44px;display:flex!important;align-items:center;padding:0 14px;
+  border-radius:12px;background:#243656!important;background-color:#243656!important;
+  color:#FFFFFF!important;cursor:pointer!important;border:1px solid rgba(255,255,255,.12)!important;
+  font-size:14px;font-weight:650;opacity:1!important}
+#cv-side-nav label:hover{background:#2F4570!important;background-color:#2F4570!important;color:#FFFFFF!important}
+#cv-side-nav label:has(input:checked){
+  background:#2563EB!important;background-color:#2563EB!important;color:#FFFFFF!important;
+  border-color:#2563EB!important}
+#cv-side-nav label span,#cv-side-nav label *{color:#FFFFFF!important;opacity:1!important}
+#cv-side-nav label input{width:0;height:0;margin:0;opacity:0;position:absolute}
+#careview-shell{background:#F1F5F9!important;border:0!important;border-radius:0!important;padding:0!important;padding-bottom:28px!important;color:#0F172A!important;min-height:100%;height:auto;max-width:none!important;flex:1!important;overflow:visible;
+  /* Gradio .prose * { color: var(--body-text-color) } inherits the dark-lab cream text;
+     force CareView's light-theme body color so board + patient details stay readable. */
+  --body-text-color:#334155!important;--body-text-color-subdued:#64748B!important;
+  --color-text-body:#334155!important;--color-text-primary:#0F172A!important;
+  --color-text-secondary:#64748B!important}
+#careview-shell .cv-tools .prose,#careview-shell .cv-tools label,#careview-shell .cv-tools p,#careview-shell .cv-tools span,#careview-shell .cv-main{color:#334155}
+#careview-shell .cv-main .cv-hello,#careview-shell .cv-main .cv-stat-n,#careview-shell .cv-main .cv-patient-name,#careview-shell .cv-main .cv-alert-title,#careview-shell .cv-section-head h2{color:#0F172A!important}
+#careview-shell .cv-main .cv-sub,#careview-shell .cv-main .cv-stat-l,#careview-shell .cv-main .cv-patient-room,#careview-shell .cv-main .cv-patient-bell,#careview-shell .cv-main .cv-alert-time{color:#64748B!important}
+#careview-shell textarea,#careview-shell input,#careview-shell select{background:#fff!important;color:#0F172A!important;border:1px solid #E2E8F0!important;border-radius:10px!important}
+/* Add patient: keep form visible (accordion header was black-on-black). */
+#careview-shell .cv-add-patient{
+  background:#fff!important;border:1px solid #E2E8F0!important;border-radius:14px!important;
+  padding:12px 14px!important;margin:8px 0 12px!important;box-shadow:0 1px 2px rgba(15,23,42,.04)}
+#careview-shell .cv-add-patient > button,
+#careview-shell .cv-add-patient > .label-wrap,
+#careview-shell .cv-add-patient summary,
+#careview-shell .cv-add-patient .svelte-accordion,
+#careview-shell .cv-add-patient [class*="accordion"] > button{
+  background:#fff!important;color:#0F172A!important;border:0!important;
+  font-weight:700!important;font-size:15px!important;opacity:1!important}
+#careview-shell .cv-add-patient label,
+#careview-shell .cv-add-patient span,
+#careview-shell .cv-add-patient p{color:#334155!important;opacity:1!important}
+#careview-shell .cv-add-patient input[type=radio],
+#careview-shell .cv-add-patient input[type=checkbox]{
+  -webkit-appearance:auto!important;appearance:auto!important;
+  width:18px!important;height:18px!important;min-width:18px!important;min-height:18px!important;
+  margin:0 8px 0 0!important;opacity:1!important;position:static!important;
+  pointer-events:auto!important;cursor:pointer!important;accent-color:#2563EB!important;
+  background:transparent!important;border:0!important;border-radius:0!important;flex-shrink:0!important}
+#careview-shell .cv-add-patient fieldset{border:0!important;padding:0!important;margin:6px 0 10px!important}
+#careview-shell .cv-add-patient fieldset label{
+  display:flex!important;align-items:center!important;gap:8px!important;
+  min-height:40px!important;padding:8px 10px!important;margin:0 0 6px!important;
+  background:#F8FAFC!important;border:1px solid #E2E8F0!important;border-radius:10px!important;
+  pointer-events:auto!important;cursor:pointer!important;color:#0F172A!important}
+#careview-shell .gr-button,#careview-shell button{border-radius:10px!important}
+#careview-shell button.primary,#careview-shell .primary{background:#2563EB!important;border-color:#2563EB!important;color:#fff!important}
+#careview-shell .cv-tools .markdown-body,#careview-shell .cv-tools .prose,#careview-shell .cv-tools .prose *{color:#334155!important}
+#careview-root,#careview-root *{box-sizing:border-box}
+/* Patient details — beat Gradio .prose * { color: var(--body-text-color) }; scoped to #careview-root only */
+#careview-shell .prose:has(#careview-root.pd-page),
+#careview-shell .prose:has(#careview-root.pd-page) #careview-root.pd-page{--body-text-color:#334155!important;color:#334155!important}
+#careview-shell #careview-root.pd-page{background:#F1F5F9!important;color:#0F172A!important}
+#careview-shell #careview-root.pd-page .pd-head,
+#careview-shell #careview-root.pd-page .pd-sec{background:#FFFFFF!important;border-color:#E2E8F0!important}
+#careview-shell #careview-root.pd-page .pd-name,
+#careview-shell #careview-root.pd-page .pd-stat-n{color:#0F172A!important}
+#careview-shell #careview-root.pd-page .pd-sec h2,
+#careview-shell #careview-root.pd-page .pd-row-title,
+#careview-shell #careview-root.pd-page .pd-meta b,
+#careview-shell #careview-root.pd-page .pd-act-top b,
+#careview-shell #careview-root.pd-page .pd-snap-meta b{color:#1E293B!important}
+#careview-shell #careview-root.pd-page .pd-meta,
+#careview-shell #careview-root.pd-page .pd-act-top,
+#careview-shell #careview-root.pd-page .pd-snap-meta{color:#334155!important}
+#careview-shell #careview-root.pd-page .pd-sub,
+#careview-shell #careview-root.pd-page .pd-muted,
+#careview-shell #careview-root.pd-page .pd-row-sub,
+#careview-shell #careview-root.pd-page .pd-stat-l,
+#careview-shell #careview-root.pd-page .pd-empty{color:#64748B!important}
+#careview-shell #careview-root.pd-page .pd-back{color:#2563EB!important}
+#careview-shell #careview-root.pd-page .pd-chip{background:#F1F5F9!important;color:#475569!important}
+#careview-shell #careview-root.pd-page .pd-chip-rec-ok{background:#DCFCE7!important;color:#166534!important}
+#careview-shell #careview-root.pd-page .pd-empty,
+#careview-shell #careview-root.pd-page .pd-stat,
+#careview-shell #careview-root.pd-page .pd-snap{background:#F8FAFC!important;border-color:#E2E8F0!important}
+#careview-shell #careview-root.pd-page .pd-focus{background:#EFF6FF!important}
+#careview-shell .pd-player-panel{background:#0F172A;border-radius:14px;overflow:hidden}
+#careview-shell .pd-player{display:block;width:100%;max-height:min(56vh,420px);background:#000;aspect-ratio:16/9;object-fit:contain}
+#careview-shell .pd-player-info{margin-top:8px;color:#334155!important}
+#careview-shell .cv-play-block{background:transparent!important;border:0!important;border-radius:0!important;padding:0!important;margin:8px 0!important;box-shadow:none!important}
+#careview-shell .cv-details-tools,#careview-shell .cv-handle-tools,#careview-shell .cv-ac-filter-wrap{margin:0 0 8px}
+#careview-shell .cv-tools .label-wrap,#careview-shell .cv-tools .form{border:0!important;box-shadow:none!important}
+#careview-shell .cv-toolbar{gap:8px;margin:0 0 6px}
+#careview-shell #careview-root.pd-page .pd-pill-safe{background:#DCFCE7!important;color:#16A34A!important}
+#careview-shell #careview-root.pd-page .pd-pill-attention{background:#FEF9C3!important;color:#A16207!important}
+#careview-shell #careview-root.pd-page .pd-pill-alert{background:#FEE2E2!important;color:#DC2626!important}
+.cv-app{display:flex;min-height:100vh;background:#F1F5F9;font-family:"Segoe UI",ui-sans-serif,system-ui,sans-serif}
+#careview-shell .cv-rail,.cv-rail{width:232px;flex:0 0 232px;background:#15233F!important;color:#F8FAFC!important;padding:26px 16px;display:flex;flex-direction:column;min-height:100vh}
+#careview-shell .cv-rail,#careview-shell .cv-rail *,#careview-shell .prose .cv-rail,#careview-shell .prose .cv-rail *{color:#F8FAFC!important}
+.cv-brand{display:flex;gap:12px;align-items:center;padding:2px 8px 32px}
+.cv-brand-mark{width:38px;height:38px;border-radius:12px;background:#3B82F6;display:grid;place-items:center;color:#fff!important;font-size:17px;font-weight:700}
+.cv-brand-name{font-size:16px;font-weight:750;color:#FFFFFF!important;letter-spacing:-.2px}
+.cv-brand-sub{font-size:11px;color:#94A3B8!important;margin-top:3px}
+.cv-nav{display:flex;flex-direction:column;gap:8px;flex:1}
+.cv-nav-item{padding:12px 14px;border-radius:12px;font-size:14px;color:#E2E8F0!important;font-weight:600;background:rgba(255,255,255,.04)}
+.cv-nav-active{background:#2563EB!important;color:#FFFFFF!important}
+.cv-nav-badge{margin-left:8px;background:#EF4444!important;color:#fff!important;border-radius:999px;font-size:10px;padding:2px 7px}
+.cv-nav-foot{padding:14px 12px;color:#94A3B8!important;font-size:12px;font-weight:600;border-top:1px solid rgba(255,255,255,.12);margin-top:12px}
+.cv-main{flex:1;min-width:0;padding:28px 28px 20px;background:#F1F5F9}
+.cv-top{display:flex;justify-content:space-between;gap:16px;align-items:flex-start;margin-bottom:20px}
+.cv-hello{font-size:30px;font-weight:750;color:#0F172A;letter-spacing:-.6px}
+.cv-sub{margin-top:6px;font-size:14px;color:#64748B}
+.cv-top-right{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.cv-live-pill{display:inline-flex;align-items:center;gap:7px;padding:8px 14px;border-radius:999px;background:#DCFCE7;color:#166534;font-size:12px;font-weight:650}
+.cv-live-pill i{width:7px;height:7px;border-radius:50%;background:#16A34A;display:inline-block}
+.cv-user{padding:8px 14px;border-radius:999px;background:#fff;border:1px solid #E2E8F0;font-size:12px;color:#1E293B;font-weight:600}
+.cv-stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin-bottom:22px}
+.cv-stat{background:#fff;border:1px solid #E2E8F0;border-radius:18px;padding:18px 20px;min-height:96px;display:flex;gap:14px;align-items:center;box-shadow:0 1px 2px rgba(15,23,42,.04)}
+.cv-stat-icon{width:44px;height:44px;border-radius:14px;display:grid;place-items:center;font-weight:800;font-size:16px}
+.cv-stat-safe .cv-stat-icon{background:#DCFCE7;color:#16A34A}
+.cv-stat-att .cv-stat-icon{background:#FEF9C3;color:#A16207}
+.cv-stat-alert .cv-stat-icon{background:#FEE2E2;color:#DC2626}
+.cv-stat-n{font-size:30px;font-weight:750;color:#0F172A;line-height:1}
+.cv-stat-l{margin-top:4px;font-size:12px;color:#64748B;font-weight:600}
+.cv-section-head{display:flex;justify-content:space-between;align-items:baseline;margin:6px 0 12px}
+.cv-section-head h2{margin:0;font-size:17px;color:#0F172A;font-weight:700}
+.cv-link{font-size:12px;color:#2563EB;font-weight:650}
+.cv-muted{font-size:11px;color:#94A3B8}
+.cv-patients{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.cv-patient-card{background:#fff;border:1px solid #E2E8F0;border-radius:18px;padding:16px;min-height:176px;box-shadow:0 1px 2px rgba(15,23,42,.04)}
+.cv-patient-top{display:flex;justify-content:space-between;align-items:flex-start}
+.cv-avatar{width:52px;height:52px;border-radius:16px;display:grid;place-items:center;background:linear-gradient(145deg,#93C5FD,#2563EB);color:#fff;font-weight:750;font-size:18px}
+.cv-pill{padding:4px 10px;border-radius:999px;font-size:10px;font-weight:750;letter-spacing:.3px}
+.cv-patient-name{margin-top:14px;font-size:16px;font-weight:700;color:#0F172A}
+.cv-patient-room{margin-top:3px;font-size:12px;color:#64748B}
+.cv-patient-act{margin-top:12px;font-size:12px;color:#334155}
+.cv-patient-bell{margin-top:12px;font-size:11px;color:#64748B;display:flex;gap:6px;align-items:center}
+.cv-card-hint{margin-top:10px;font-size:11px;font-weight:650;color:#2563EB}
+.cv-clickable{cursor:pointer!important;transition:border-color .15s ease,box-shadow .15s ease,transform .12s ease}
+.cv-clickable:hover{border-color:#2563EB!important;box-shadow:0 4px 14px rgba(37,99,235,.16)!important;transform:translateY(-1px)}
+.cv-alerts{background:#fff;border:1px solid #E2E8F0;border-radius:18px;overflow:hidden;box-shadow:0 1px 2px rgba(15,23,42,.04)}
+.cv-alert-row{display:flex;gap:12px;align-items:center;padding:14px 16px;border-bottom:1px solid #F1F5F9}
+.cv-alert-row:last-child{border-bottom:0}
+.cv-alert-row.cv-clickable:hover{background:#F8FAFC}
+.cv-alert-thumb{width:48px;height:48px;border-radius:12px;background:#FEE2E2;color:#DC2626;display:grid;place-items:center;font-size:11px;font-weight:700}
+.cv-alert-title{font-size:13px;font-weight:650;color:#0F172A}
+.cv-alert-desc{font-size:12px;color:#DC2626;font-weight:600;margin-top:2px}
+.cv-alert-time{font-size:10px;color:#94A3B8;margin-top:2px}
+.cv-alert-open{margin-left:auto;padding:8px 14px;border-radius:999px;background:#FEE2E2;color:#B91C1C;font-size:11px;font-weight:700;white-space:nowrap}
+.cv-alert-empty{padding:18px;color:#94A3B8;font-size:13px}
+.cv-tools{margin:0;padding:12px 22px 28px;background:#F1F5F9!important;border:0;border-radius:0;border-top:0}
+#careview-shell .cv-toolbar label{color:#334155!important;font-weight:600!important}
+#careview-shell .cv-exit button{background:#fff!important;color:#1A2B4B!important;border:1px solid #CBD5E1!important}
+#careview-shell,#careview-shell .block,#careview-shell .form,#careview-shell .panel-wrapper{background:#F1F5F9!important;color:#0F172A!important;border-color:#E2E8F0!important}
+#careview-shell .progress-bar,#careview-shell .progress-level{background:#DBEAFE!important}
+#careview-shell .meta-text,#careview-shell .progress-text,#careview-shell .eta-bar{color:#475569!important;background:transparent!important}
+/* Kill dark Gradio chrome in Patient actions / Watch recording / Care response */
+#care-page-wrap,#careview-shell,.cv-tools{
+  --background-fill-primary:#FFFFFF!important;
+  --background-fill-secondary:#F8FAFC!important;
+  --block-background-fill:#FFFFFF!important;
+  --block-border-color:#E2E8F0!important;
+  --block-label-text-color:#64748B!important;
+  --block-title-text-color:#0F172A!important;
+  --body-background-fill:#F1F5F9!important;
+  --body-text-color:#0F172A!important;
+  --body-text-color-subdued:#64748B!important;
+  --border-color-primary:#E2E8F0!important;
+  --color-accent:#2563EB!important;
+  --input-background-fill:#FFFFFF!important;
+  --input-border-color:#E2E8F0!important;
+  --input-placeholder-color:#94A3B8!important;
+  --neutral-950:#0F172A!important;
+  --neutral-900:#1E293B!important;
+  --neutral-800:#334155!important;
+  --neutral-700:#475569!important;
+  --neutral-600:#64748B!important;
+  --neutral-500:#94A3B8!important;
+  --neutral-400:#CBD5E1!important;
+  --neutral-300:#E2E8F0!important;
+  --neutral-200:#F1F5F9!important;
+  --neutral-100:#F8FAFC!important;
+  --neutral-50:#FFFFFF!important;
+  color-scheme:light!important}
+#careview-shell .cv-details-tools .row,
+#careview-shell .cv-details-tools .form,
+#careview-shell .cv-details-tools .block,
+#careview-shell .cv-details-tools .panel-wrapper,
+#careview-shell .cv-details-tools .svelte-group,
+#careview-shell .cv-handle-tools .row,
+#careview-shell .cv-handle-tools .form,
+#careview-shell .cv-handle-tools .block,
+#careview-shell .cv-handle-tools .panel-wrapper,
+#careview-shell .cv-play-block,
+#careview-shell .cv-play-block .form,
+#careview-shell .cv-play-block .block,
+#careview-shell .cv-toolbar,
+#careview-shell .cv-exit{
+  background:#FFFFFF!important;background-color:#FFFFFF!important;
+  border-color:#E2E8F0!important;box-shadow:none!important;color:#0F172A!important}
+#careview-shell .cv-details-tools label,
+#careview-shell .cv-handle-tools label,
+#careview-shell .cv-play-block label,
+#careview-shell .cv-details-tools .label-wrap,
+#careview-shell .cv-handle-tools .label-wrap,
+#careview-shell .cv-play-block .label-wrap,
+#careview-shell .cv-details-tools span,
+#careview-shell .cv-play-block span,
+#careview-shell .cv-details-tools p,
+#careview-shell .cv-play-block p{
+  color:#334155!important;opacity:1!important}
+#careview-shell .cv-details-tools .container,
+#careview-shell .cv-handle-tools .container,
+#careview-shell .cv-play-block .container,
+#careview-shell .cv-details-tools [class*="wrap"],
+#careview-shell .cv-handle-tools [class*="wrap"],
+#careview-shell .cv-play-block [class*="wrap"]{
+  background:transparent!important;background-color:transparent!important;
+  border-color:#E2E8F0!important;color:#0F172A!important}
+#careview-shell .cv-details-tools input,
+#careview-shell .cv-details-tools textarea,
+#careview-shell .cv-details-tools select,
+#careview-shell .cv-handle-tools input,
+#careview-shell .cv-handle-tools textarea,
+#careview-shell .cv-handle-tools select,
+#careview-shell .cv-play-block input,
+#careview-shell .cv-play-block textarea,
+#careview-shell .cv-play-block select,
+#careview-shell #cv-session-select input,
+#careview-shell #cv-session-select textarea{
+  background:#FFFFFF!important;color:#0F172A!important;border:1px solid #E2E8F0!important;
+  border-radius:10px!important;caret-color:#0F172A!important}
+#careview-shell .cv-exit button,
+#careview-shell .cv-details-tools button:not(.primary):not(.cv-cr-resolve){
+  background:#FFFFFF!important;color:#1E3A5F!important;border:1px solid #CBD5E1!important}
+#careview-shell .cv-details-tools button.primary,
+#careview-shell .cv-details-tools .primary{
+  background:#2563EB!important;border-color:#2563EB!important;color:#FFFFFF!important}
+/* Dropdown option menus (often portaled outside the card) */
+#care-page-wrap [role="listbox"],
+#careview-shell [role="listbox"],
+body > [role="listbox"],
+body .options,
+body ul.options,
+body [class*="options"],
+#care-page-wrap ul[role="listbox"],
+#careview-shell ul[role="listbox"]{
+  background:#FFFFFF!important;color:#0F172A!important;border:1px solid #E2E8F0!important;
+  border-radius:12px!important;box-shadow:0 8px 24px rgba(15,23,42,.12)!important}
+#care-page-wrap [role="option"],
+#careview-shell [role="option"],
+body > [role="listbox"] [role="option"],
+body .options li,
+body ul.options li,
+body [class*="options"] li,
+#care-page-wrap [role="listbox"] li,
+#careview-shell [role="listbox"] li{
+  background:#FFFFFF!important;color:#0F172A!important;border:0!important;
+  opacity:1!important;font-size:13px!important}
+#care-page-wrap [role="option"][aria-selected="true"],
+#careview-shell [role="option"][aria-selected="true"],
+body > [role="listbox"] [role="option"][aria-selected="true"],
+body .options li.selected,
+body ul.options li.selected,
+body [class*="options"] li[aria-selected="true"]{
+  background:#EFF6FF!important;color:#1E40AF!important}
+#care-page-wrap [role="option"]:hover,
+#careview-shell [role="option"]:hover,
+body > [role="listbox"] [role="option"]:hover,
+body .options li:hover,
+body ul.options li:hover{
+  background:#F1F5F9!important;color:#0F172A!important}
+/* Light tool cards — Settings-only add form; no dark accordion bars on patient page */
+#careview-shell .cv-status-note{
+  background:#fff!important;border:1px solid #E2E8F0!important;border-radius:14px!important;
+  padding:12px 16px!important;margin:0 0 12px!important;box-shadow:0 1px 2px rgba(15,23,42,.04)}
+#careview-shell .cv-status-note .prose,#careview-shell .cv-status-note p,
+#careview-shell .cv-status-note *{color:#334155!important}
+#careview-shell .cv-details-tools,
+#careview-shell .cv-handle-tools,
+#careview-shell .cv-settings-tools,
+#careview-shell .cv-events-log,
+#careview-shell .cv-ac-filter-wrap{
+  background:#fff!important;border:1px solid #E2E8F0!important;border-radius:16px!important;
+  padding:14px 16px!important;margin:0 0 12px!important;box-shadow:0 1px 2px rgba(15,23,42,.04)}
+#careview-shell .cv-section-label{
+  display:block;font-size:11px;font-weight:750;letter-spacing:.06em;text-transform:uppercase;
+  color:#64748B!important;margin:0 0 10px}
+/* Care Response panel (no icons) */
+#careview-shell .cv-handle-tools{padding:16px!important}
+#careview-shell .cv-cr{margin:0 0 14px}
+#careview-shell .cv-cr-head{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin:0 0 12px}
+#careview-shell .cv-cr-title{font-size:18px;font-weight:750;color:#1E3A5F!important;letter-spacing:-.2px}
+#careview-shell .cv-cr-sub{margin-top:4px;font-size:12px;color:#64748B!important;line-height:1.45}
+#careview-shell .cv-cr-badge{
+  flex:0 0 auto;padding:6px 12px;border-radius:999px;background:#FEE2E2!important;color:#B91C1C!important;
+  font-size:11px;font-weight:750;white-space:nowrap}
+#careview-shell .cv-cr-empty{
+  padding:14px;border-radius:12px;background:#F8FAFC!important;border:1px solid #E2E8F0!important;
+  color:#64748B!important;font-size:13px}
+#careview-shell .cv-cr-incident{
+  display:grid;grid-template-columns:1.4fr .9fr;gap:14px;align-items:start;
+  padding:14px 16px;border-radius:14px;background:#FEF2F2!important;border:1px solid #FECACA!important}
+#careview-shell .cv-cr-incident-id{font-size:12px;font-weight:700;color:#B91C1C!important;margin-bottom:4px}
+#careview-shell .cv-cr-incident-title{font-size:16px;font-weight:750;color:#7F1D1D!important;line-height:1.25}
+#careview-shell .cv-cr-incident-blurb{margin-top:6px;font-size:12px;color:#64748B!important;line-height:1.5}
+#careview-shell .cv-cr-incident-side{display:grid;gap:8px;font-size:12px;color:#334155!important}
+#careview-shell .cv-cr-incident-side span{display:block;font-size:10px;font-weight:700;color:#94A3B8!important;margin-bottom:2px}
+#careview-shell .cv-cr-incident-side b{font-weight:700;color:#1E293B!important}
+#careview-shell .cv-cr-wait{
+  display:inline-block;margin-top:2px;padding:5px 10px;border-radius:8px;background:#FEE2E2!important;
+  color:#B91C1C!important;font-size:11px;font-weight:750;width:fit-content}
+#careview-shell .cv-cr-step{display:flex;gap:10px;align-items:flex-start;margin:16px 0 10px}
+#careview-shell .cv-cr-step-n{
+  width:22px;height:22px;border-radius:999px;background:#2563EB!important;color:#fff!important;
+  font-size:11px;font-weight:750;display:grid;place-items:center;flex:0 0 auto;margin-top:1px}
+#careview-shell .cv-cr-step-h{font-size:14px;font-weight:750;color:#1E3A5F!important}
+#careview-shell .cv-cr-step-s{margin-top:2px;font-size:12px;color:#64748B!important}
+#careview-shell .cv-outcome-radio fieldset,
+#careview-shell .cv-outcome-radio .wrap{border:0!important;padding:0!important;margin:0!important}
+#careview-shell .cv-outcome-radio{margin:0 0 4px!important}
+#careview-shell .cv-outcome-radio .form,
+#careview-shell .cv-outcome-radio .block{border:0!important;background:transparent!important;box-shadow:none!important;padding:0!important}
+#careview-shell .cv-outcome-radio label{
+  display:flex!important;flex-direction:column!important;align-items:flex-start!important;justify-content:flex-start!important;
+  gap:4px!important;min-height:84px;padding:12px 12px 12px!important;margin:0!important;
+  border:1.5px solid #E2E8F0!important;border-radius:12px!important;background:#fff!important;
+  box-shadow:none!important;cursor:pointer;position:relative;white-space:pre-line!important;
+  color:#1E293B!important;font-size:12px!important;line-height:1.35!important;font-weight:600!important}
+#careview-shell .cv-outcome-radio .wrap,
+#careview-shell .cv-outcome-radio fieldset{
+  display:grid!important;grid-template-columns:repeat(auto-fit,minmax(148px,1fr))!important;gap:10px!important}
+#careview-shell .cv-outcome-radio label span{
+  white-space:pre-line!important;text-align:left!important;color:#1E293B!important;font-size:12px!important;line-height:1.35!important}
+#careview-shell .cv-outcome-radio label input{position:absolute;top:10px;right:10px;margin:0;accent-color:#16A34A}
+#careview-shell .cv-outcome-radio label:has(input:checked){
+  border-color:#16A34A!important;background:#F0FDF4!important;box-shadow:0 0 0 1px #16A34A inset!important}
+#careview-shell .cv-outcome-radio label:has(input:checked) span{color:#166534!important}
+#careview-shell .cv-cr-note textarea{
+  min-height:96px!important;border-radius:12px!important;border:1px solid #E2E8F0!important;
+  background:#fff!important;color:#0F172A!important}
+#careview-shell .cv-cr-info{
+  margin:12px 0;padding:10px 12px;border-radius:10px;background:#EFF6FF!important;border:1px solid #BFDBFE!important;
+  color:#1E40AF!important;font-size:12px;line-height:1.45}
+#careview-shell .cv-cr-actions{gap:10px;margin:4px 0 0}
+#careview-shell .cv-cr-actions button{
+  min-height:52px!important;border-radius:12px!important;font-weight:700!important;
+  line-height:1.25!important;white-space:pre-line!important;padding:10px 12px!important}
+#careview-shell .cv-cr-keep button,
+#careview-shell .cv-cr-keep .secondary,
+#careview-shell button.cv-cr-keep{
+  background:#fff!important;color:#1E3A5F!important;border:1.5px solid #1E3A5F!important}
+#careview-shell .cv-cr-resolve button,
+#careview-shell .cv-cr-resolve .primary,
+#careview-shell button.cv-cr-resolve{
+  background:#15803D!important;color:#fff!important;border-color:#15803D!important}
+#careview-shell .cv-cr-event .wrap{margin-bottom:8px}
+@media(max-width:700px){
+  #careview-shell .cv-cr-incident{grid-template-columns:1fr}
+  #careview-shell .cv-outcome-radio .wrap,
+  #careview-shell .cv-outcome-radio fieldset{grid-template-columns:1fr!important}
+}
+#careview-shell .cv-details-tools button.primary,
+#careview-shell .cv-details-tools .primary{background:#2563EB!important;border-color:#2563EB!important;color:#fff!important}
+/* History list rows — beat Gradio dark button chrome */
+#careview-shell .cv-hist2-row,
+#careview-shell button.cv-hist2-row,
+#careview-shell .cv-hist2-list .cv-hist2-row{
+  background:#FFFFFF!important;background-color:#FFFFFF!important;
+  color:#0F172A!important;border:1px solid #E2E8F0!important;
+  box-shadow:none!important;opacity:1!important}
+#careview-shell .cv-hist2-row:hover,
+#careview-shell button.cv-hist2-row:hover{
+  background:#F8FAFC!important;border-color:#93C5FD!important;color:#0F172A!important}
+#careview-shell .cv-hist2-row.is-selected,
+#careview-shell button.cv-hist2-row.is-selected{
+  background:#EFF6FF!important;border-color:#2563EB!important;color:#0F172A!important;
+  box-shadow:0 0 0 1px #2563EB inset!important}
+#careview-shell .cv-hist2-row-name{color:#0F172A!important}
+#careview-shell .cv-hist2-row-title{color:#B91C1C!important}
+#careview-shell .cv-hist2-row-time{color:#64748B!important}
+#careview-shell .cv-hist2-pill{background:#DCFCE7!important;color:#166534!important}
+#careview-shell .cv-hist2-avatar{background:#DBEAFE!important;color:#1D4ED8!important}
+#careview-shell .cv-hist2-panel,#careview-shell .cv-hist2-stat,#careview-shell .cv-hist2-card{
+  background:#FFFFFF!important;border-color:#E2E8F0!important;color:#0F172A!important}
+#careview-shell .cv-hist2-stat-n,#careview-shell .cv-hist2-panel-h,
+#careview-shell .cv-hist2-detail-h,#careview-shell .cv-hist2-card-h,
+#careview-shell .cv-hist2-alert-title{color:#0F172A!important}
+#careview-shell .cv-hist2-stat.fall .cv-hist2-stat-n{color:#B91C1C!important}
+#careview-shell .cv-hist2-stat.ok .cv-hist2-stat-n{color:#15803D!important}
+#careview-shell .cv-hist2-alert{background:#F8FAFC!important;border-color:#E2E8F0!important}
+#careview-shell .cv-hist2-alert-fall{background:#FEF2F2!important;border-color:#FECACA!important}
+#careview-shell .cv-hist2-alert-fall .cv-hist2-alert-title{color:#7F1D1D!important}
+#careview-shell .cv-settings-tools .cv-add-patient{
+  background:transparent!important;border:0!important;padding:0!important;margin:0!important;box-shadow:none!important}
+/* Off-screen hooks so board HTML can trigger real Gradio actions */
+/* Off-screen hooks must stay clickable via JS (.click()) — pointer-events:none breaks Gradio. */
+#cv-hidden-hooks{position:fixed!important;left:-10000px!important;top:0!important;width:1px!important;height:1px!important;overflow:hidden!important;opacity:0.01!important;pointer-events:auto!important;z-index:-1!important}
+/* Desktop caregiver (tablet+): sticky side rail; page/body scrolls */
+@media(min-width:769px){
+  #cv-mobile-top{display:none!important}
+  #cv-gradio-rail{display:flex!important;flex-direction:column!important;
+    position:sticky!important;top:0!important;height:100vh!important;
+    max-height:100vh!important;align-self:flex-start!important;overflow:hidden!important}
+  #careview-shell{flex:1 1 auto!important;min-height:100vh!important;padding-bottom:48px!important}
+}
+/* Mobile-first caregiver: hide permanent sidebar, bottom nav, full-width cards */
+@media(max-width:768px){
+  html,body{
+    -webkit-overflow-scrolling:touch!important;overscroll-behavior-y:auto;
+    touch-action:pan-y!important;position:static!important}
+  #care-page-wrap{min-height:100dvh!important;touch-action:pan-y}
+  #care-page-wrap > .form,#care-page-wrap > div,
+  #care-page-wrap .bubble-wrap,#care-page-wrap .block,
+  #cv-layout,#careview-shell,#careview-shell .block,#careview-shell .form{
+    flex:none!important}
+  #cv-layout{flex-direction:column!important;align-items:stretch!important;display:flex!important;min-height:0!important}
+  #cv-mobile-top{display:flex!important;align-items:center;justify-content:space-between;gap:10px;
+    position:sticky;top:0;z-index:90;padding:10px 14px;background:#15233F!important;color:#F8FAFC!important;
+    border-bottom:1px solid rgba(255,255,255,.1)}
+  #cv-mobile-top .cv-m-brand{display:flex;align-items:center;gap:10px;font-weight:750;font-size:15px;color:#fff!important}
+  #cv-mobile-top .cv-m-mark{width:32px;height:32px;border-radius:10px;background:#3B82F6;display:grid;place-items:center;color:#fff;font-weight:700}
+  #cv-mobile-top .cv-m-meta{display:flex;align-items:center;gap:8px}
+  #cv-mobile-top .cv-m-bell{width:36px;height:36px;border-radius:999px;background:rgba(255,255,255,.08);display:grid;place-items:center;color:#F8FAFC;font-size:14px}
+  #cv-mobile-top .cv-m-user{padding:6px 10px;border-radius:999px;background:rgba(255,255,255,.1);font-size:11px;font-weight:650;color:#E2E8F0}
+  /* Turn desktop rail into fixed bottom navigation */
+  #cv-gradio-rail{position:fixed!important;left:0!important;right:0!important;bottom:0!important;top:auto!important;
+    width:100%!important;max-width:none!important;min-width:0!important;flex:none!important;height:auto!important;
+    z-index:95!important;padding:6px 6px calc(6px + env(safe-area-inset-bottom,0px))!important;
+    background:#15233F!important;border-top:1px solid rgba(255,255,255,.12)!important;box-shadow:0 -6px 20px rgba(15,23,42,.25)}
+  #cv-gradio-rail .cv-brand,#cv-gradio-rail .cv-nav-foot{display:none!important}
+  #cv-side-nav{width:100%!important}
+  #cv-side-nav fieldset{flex-direction:row!important;justify-content:space-between!important;gap:4px!important;width:100%!important}
+  #cv-side-nav label{flex:1 1 0!important;min-width:0!important;min-height:56px!important;justify-content:center!important;
+    text-align:center!important;padding:6px 2px!important;font-size:11px!important;border-radius:12px!important;line-height:1.2}
+  #careview-shell{width:100%!important;max-width:100%!important;padding:0!important;
+    padding-bottom:calc(120px + env(safe-area-inset-bottom,0px))!important;
+    min-height:0!important;height:auto!important;overflow:visible!important;flex:1 0 auto!important}
+  #careview-shell .cv-main,.cv-main{padding:14px 14px 18px!important}
+  #careview-shell #careview-root.pd-page{padding-bottom:24px!important}
+  #cv-live-panel{padding-bottom:12px!important}
+  .cv-hello{font-size:22px!important;letter-spacing:-.3px}
+  .cv-sub{font-size:13px!important}
+  .cv-top{flex-direction:column!important;align-items:stretch!important;gap:10px!important;margin-bottom:14px!important}
+  .cv-top-right{width:100%;justify-content:flex-start}
+  .cv-stats{grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:8px!important;margin-bottom:14px!important}
+  .cv-stat{padding:12px 10px!important;min-height:0!important;border-radius:14px!important;gap:8px!important}
+  .cv-stat-icon{width:32px;height:32px;border-radius:10px;font-size:13px}
+  .cv-stat-n{font-size:20px!important}
+  .cv-stat-l{font-size:11px!important}
+  .cv-patients{grid-template-columns:1fr!important;gap:10px!important}
+  .cv-patient-card{min-height:0!important;padding:14px!important}
+  .cv-alerts{border-radius:14px!important}
+  .cv-alert-row{padding:12px!important;align-items:flex-start!important;flex-wrap:wrap}
+  .cv-alert-open{margin-left:0!important;margin-top:8px}
+  .cv-tools{padding:10px 14px 24px!important}
+  #careview-shell .cv-exit button,#careview-shell button{min-height:44px!important}
+  #careview-shell #careview-root.pd-page{padding:12px 12px 8px!important}
+  #careview-shell #careview-root.pd-page .pd-name{font-size:22px!important}
+  #careview-shell #careview-root.pd-page .pd-meta{grid-template-columns:1fr!important}
+  #careview-shell #careview-root.pd-page .pd-grid3{grid-template-columns:1fr!important}
+  #cv-case-preview img, #careview-shell .large-viewer img, #careview-shell .cv-live-image img{
+    max-width:100%!important;width:100%!important;height:auto!important;aspect-ratio:4/3;object-fit:contain}
+  #cv-live-panel{padding:12px 14px 0!important}
+  .cv-lab-link{display:none!important}
+}
+#cv-live-panel{padding:12px 22px 10px;background:#F1F5F9}
+#cv-live-panel .cv-live-image{border-radius:14px;overflow:hidden}
+#cv-live-panel .cv-live-empty-compact{min-height:56px!important;max-height:88px!important;padding:12px 14px!important;
+  background:#F8FAFC!important;border:1px solid #E2E8F0!important;color:#64748B!important}
+/* P4 Alert Center */
+.cv-ac-stats{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px;margin:0 0 10px}
+.cv-ac-stat{background:#fff;border:1px solid #E2E8F0;border-radius:14px;padding:12px 10px;text-align:center}
+.cv-ac-stat b{display:block;font-size:22px;color:#0F172A;line-height:1.1}
+.cv-ac-stat span{display:block;margin-top:4px;font-size:11px;color:#64748B;font-weight:650}
+.cv-ac-high{border-color:#FECACA}.cv-ac-high b{color:#DC2626}
+.cv-ac-med{border-color:#FDE68A}.cv-ac-med b{color:#A16207}
+.cv-ac-low{border-color:#BFDBFE}.cv-ac-low b{color:#2563EB}
+.cv-ac-note{margin:0 0 8px;line-height:1.45}
+.cv-ac-list{display:flex;flex-direction:column;gap:10px}
+.cv-ac-card{background:#fff;border:1px solid #E2E8F0;border-radius:16px;overflow:hidden;box-shadow:0 1px 2px rgba(15,23,42,.04)}
+.cv-ac-summary{list-style:none;display:flex;gap:12px;align-items:flex-start;padding:12px 14px;cursor:pointer}
+.cv-ac-summary::-webkit-details-marker{display:none}
+.cv-ac-thumb{width:56px;height:56px;border-radius:12px;object-fit:cover;flex:0 0 56px;background:#FEE2E2;color:#B91C1C;display:grid;place-items:center;font-size:11px;font-weight:700}
+.cv-ac-thumb-empty{display:grid}
+.cv-ac-main{min-width:0;flex:1}
+.cv-ac-top{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.cv-ac-name{font-weight:700;color:#0F172A;font-size:14px}
+.cv-ac-room{font-size:12px;color:#64748B}
+.cv-pri,.cv-st{font-size:10px;font-weight:750;padding:3px 8px;border-radius:999px;letter-spacing:.2px}
+.cv-pri-high{background:#FEE2E2;color:#B91C1C}
+.cv-pri-med{background:#FEF9C3;color:#A16207}
+.cv-pri-low{background:#DBEAFE;color:#1D4ED8}
+.cv-pri-unk{background:#F1F5F9;color:#475569}
+.cv-st-open{background:#FFEDD5;color:#C2410C}
+.cv-st-ack{background:#E0E7FF;color:#4338CA}
+.cv-ac-title{margin-top:6px;font-size:13px;font-weight:650;color:#0F172A}
+.cv-ac-sub,.cv-ac-brief,.cv-ac-next{margin-top:3px;font-size:12px;color:#64748B;line-height:1.4}
+.cv-ac-brief b,.cv-ac-next b{color:#334155}
+.cv-needs-check{background:#7F1D1D;color:#FEE2E2;border-radius:999px;font-size:10px;font-weight:750;
+  padding:3px 8px;letter-spacing:.02em}
+.cv-ac-detail{padding:0 14px 14px 82px;border-top:1px solid #F1F5F9;color:#334155;font-size:12px;line-height:1.5}
+.cv-ac-detail > div{margin-top:6px}
+.cv-ac-actions{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-top:10px}
+.cv-ac-open-patient{appearance:none;border:1px solid #2563EB;background:#2563EB;color:#fff!important;border-radius:10px;
+  padding:8px 12px;font-size:12px;font-weight:700;cursor:pointer!important;pointer-events:auto!important;
+  display:inline-block;text-decoration:none!important;line-height:1.2}
+.cv-ac-open-patient:hover{background:#1D4ED8!important;border-color:#1D4ED8!important}
+/* Interrupt banner — visible even while watching live */
+.cv-urgent-banner{margin:10px 14px 0;padding:14px 16px;border-radius:16px;background:#7F1D1D;color:#FEE2E2;
+  border:1px solid #B91C1C;box-shadow:0 8px 24px rgba(127,29,29,.35);position:sticky;top:8px;z-index:80}
+.cv-urgent-banner.cv-urgent-new{animation:cvUrgentPulse 1.2s ease-in-out 2}
+@keyframes cvUrgentPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.01);box-shadow:0 0 0 4px rgba(248,113,113,.35)}}
+.cv-urgent-kicker{font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:#FECACA}
+.cv-urgent-title{margin-top:6px;font-size:17px;font-weight:750;color:#fff}
+.cv-urgent-meta{margin-top:4px;font-size:13px;color:#FEE2E2}
+.cv-urgent-reason{margin-top:8px;font-size:13px;line-height:1.45;color:#FFE4E6}
+.cv-urgent-actions{margin-top:12px;display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.cv-urgent-actions .cv-ac-open-patient{background:#fff;color:#7F1D1D!important;border-color:#fff}
+.cv-urgent-actions .cv-muted{color:#FECACA!important}
+@media(max-width:768px){
+  .cv-urgent-banner{margin:8px 10px 0;top:52px}
+}
+@media(max-width:768px){
+  .cv-ac-stats{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .cv-ac-detail{padding-left:14px}
+}
+@media(max-width:1100px) and (min-width:769px){
+  .cv-patients{grid-template-columns:1fr 1fr}
+  .cv-main{padding:18px}
+}
 """
 
 
-PAGE_CHOICES = [(chr(0x25eb) + "  Overview", "Overview"), (chr(0x25b6) + "  Video Analysis", "Video Analysis"), (chr(0x25a7) + "  Photo Analysis", "Photo Analysis"), (chr(0x25c9) + "  Live Camera", "Live Camera"), (chr(0x2699) + "  About The Model", "About The Model")]
+# Click My Patients / Recent Alerts / Alert Center HTML → hidden Gradio buttons.
+# Force document scroll on every viewport (Gradio wrappers often set overflow:hidden).
+CV_BOARD_CLICK_JS = """
+() => {
+  const unlockPageScroll = () => {
+    const html = document.documentElement;
+    const body = document.body;
+    [html, body].forEach((el) => {
+      if (!el) return;
+      el.style.setProperty('overflow-y', 'scroll', 'important');
+      el.style.setProperty('overflow-x', 'hidden', 'important');
+      el.style.setProperty('height', 'auto', 'important');
+      el.style.setProperty('max-height', 'none', 'important');
+      el.style.setProperty('position', 'static', 'important');
+    });
+    const wrap = document.getElementById('care-page-wrap');
+    if (wrap) {
+      wrap.style.setProperty('position', 'relative', 'important');
+      wrap.style.setProperty('inset', 'auto', 'important');
+      wrap.style.setProperty('top', 'auto', 'important');
+      wrap.style.setProperty('left', 'auto', 'important');
+      wrap.style.setProperty('right', 'auto', 'important');
+      wrap.style.setProperty('bottom', 'auto', 'important');
+      wrap.style.setProperty('height', 'auto', 'important');
+      wrap.style.setProperty('max-height', 'none', 'important');
+      wrap.style.setProperty('overflow', 'visible', 'important');
+    }
+    document.querySelectorAll(
+      '.gradio-container, main, .main, .wrap, .app, .fillable, #root'
+    ).forEach((el) => {
+      el.style.setProperty('overflow', 'visible', 'important');
+      el.style.setProperty('height', 'auto', 'important');
+      el.style.setProperty('max-height', 'none', 'important');
+    });
+  };
+  unlockPageScroll();
+  window.addEventListener('resize', unlockPageScroll, { passive: true });
+  // Debounced — every Gradio HTML refresh used to thrash layout.
+  let unlockTimer = null;
+  const mo = new MutationObserver(() => {
+    if (unlockTimer) return;
+    unlockTimer = setTimeout(() => { unlockTimer = null; unlockPageScroll(); }, 120);
+  });
+  mo.observe(document.documentElement, { childList: true, subtree: true });
+
+  // Bind once on document (survives Gradio remounts of #care-page-wrap).
+  if (document.documentElement.dataset.cvClickBound === '1') return [];
+  document.documentElement.dataset.cvClickBound = '1';
+
+  const clickHost = (sel) => {
+    const host = document.querySelector(sel);
+    if (!host) return false;
+    const btn = host.matches('button') ? host : host.querySelector('button');
+    (btn || host).click();
+    return true;
+  };
+  const setNativeValue = (input, val) => {
+    if (!input) return;
+    const proto = input.tagName === 'TEXTAREA'
+      ? window.HTMLTextAreaElement.prototype
+      : window.HTMLInputElement.prototype;
+    const setter = Object.getOwnPropertyDescriptor(proto, 'value').set;
+    setter.call(input, String(val));
+    input.dispatchEvent(new Event('input', { bubbles: true }));
+    input.dispatchEvent(new Event('change', { bubbles: true }));
+  };
+  const setEventId = (val) => {
+    const host = document.querySelector('#cv-hidden-eid');
+    if (!host) return;
+    setNativeValue(host.querySelector('input'), val);
+  };
+  const setOpenPatientId = (val) => {
+    const host = document.querySelector('#cv-open-pid');
+    if (!host) return;
+    setNativeValue(host.querySelector('input, textarea'), val);
+  };
+  const clickSoon = (sel, tries) => {
+    const n = (tries == null) ? 8 : tries;
+    setTimeout(() => {
+      if (clickHost(sel)) return;
+      if (n > 1) clickSoon(sel, n - 1);
+    }, 40);
+  };
+  const openPatient = (id) => {
+    if (!id) return;
+    setOpenPatientId(id);
+    clickSoon('#cv-btn-open-patient');
+  };
+  const openAlertEvent = (eid, pid) => {
+    if (eid) setEventId(eid);
+    if (pid) setOpenPatientId(pid);
+    // Review opens the patient case focused on this alert (most reliable path).
+    if (eid) clickSoon('#cv-btn-review');
+    else openPatient(pid);
+  };
+
+  // Beep/vibrate when urgent banner marks a NEW open alert (no inline <script>).
+  let lastBeepId = '';
+  const playAlertCue = () => {
+    // Three short pulses so a fall is hard to miss.
+    try {
+      if (navigator.vibrate) navigator.vibrate([140, 80, 140, 80, 140]);
+    } catch (e) {}
+    try {
+      const Ctx = window.AudioContext || window.webkitAudioContext;
+      if (!Ctx) return;
+      const ctx = new Ctx();
+      const beepAt = (startSec) => {
+        const o = ctx.createOscillator();
+        const g = ctx.createGain();
+        o.type = 'square';
+        o.frequency.value = 880;
+        g.gain.value = 0.06;
+        o.connect(g); g.connect(ctx.destination);
+        o.start(ctx.currentTime + startSec);
+        o.stop(ctx.currentTime + startSec + 0.18);
+      };
+      beepAt(0);
+      beepAt(0.32);
+      beepAt(0.64);
+      setTimeout(() => { try { ctx.close(); } catch (e) {} }, 1000);
+    } catch (e) {}
+  };
+  const watchUrgent = () => {
+    const el = document.querySelector('#cv-urgent-watch .cv-urgent-banner[data-alert-new=\"1\"]');
+    if (!el) return;
+    const id = el.getAttribute('data-event-id') || '';
+    if (!id || id === lastBeepId) return;
+    lastBeepId = id;
+    playAlertCue();
+  };
+  const urgentMo = new MutationObserver(() => watchUrgent());
+  urgentMo.observe(document.documentElement, { childList: true, subtree: true });
+  // Unlock audio on first tap (required by iOS / Messenger WebView).
+  document.addEventListener('pointerdown', () => {
+    try {
+      const Ctx = window.AudioContext || window.webkitAudioContext;
+      if (!Ctx) return;
+      const ctx = new Ctx();
+      ctx.resume && ctx.resume();
+      setTimeout(() => { try { ctx.close(); } catch (e) {} }, 50);
+    } catch (e) {}
+  }, { once: true, passive: true });
+
+  document.addEventListener('click', (e) => {
+    const inApp = e.target.closest(
+      '#care-page-wrap, #careview-shell, #careview-root, .cv-ac-card, .cv-patient-card'
+    );
+    if (!inApp) return;
+
+    const openBtn = e.target.closest('.cv-ac-open-patient');
+    if (openBtn) {
+      e.preventDefault();
+      e.stopPropagation();
+      const card = openBtn.closest('.cv-ac-card');
+      const eid = card && card.getAttribute('data-event-id');
+      const pid = openBtn.getAttribute('data-patient-id')
+        || (card && card.getAttribute('data-patient-id'));
+      openAlertEvent(eid, pid);
+      return;
+    }
+
+    // Alert Center card body: select event only (expand stays native <details>).
+    const acCard = e.target.closest('.cv-ac-card[data-event-id]');
+    if (acCard && !e.target.closest('a, button, .cv-ac-open-patient')) {
+      setEventId(acCard.getAttribute('data-event-id'));
+      return;
+    }
+
+    const card = e.target.closest('.cv-patient-card[data-patient-id], .cv-clickable[data-patient-id]');
+    if (card) {
+      openPatient(card.getAttribute('data-patient-id'));
+      return;
+    }
+
+    // History: select event → show summary + snapshots (no icons).
+    const histRow = e.target.closest('.cv-hist2-row[data-hist-select]');
+    if (histRow) {
+      e.preventDefault();
+      e.stopPropagation();
+      const eid = histRow.getAttribute('data-hist-select') || '';
+      const root = histRow.closest('#cv-hist2') || document.getElementById('cv-hist2');
+      if (root && eid) {
+        root.setAttribute('data-hist-active', eid);
+        root.querySelectorAll('.cv-hist2-row').forEach((r) => {
+          r.classList.toggle('is-selected', r.getAttribute('data-hist-select') === eid);
+        });
+        root.querySelectorAll('.cv-hist2-detail').forEach((d) => {
+          d.classList.toggle('is-active', d.getAttribute('data-hist-detail') === eid);
+        });
+      }
+      if (eid) setEventId(eid);
+      return;
+    }
+
+    const row = e.target.closest('.cv-alert-row[data-event-id]');
+    if (row) {
+      openAlertEvent(
+        row.getAttribute('data-event-id'),
+        row.getAttribute('data-patient-id'),
+      );
+    }
+  }, true);
+  return [];
+}
+"""
+
+
+# CareView is the product home. Lab tools stay available under the exit button.
+PAGE_CHOICES = [
+    (chr(0x2665) + "  CareView", "Care Home"),
+    (chr(0x25c9) + "  Live Camera", "Live Camera"),
+    (chr(0x25b6) + "  Video Analysis", "Video Analysis"),
+    (chr(0x25a7) + "  Photo Analysis", "Photo Analysis"),
+    (chr(0x2699) + "  About The Model", "About The Model"),
+]
 PAGE_NAMES = [value for _, value in PAGE_CHOICES]
+CARE_PAGE = "Care Home"
+LAB_PAGE = "Live Camera"
 
 
 def show_page(page):
     return [gr.update(visible=page == name) for name in PAGE_NAMES]
 
 
-def build_ui(analyse_video, analyse_image, webcam_step, stop_webcam, stop_camera_js, start_camera_js, examples_dir):
+def build_ui(
+    analyse_video, analyse_image, webcam_step, stop_webcam,
+    stop_camera_js, start_camera_js, examples_dir,
+    acknowledge_event=None, resolve_event=None,
+    care_login=None, care_refresh=None, care_room_check=None,
+    care_ack=None, care_resolve=None, care_switch_panel=None,
+    care_open_ana=None, care_open_pedro=None, care_open_maria=None,
+    care_review_alert=None, care_back_to_patients=None, care_run_details=None,
+    care_live_preview=None, care_live_status=None,
+    care_initial_html: str | None = None,
+    care_select_session=None,
+):
     # Gradio 6+: theme/css belong on launch(), not Blocks().
-    with gr.Blocks(title="MotionSense | Activity Monitor") as demo:
+    with gr.Blocks(title="CareView | Care Home Monitor") as demo:
         with gr.Row(elem_id="app-shell"):
             with gr.Column(elem_id="sidebar", scale=0, min_width=205):
                 gr.HTML("""
                 <div class="brand">
-                  <div class="brand-mark">MS</div>
-                  <div>Motion<span>Sense</span><small>Activity Monitor</small></div>
+                  <div class="brand-mark">CV</div>
+                  <div>Care<span>View</span><small>Lab Tools</small></div>
                 </div>
-                <div class="nav-caption">Analysis</div>
+                <div class="nav-caption">Workspace</div>
                 """)
                 nav = gr.Radio(
-                    choices=PAGE_CHOICES, value=PAGE_NAMES[0], label=None,
+                    choices=PAGE_CHOICES, value=CARE_PAGE, label=None,
                     show_label=False, elem_id="sidebar-nav",
                 )
                 gr.HTML("""
                 <div class="sidebar-tip">
-                  <div class="sidebar-tip-heading"><span class="tip-icon" aria-hidden="true">&#10022;</span><strong>Better Results</strong></div>
-                  <p>Keep the camera still and include the person's full body in the frame.</p>
+                  <div class="sidebar-tip-heading"><span class="tip-icon" aria-hidden="true">&#10022;</span><strong>Ana live room</strong></div>
+                  <p>Use Live Camera for Ana. Maria / Pedro room checks run from the CareView board.</p>
                 </div>
-                <div class="sidebar-foot">Local Inference<br>Activity labels are estimates.</div>
+                <div class="sidebar-foot">CareView home is the product.<br>These pages are CV lab tools.</div>
                 """)
             with gr.Column(elem_id="main-panel"):
                 gr.HTML("""
                 <div class="topbar">
-                  <div>MotionSense <span style="color:#55564f">/</span> <b>Activity Workspace</b></div>
+                  <div>CareView <span style="color:#55564f">/</span> <b>Lab Tools</b></div>
                   <div class="local-badge"><i></i>Models Loaded | Processing On This Computer</div>
                 </div>
                 """)
-                with gr.Group(visible=True) as overview_page:
-                    gr.HTML("""
-                    <div class="page-heading">
-                      <div>
-                        <div class="eyebrow">Computer Vision | Local Demo</div>
-                        <h1>Human Activity Monitor</h1>
-                        <p>The system classifies these activities: Standing, Sitting, Walking, Running, and Lying.</p>
-                      </div>
-                      <div class="ready-pill"><i></i>Models Are Ready</div>
-                    </div>
-                    <div class="hero-card">
-                      <div class="hero-copy">
-                        <div class="eyebrow">Recommended Start</div>
-                        <h2>Review An Activity Video</h2>
-                        <p>Upload a clip to see an annotated preview, how much time each activity appears, and when the predicted activity changes.</p>
-                      </div>
-                      <div class="hero-meta"><b>Best Setup</b>Fixed Camera | Full Body Visible<br>About 2-5 m from the camera</div>
-                    </div>
-                    """)
-                    with gr.Row(elem_classes=["action-row"]):
-                        go_video = gr.Button("Analyze Video", variant="primary", elem_classes=["primary-action"])
-                        go_photo = gr.Button("Analyze Photo", variant="primary", elem_classes=["primary-action"])
-                        go_live = gr.Button("Open Live Camera", variant="primary", elem_classes=["primary-action"])
-                    gr.HTML("""
-                    <div class="metric-grid">
-                      <div class="metric-card"><div class="metric-icon">05</div><div class="metric-label">Activity Labels</div><div class="metric-note">Standing, Sitting, Walking, Running, Lying</div></div>
-                      <div class="metric-card"><div class="metric-icon">03</div><div class="metric-label">Ways To Analyze</div><div class="metric-note">Video | Single Photo | Live Camera</div></div>
-                      <div class="metric-card"><div class="metric-icon">Y</div><div class="metric-label">Person Detector</div><div class="metric-value">YOLO11n</div><div class="metric-note">Finds a person in the image</div></div>
-                      <div class="metric-card"><div class="metric-icon">33</div><div class="metric-label">Pose Landmarks</div><div class="metric-note">Body points help estimate posture and movement</div></div>
-                    </div>
-                    <div class="dashboard-grid">
-                      <div class="panel">
-                        <h2>How The Analysis Works</h2><div class="panel-sub">Each frame moves through these steps.</div>
-                        <div class="pipeline">
-                          <div class="pipe-step"><b>1 | Find A Person</b><span>The detector locates a person in the frame.</span></div>
-                          <div class="pipe-arrow">></div>
-                          <div class="pipe-step"><b>2 | Read Body Pose</b><span>Pose landmarks and motion cues are measured.</span></div>
-                          <div class="pipe-arrow">></div>
-                          <div class="pipe-step"><b>3 | Estimate Activity</b><span>Rules combine the measurements into a label.</span></div>
-                        </div>
-                      </div>
-                      <div class="panel">
-                        <h2>Activities This System Recognizes</h2><div class="panel-sub">A person may be labeled Unknown when they are hard to see.</div>
-                        <div class="activity-list">
-                          <div class="activity-chip"><i></i>Standing</div><div class="activity-chip"><i></i>Sitting</div>
-                          <div class="activity-chip"><i></i>Walking</div><div class="activity-chip"><i></i>Running</div>
-                          <div class="activity-chip"><i></i>Lying</div>
-                        </div>
-                      </div>
-                    </div>
-                    <div class="quick-actions">
-                      <div class="quick-card"><h3>Video Analysis</h3><p>Get an annotated clip, a time summary, and an activity timeline.</p></div>
-                      <div class="quick-card"><h3>Photo Analysis</h3><p>Estimate posture from one still image. A photo cannot show movement over time.</p></div>
-                      <div class="quick-card"><h3>Live Camera</h3><p>Allow camera access to view activity estimates as frames arrive.</p></div>
-                    </div>
-                    """)
                 with gr.Group(visible=False) as video_page:
                     gr.HTML("""
                     <div class="section-title"><div class="eyebrow">Video Workspace</div><h1>Analyze A Video</h1>
@@ -226,9 +947,15 @@ def build_ui(analyse_video, analyse_image, webcam_step, stop_webcam, stop_camera
                             vsum = gr.Dataframe(label="Time By Activity", interactive=False)
                         with gr.Column(scale=1, min_width=260, elem_classes=["content-card"]):
                             vtl = gr.Dataframe(label="Activity Timeline", interactive=False)
+                    vmon = gr.Markdown("Monitoring status will appear after analysis.")
+                    vevents = gr.Dataframe(
+                        label="Recent Monitoring Events",
+                        headers=["id", "time", "type", "status", "action", "snapshot"],
+                        interactive=False,
+                    )
                     with gr.Accordion("Technical Details", open=False):
                         vjson = gr.JSON(label="Processing Details")
-                    vbtn.click(analyse_video, vin, [vout, vhead, vsum, vtl, vjson])
+                    vbtn.click(analyse_video, vin, [vout, vhead, vsum, vtl, vjson, vmon, vevents])
                 with gr.Group(visible=False) as photo_page:
                     gr.HTML("""
                     <div class="section-title"><div class="eyebrow">Photo Workspace</div><h1>Analyze A Photo</h1>
@@ -253,10 +980,13 @@ def build_ui(analyse_video, analyse_image, webcam_step, stop_webcam, stop_camera
                     ibtn.click(analyse_image, iin, [iout, ihead, ijson])
                 with gr.Group(visible=False) as live_page:
                     gr.HTML("""
-                    <div class="section-title"><div class="eyebrow">Live Workspace</div><h1>Live Camera</h1>
-                    <p>Click <b>Start camera</b>, allow the browser permission, then press the orange <b>record</b> button on the preview if it appears. Keep your full body in view. Use <b>Stop camera</b> when finished.</p></div>
+                    <div class="section-title"><div class="eyebrow">Camera Station · Room 01</div><h1>Live Camera — Ana</h1>
+                    <p>This laptop page owns the webcam. Click <b>Start camera</b>, allow permission, then the orange <b>record</b> button if shown. Caregiver phones view the processed feed on Ana's CareView page — they never open this camera.</p></div>
                     """)
-                    gr.Markdown("The app analyzes incoming frames about four times per second. Keep the camera stationary and stand roughly 2-5 m away.")
+                    gr.Markdown(
+                        "Analyzes ~4 frames/sec. Keep the camera stationary, full body, ~2–5 m away. "
+                        "**Start camera** begins a persistent ACTIVE session; **Stop camera** finalizes it."
+                    )
                     with gr.Row(elem_classes=["media-row"]):
                         with gr.Column(scale=1, min_width=420, elem_classes=["content-card", "media-panel"]):
                             win = gr.Image(
@@ -274,11 +1004,202 @@ def build_ui(analyse_video, analyse_image, webcam_step, stop_webcam, stop_camera
                         wstart = gr.Button("Start camera", variant="primary", elem_classes=["primary-action"], scale=0, min_width=140)
                         wstop = gr.Button("Stop camera", elem_classes=["secondary"], scale=0, min_width=140)
                         whead = gr.Markdown("Click **Start camera**, allow access, then the orange record button if shown.")
+                    wmon = gr.Markdown("Monitoring status (SAFE / ATTENTION / ALERT) will appear while the camera runs.")
                     wsum = gr.Markdown("Session summary will appear here while the camera runs, and again when you stop.")
+                    wevents = gr.Dataframe(
+                        label="Recent Monitoring Events",
+                        headers=["id", "time", "type", "status", "action", "snapshot"],
+                        interactive=False,
+                    )
+                    with gr.Row():
+                        weid = gr.Number(label="Event id", precision=0, value=None)
+                        wack = gr.Button("Acknowledge event", elem_classes=["secondary"])
+                        wres = gr.Button("Resolve event", elem_classes=["secondary"])
+                    waction_note = gr.Markdown(
+                        "Acknowledge = caregiver saw it (does **not** force SAFE). Resolve = close the event."
+                    )
                     wstate = gr.State(None)
-                    win.stream(webcam_step, [win, wstate], [wout, whead, wsum, wstate], stream_every=0.25, concurrency_limit=1)
+                    win.stream(
+                        webcam_step, [win, wstate],
+                        [wout, whead, wmon, wsum, wevents, wstate],
+                        stream_every=0.25, concurrency_limit=1,
+                    )
                     wstart.click(None, None, None, js=start_camera_js)
-                    wstop.click(stop_webcam, [wstate], [win, wout, whead, wsum, wstate], js=stop_camera_js)
+                    wstop.click(
+                        stop_webcam, [wstate],
+                        [win, wout, whead, wmon, wsum, wevents, wstate],
+                        js=stop_camera_js,
+                    )
+                    if acknowledge_event is not None:
+                        wack.click(acknowledge_event, weid, [wevents, waction_note])
+                    if resolve_event is not None:
+                        wres.click(resolve_event, weid, [wevents, waction_note])
+                with gr.Group(visible=True, elem_id="care-page-wrap") as care_page:
+                    with gr.Row(elem_id="cv-layout"):
+                        with gr.Column(elem_id="cv-gradio-rail", scale=0, min_width=220):
+                            gr.HTML("""
+                            <div class="cv-brand">
+                              <div class="cv-brand-mark">⌂</div>
+                              <div><div class="cv-brand-name">CareView</div>
+                              <div class="cv-brand-sub">Care Home Monitor</div></div>
+                            </div>
+                            """)
+                            cnav = gr.Radio(
+                                choices=["Home", "Alerts", "History", "Settings"],
+                                value="Home",
+                                label=None,
+                                show_label=False,
+                                elem_id="cv-side-nav",
+                            )
+                            gr.HTML('<div class="cv-nav-foot">Demo · caregiver / care123</div>')
+                        with gr.Column(elem_id="careview-shell", scale=1):
+                            # Board first — CareView mock design stays the hero.
+                            _care_fallback = care_initial_html or (
+                                '<div id="careview-root"><p style="padding:16px;color:#64748B">'
+                                "Loading CareView…</p></div>"
+                            )
+                            ccards = gr.HTML(_care_fallback)
+                            with gr.Group(elem_classes=["cv-tools"]):
+                                # Hidden Gradio hooks — board cards/alerts click these via JS.
+                                with gr.Row(elem_id="cv-hidden-hooks", elem_classes=["cv-hidden-hooks"]):
+                                    cana = gr.Button("Ana", elem_id="cv-btn-ana")
+                                    cpedro = gr.Button("Pedro", elem_id="cv-btn-pedro")
+                                    cmaria = gr.Button("Maria", elem_id="cv-btn-maria")
+                                    creview = gr.Button("Review", elem_id="cv-btn-review")
+                                    ceid = gr.Number(
+                                        label="Event id", precision=0, value=None, elem_id="cv-hidden-eid",
+                                    )
+                                cnote = gr.Markdown(
+                                    "Click a **patient card** for that patient's details page, "
+                                    "or a **Recent Alerts** row to open the related patient."
+                                )
+                                with gr.Group(visible=False) as cdetails_bar:
+                                    with gr.Row(elem_classes=["cv-toolbar", "cv-exit"]):
+                                        cback = gr.Button("← Back to patients", scale=1)
+                                        crun = gr.Button("Run room check", variant="primary", scale=1)
+                                    with gr.Group(elem_classes=["cv-play-block"]):
+                                        gr.Markdown("### Session recording")
+                                        csession = gr.Dropdown(
+                                            label="Choose a monitoring session",
+                                            choices=[],
+                                            value=None,
+                                            interactive=True,
+                                            elem_id="cv-session-select",
+                                        )
+                                        cplayer = gr.HTML(
+                                            '<div class="pd-player-panel"><div class="pd-empty">'
+                                            "Select a session with a ready recording to watch it here.</div></div>",
+                                            elem_id="cv-session-player",
+                                        )
+                                        cplay_info = gr.HTML(
+                                            '<div class="pd-player-info pd-muted">'
+                                            "Session recording details appear after you select a playable session.</div>"
+                                        )
+                                        csession_sel = gr.State(None)
+                                with gr.Row(elem_classes=["media-row"]):
+                                    with gr.Column(scale=1, min_width=280):
+                                        cframe = gr.Image(
+                                            label="Live feed / case preview",
+                                            height=320,
+                                            elem_classes=["large-viewer"],
+                                            elem_id="cv-case-preview",
+                                        )
+                                    with gr.Column(scale=1, min_width=260):
+                                        cmon = gr.Markdown("Status / next action")
+                                # Poll shared live frames for Ana while her details page is open.
+                                clive_timer = gr.Timer(1.25, active=True)
+                                with gr.Row(elem_classes=["cv-toolbar", "cv-exit"]):
+                                    cexit = gr.Button("Lab tools", scale=0, min_width=120)
+                                    crefresh = gr.Button("Refresh board", scale=0, min_width=120)
+                                    cack = gr.Button("Acknowledge", scale=0, min_width=120)
+                                    cres = gr.Button("Resolve", scale=0, min_width=100)
+                                cuser = gr.Textbox(value="caregiver", visible=False)
+                                cpass = gr.Textbox(value="care123", type="password", visible=False)
+                                clogin = gr.Button("Sign in", visible=False)
+                                cauth = gr.State(None)
+                                cmsg = gr.Markdown(visible=False)
+                                cpatient = gr.State(None)
+                                calert = gr.Dropdown(
+                                    label="Patient events", choices=[], interactive=True,
+                                )
+                                with gr.Accordion("Events log", open=False):
+                                    cinbox = gr.Dataframe(
+                                        label="Events",
+                                        headers=["id", "patient", "time", "type", "status", "action", "snapshot"],
+                                        interactive=False,
+                                    )
+                                    caction_note = gr.Markdown(
+                                        "Acknowledge = saw it (does **not** force SAFE). Resolve = close event."
+                                    )
+                    # open_patient_details (9) + playback panel (4): dropdown, player, info, selected id
+                    detail_outs = [
+                        ccards, cnote, cframe, cmon, cpatient, calert, ceid, cdetails_bar,
+                        csession, cplayer, cplay_info, csession_sel,
+                    ]
+                    if care_login is not None:
+                        clogin.click(
+                            care_login, [cuser, cpass],
+                            [cauth, cmsg, ccards, cinbox, cnav, calert],
+                        )
+                    if care_switch_panel is not None:
+                        cnav.change(
+                            care_switch_panel, [cauth, cnav],
+                            [
+                                ccards, cnote, cframe, cmon, cpatient, cdetails_bar,
+                                csession, cplayer, cplay_info, csession_sel,
+                            ],
+                        )
+                    if care_refresh is not None:
+                        crefresh.click(
+                            care_refresh, [cauth, cnav, cpatient],
+                            [ccards, cinbox, calert],
+                        )
+                    if care_open_ana is not None:
+                        cana.click(care_open_ana, [cauth, cnav], detail_outs)
+                    if care_open_pedro is not None:
+                        cpedro.click(care_open_pedro, [cauth, cnav], detail_outs)
+                    if care_open_maria is not None:
+                        cmaria.click(care_open_maria, [cauth, cnav], detail_outs)
+                    if care_review_alert is not None:
+                        creview.click(care_review_alert, [cauth, ceid, cnav], detail_outs)
+                    if care_back_to_patients is not None:
+                        cback.click(
+                            care_back_to_patients, [cauth, cnav],
+                            [
+                                ccards, cnote, cframe, cmon, cpatient, calert, ceid,
+                                cdetails_bar, cinbox,
+                                csession, cplayer, cplay_info, csession_sel,
+                            ],
+                        )
+                    if care_run_details is not None:
+                        crun.click(
+                            care_run_details, [cauth, cpatient, cnav],
+                            [
+                                ccards, cnote, cframe, cmon, cpatient, calert, ceid,
+                                cdetails_bar, cinbox,
+                                csession, cplayer, cplay_info, csession_sel,
+                            ],
+                        )
+                    calert.change(lambda v: v, calert, ceid)
+                    if care_select_session is not None:
+                        csession.change(
+                            care_select_session, [cauth, cpatient, csession],
+                            [cplayer, cplay_info, csession_sel],
+                        )
+                    if care_live_preview is not None:
+                        clive_timer.tick(care_live_preview, [cpatient], [cframe])
+                    if care_live_status is not None:
+                        clive_timer.tick(care_live_status, [cpatient], [cmon])
+                    if care_ack is not None:
+                        cack.click(
+                            care_ack, [cauth, ceid, cnav, cpatient],
+                            [cinbox, caction_note, ccards, calert],
+                        )
+                    if care_resolve is not None:
+                        cres.click(
+                            care_resolve, [cauth, ceid, cnav, cpatient],
+                            [cinbox, caction_note, ccards, calert, cnav],
+                        )
                 with gr.Group(visible=False) as model_page:
                     gr.HTML("""
                     <div class="section-title"><div class="eyebrow">System Details</div><h1>About The Model</h1>
@@ -304,10 +1225,452 @@ def build_ui(analyse_video, analyse_image, webcam_step, stop_webcam, stop_camera
                     </div>
                     <div class="section-note">Core labels are standing/sitting/walking/running/lying. Monitoring extensions add fall / inactive / zone banners and a session summary. Demo heuristics — not clinical devices.</div>
                     """)
-        pages = [overview_page, video_page, photo_page, live_page, model_page]
+        # Order must match PAGE_NAMES.
+        pages = [care_page, live_page, video_page, photo_page, model_page]
         nav.change(show_page, inputs=nav, outputs=pages)
-        go_video.click(lambda: PAGE_NAMES[1], outputs=nav).then(show_page, inputs=nav, outputs=pages)
-        go_photo.click(lambda: PAGE_NAMES[2], outputs=nav).then(show_page, inputs=nav, outputs=pages)
-        go_live.click(lambda: PAGE_NAMES[3], outputs=nav).then(show_page, inputs=nav, outputs=pages)
+        cexit.click(lambda: LAB_PAGE, outputs=nav).then(show_page, inputs=nav, outputs=pages)
+        # Bind board card/alert clicks, then auto-sign in.
+        demo.load(None, None, None, js=CV_BOARD_CLICK_JS)
+        if care_login is not None:
+            demo.load(
+                care_login, [cuser, cpass],
+                [cauth, cmsg, ccards, cinbox, cnav, calert],
+            )
 
+    return demo
+
+
+# Caregiver-only mount: light shell (no dark lab chrome). Reuses CareView CSS rules.
+_CAREVIEWS_CSS = APP_CSS.split("/* ---- CareView product", 1)
+CAREGIVER_APP_CSS = (
+    "html,body,.gradio-container{background:#F1F5F9!important;color:#0F172A!important;"
+    "color-scheme:light!important;"
+    "--background-fill-primary:#FFFFFF!important;"
+    "--background-fill-secondary:#F8FAFC!important;"
+    "--block-background-fill:#FFFFFF!important;"
+    "--body-background-fill:#F1F5F9!important;"
+    "--body-text-color:#0F172A!important;"
+    "--input-background-fill:#FFFFFF!important;"
+    "--input-border-color:#E2E8F0!important;"
+    "--border-color-primary:#E2E8F0!important;"
+    "--neutral-950:#0F172A!important;--neutral-900:#1E293B!important;"
+    "--neutral-800:#334155!important;--neutral-700:#475569!important;"
+    "--neutral-600:#64748B!important;--neutral-500:#94A3B8!important;"
+    "--neutral-400:#CBD5E1!important;--neutral-300:#E2E8F0!important;"
+    "--neutral-200:#F1F5F9!important;--neutral-100:#F8FAFC!important;"
+    "--neutral-50:#FFFFFF!important}"
+    ".gradio-container{max-width:none!important;padding:0!important;margin:0!important}"
+    # Global dropdown portals (listboxes often render under body, not inside cards).
+    "body [role='listbox'],body ul[role='listbox'],body .options,body ul.options,"
+    "body [class*='dropdown'] [role='listbox']{"
+    "background:#FFFFFF!important;color:#0F172A!important;border:1px solid #E2E8F0!important;"
+    "border-radius:12px!important;box-shadow:0 8px 24px rgba(15,23,42,.12)!important}"
+    "body [role='option'],body .options li,body ul.options li{"
+    "background:#FFFFFF!important;color:#0F172A!important;opacity:1!important}"
+    "body [role='option'][aria-selected='true'],body .options li.selected{"
+    "background:#EFF6FF!important;color:#1E40AF!important}"
+    "body [role='option']:hover,body .options li:hover{"
+    "background:#F1F5F9!important;color:#0F172A!important}"
+    "/* ---- CareView product"
+    + (_CAREVIEWS_CSS[1] if len(_CAREVIEWS_CSS) > 1 else "")
+)
+
+
+def build_caregiver_ui(
+    care_login=None, care_refresh=None,
+    care_ack=None, care_resolve=None, care_switch_panel=None,
+    care_open_ana=None, care_open_pedro=None, care_open_maria=None,
+    care_review_alert=None, care_back_to_patients=None, care_run_details=None,
+    care_live_tick=None,
+    care_initial_html: str | None = None,
+    care_select_session=None,
+    care_filter_alerts=None,
+    care_open_patient=None,
+    care_add_patient=None,
+    care_load_demo_pack=None,
+    care_alert_watch=None,
+    care_response_preview=None,
+):
+    """Phone/desktop caregiver app — no Camera Station controls, no lab sidebar."""
+    with gr.Blocks(title="CareView | Caregiver") as demo:
+        with gr.Group(elem_id="care-page-wrap"):
+            gr.HTML(
+                """
+                <div id="cv-mobile-top">
+                  <div class="cv-m-brand"><div class="cv-m-mark">⌂</div>CareView</div>
+                  <div class="cv-m-meta">
+                    <div class="cv-m-bell" title="Alerts">🔔</div>
+                    <div class="cv-m-user">caregiver1</div>
+                  </div>
+                </div>
+                """
+            )
+            with gr.Row(elem_id="cv-layout"):
+                with gr.Column(elem_id="cv-gradio-rail", scale=0, min_width=220):
+                    gr.HTML("""
+                    <div class="cv-brand">
+                      <div class="cv-brand-mark">⌂</div>
+                      <div><div class="cv-brand-name">CareView</div>
+                      <div class="cv-brand-sub">Care Home Monitor</div></div>
+                    </div>
+                    """)
+                    cnav = gr.Radio(
+                        choices=["Home", "Alerts", "History", "Settings"],
+                        value="Home",
+                        label=None,
+                        show_label=False,
+                        elem_id="cv-side-nav",
+                    )
+                    gr.HTML('<div class="cv-nav-foot">Demo · caregiver / care123</div>')
+                with gr.Column(elem_id="careview-shell", scale=1):
+                    # Sticky interrupt when OPEN alerts fire (even while watching live).
+                    # Textbox (not State) so Timer reliably round-trips last seen id.
+                    calert_watch = gr.HTML("", elem_id="cv-urgent-watch")
+                    calert_seen = gr.Textbox(
+                        value="0", visible=False, elem_id="cv-alert-seen-id",
+                    )
+                    # Patient details FIRST so Alert "Open" shows the case, not a wall of offline camera.
+                    _care_fallback = care_initial_html or (
+                        '<div id="careview-root"><p style="padding:16px;color:#64748B">'
+                        "Loading CareView…</p></div>"
+                    )
+                    ccards = gr.HTML(_care_fallback)
+                    with gr.Group(elem_classes=["cv-tools"]):
+                        with gr.Row(elem_id="cv-hidden-hooks", elem_classes=["cv-hidden-hooks"]):
+                            cana = gr.Button("Ana", elem_id="cv-btn-ana")
+                            cpedro = gr.Button("Pedro", elem_id="cv-btn-pedro")
+                            cmaria = gr.Button("Maria", elem_id="cv-btn-maria")
+                            copen = gr.Button("Open patient", elem_id="cv-btn-open-patient")
+                            copen_pid = gr.Textbox(
+                                value="", label="open_pid", elem_id="cv-open-pid",
+                            )
+                            creview = gr.Button("Review", elem_id="cv-btn-review")
+                            ceid = gr.Number(
+                                label="Event id", precision=0, value=None, elem_id="cv-hidden-eid",
+                            )
+                        cnote = gr.Markdown(
+                            "Tap a patient card or alert to continue. Add patients under Settings.",
+                            elem_classes=["cv-status-note"],
+                        )
+                        # Settings only — never on patient details / Home / Alerts.
+                        with gr.Group(visible=False, elem_classes=["cv-settings-tools"]) as csettings_tools:
+                            gr.HTML('<div class="cv-section-label">Add patient</div>')
+                            with gr.Group(elem_classes=["cv-add-patient"]):
+                                padd_name = gr.Textbox(label="Patient name", placeholder="e.g. Ana")
+                                padd_room = gr.Textbox(label="Room", placeholder="e.g. Room 01")
+                                padd_live = gr.Radio(
+                                    label="Laptop Camera Station",
+                                    choices=[
+                                        ("No — board only", "no"),
+                                        ("Yes — use this laptop camera", "yes"),
+                                    ],
+                                    value="yes",
+                                    interactive=True,
+                                )
+                                padd_btn = gr.Button("Save patient", variant="primary")
+                                gr.Markdown(
+                                    "Wipe the board and load **Alex** (live) + **Casey** "
+                                    "with fall alerts/session already prepared."
+                                )
+                                pdemo_btn = gr.Button("Reset demo (2 patients)", variant="secondary")
+                        # Patient details actions (only while a case is open).
+                        with gr.Group(visible=False, elem_classes=["cv-details-tools"]) as cdetails_bar:
+                            gr.HTML('<div class="cv-section-label">Patient actions</div>')
+                            with gr.Row(elem_classes=["cv-toolbar", "cv-exit"]):
+                                cback = gr.Button("← Back to patients", scale=1)
+                                crun = gr.Button("Run room check", variant="primary", scale=1)
+                            gr.HTML('<div class="cv-section-label" style="margin-top:14px">Watch recording</div>')
+                            with gr.Group(elem_classes=["cv-play-block"]):
+                                csession = gr.Dropdown(
+                                    label="Monitoring session",
+                                    choices=[],
+                                    value=None,
+                                    interactive=True,
+                                    elem_id="cv-session-select",
+                                )
+                                cplayer = gr.HTML(
+                                    '<div class="pd-player-panel"><div class="pd-empty">'
+                                    "Pick a ready session to play it here.</div></div>",
+                                    elem_id="cv-session-player",
+                                )
+                                cplay_info = gr.HTML(
+                                    '<div class="pd-player-info pd-muted">'
+                                    "Ready recordings play here after you choose a session.</div>"
+                                )
+                                csession_sel = gr.State(None)
+                        # Care response: patient details or Alerts tab.
+                        with gr.Group(visible=False, elem_classes=["cv-handle-tools"]) as chandle_group:
+                            from src.alert_center import (
+                                build_care_response_summary_html,
+                                outcome_radio_choices,
+                            )
+                            cresp_summary = gr.HTML(
+                                build_care_response_summary_html(None),
+                                elem_classes=["cv-cr-wrap"],
+                            )
+                            calert = gr.Dropdown(
+                                label="Alert / event",
+                                choices=[],
+                                interactive=True,
+                                elem_classes=["cv-cr-event"],
+                            )
+                            gr.HTML(
+                                '<div class="cv-cr-step">'
+                                '<div class="cv-cr-step-n">1</div>'
+                                '<div><div class="cv-cr-step-h">Caregiver Response</div>'
+                                '<div class="cv-cr-step-s">What did you find after checking the patient?</div>'
+                                '</div></div>'
+                            )
+                            coutcome = gr.Radio(
+                                choices=outcome_radio_choices(),
+                                value="checked_ok",
+                                label=None,
+                                show_label=False,
+                                interactive=True,
+                                elem_classes=["cv-outcome-radio"],
+                            )
+                            gr.HTML(
+                                '<div class="cv-cr-step">'
+                                '<div class="cv-cr-step-n">2</div>'
+                                '<div><div class="cv-cr-step-h">Care Notes (Optional)</div>'
+                                '<div class="cv-cr-step-s">Add observations or actions taken during your check.</div>'
+                                '</div></div>'
+                            )
+                            cnote_handle = gr.Textbox(
+                                label=None,
+                                show_label=False,
+                                placeholder="Describe the patient's condition, assistance provided, or other notes...",
+                                lines=3,
+                                max_length=500,
+                                elem_classes=["cv-cr-note"],
+                            )
+                            gr.HTML(
+                                '<div class="cv-cr-info">'
+                                "Make sure to provide accurate information before resolving the incident."
+                                "</div>"
+                            )
+                            with gr.Row(elem_classes=["cv-cr-actions"]):
+                                cack = gr.Button(
+                                    "Keep Incident Active\nContinue monitoring",
+                                    scale=1,
+                                    elem_classes=["cv-cr-keep"],
+                                )
+                                cres = gr.Button(
+                                    "Resolve Incident\nSave your response",
+                                    variant="primary",
+                                    scale=1,
+                                    elem_classes=["cv-cr-resolve"],
+                                )
+                            caction_note = gr.Markdown("")
+                        # Alert Center filters: only when Alerts nav is active.
+                        with gr.Group(visible=False, elem_classes=["cv-ac-filter-wrap"]) as calert_filters:
+                            gr.HTML('<div class="cv-section-label">Alert filters</div>')
+                            with gr.Row(elem_classes=["cv-toolbar", "cv-exit"]):
+                                crefresh = gr.Button("Refresh alerts", scale=1)
+                            with gr.Row():
+                                f_priority = gr.Dropdown(
+                                    label="Priority",
+                                    choices=["All", "High", "Medium", "Low"],
+                                    value="All",
+                                    interactive=True,
+                                )
+                                f_patient = gr.Dropdown(
+                                    label="Patient",
+                                    choices=[("All patients", "All")],
+                                    value="All",
+                                    interactive=True,
+                                )
+                                f_status = gr.Dropdown(
+                                    label="Status",
+                                    choices=["All active", "OPEN", "ACKNOWLEDGED"],
+                                    value="All active",
+                                    interactive=True,
+                                )
+                                f_type = gr.Dropdown(
+                                    label="Event type",
+                                    choices=[
+                                        "All types",
+                                        "possible_fall",
+                                        "inactive",
+                                        "camera_unavailable",
+                                        "out_of_view",
+                                        "partial_body",
+                                    ],
+                                    value="All types",
+                                    interactive=True,
+                                )
+                            with gr.Row():
+                                f_from = gr.Textbox(
+                                    label="From date (YYYY-MM-DD)", value="",
+                                    placeholder="optional",
+                                )
+                                f_to = gr.Textbox(
+                                    label="To date (YYYY-MM-DD)", value="",
+                                    placeholder="optional",
+                                )
+                                f_apply = gr.Button("Apply filters", variant="secondary")
+                        cuser = gr.Textbox(value="caregiver", visible=False)
+                        cpass = gr.Textbox(value="care123", type="password", visible=False)
+                        clogin = gr.Button("Sign in", visible=False)
+                        cauth = gr.State(None)
+                        cmsg = gr.Markdown(visible=False)
+                        # Textbox (not State) so Timer.tick reliably reads the selected patient.
+                        cpatient = gr.Textbox(
+                            value="", label="patient_id", visible=False, elem_id="cv-patient-id",
+                        )
+                        _filter_inputs = [
+                            f_priority, f_patient, f_status, f_type, f_from, f_to,
+                        ]
+                        # History only — keep raw event table off the patient page.
+                        with gr.Group(visible=False, elem_classes=["cv-events-log"]) as cevents_log:
+                            gr.HTML('<div class="cv-section-label">Events log</div>')
+                            cinbox = gr.Dataframe(
+                                label="Events",
+                                headers=["id", "patient", "time", "type", "status", "action", "snapshot"],
+                                interactive=False,
+                            )
+                    # Live feed below details — expands when Camera Station is LIVE.
+                    with gr.Group(visible=False, elem_id="cv-live-panel") as clive_panel:
+                        clive_banner = gr.Markdown(
+                            "### Live Camera\nOpen Ana to view the laptop feed."
+                        )
+                        cframe = gr.HTML(
+                            '<div class="cv-live-empty cv-live-empty-compact">'
+                            "Live feed appears here when Camera Station is running.</div>",
+                            elem_id="cv-case-preview",
+                        )
+                        cmon = gr.Markdown("Live status")
+                        clive_seq = gr.State(0)
+                    clive_timer = gr.Timer(0.4, active=True)
+            # open→10 (with seq) + handle/filters/settings/events vis + playback 4
+            detail_outs = [
+                ccards, cnote, cframe, clive_banner, cpatient, calert, ceid,
+                cdetails_bar, clive_panel, clive_seq,
+                chandle_group, calert_filters, csettings_tools, cevents_log,
+                csession, cplayer, cplay_info, csession_sel,
+            ]
+            if care_login is not None:
+                clogin.click(
+                    care_login, [cuser, cpass],
+                    [cauth, cmsg, ccards, cinbox, cnav, calert],
+                )
+            if care_switch_panel is not None:
+                cnav.change(
+                    care_switch_panel,
+                    [cauth, cnav, *_filter_inputs],
+                    [
+                        ccards, cnote, cframe, clive_banner, cpatient,
+                        cdetails_bar, clive_panel, clive_seq,
+                        chandle_group, calert_filters, csettings_tools, cevents_log,
+                        csession, cplayer, cplay_info, csession_sel,
+                    ],
+                )
+            if care_refresh is not None:
+                crefresh.click(
+                    care_refresh, [cauth, cnav, cpatient, *_filter_inputs],
+                    [ccards, cinbox, calert],
+                )
+            if care_filter_alerts is not None:
+                f_apply.click(
+                    care_filter_alerts, [cauth, cnav, *_filter_inputs], [ccards],
+                )
+                for w in _filter_inputs[:4]:
+                    w.change(
+                        care_filter_alerts, [cauth, cnav, *_filter_inputs], [ccards],
+                    )
+            def _then_cr(evt):
+                if care_response_preview is not None and evt is not None:
+                    evt.then(
+                        care_response_preview, [cauth, calert], [cresp_summary, ceid],
+                    )
+                return evt
+
+            if care_open_patient is not None:
+                _then_cr(copen.click(care_open_patient, [cauth, copen_pid, cnav], detail_outs))
+            if care_open_ana is not None:
+                _then_cr(cana.click(care_open_ana, [cauth, cnav], detail_outs))
+            if care_open_pedro is not None:
+                _then_cr(cpedro.click(care_open_pedro, [cauth, cnav], detail_outs))
+            if care_open_maria is not None:
+                _then_cr(cmaria.click(care_open_maria, [cauth, cnav], detail_outs))
+            if care_add_patient is not None:
+                _then_cr(padd_btn.click(
+                    care_add_patient,
+                    [cauth, padd_name, padd_room, padd_live, cnav],
+                    [ccards, cnote, calert, f_patient, cnav],
+                ))
+            if care_load_demo_pack is not None:
+                _then_cr(pdemo_btn.click(
+                    care_load_demo_pack,
+                    [cauth, cnav],
+                    [ccards, cnote, calert, f_patient, cnav],
+                ))
+            if care_review_alert is not None:
+                _then_cr(creview.click(care_review_alert, [cauth, ceid, cnav], detail_outs))
+            if care_back_to_patients is not None:
+                _then_cr(cback.click(
+                    care_back_to_patients, [cauth, cnav],
+                    [
+                        ccards, cnote, cframe, clive_banner, cpatient, calert, ceid,
+                        cdetails_bar, cinbox, clive_panel, clive_seq,
+                        chandle_group, calert_filters, csettings_tools, cevents_log,
+                        csession, cplayer, cplay_info, csession_sel,
+                    ],
+                ))
+            if care_run_details is not None:
+                _then_cr(crun.click(
+                    care_run_details, [cauth, cpatient, cnav],
+                    [
+                        ccards, cnote, cframe, clive_banner, cpatient, calert, ceid,
+                        cdetails_bar, cinbox, clive_panel, clive_seq,
+                        chandle_group, calert_filters, csettings_tools, cevents_log,
+                        csession, cplayer, cplay_info, csession_sel,
+                    ],
+                ))
+            if care_response_preview is not None:
+                calert.change(
+                    care_response_preview, [cauth, calert],
+                    [cresp_summary, ceid],
+                )
+            else:
+                calert.change(lambda v: v, calert, ceid)
+            if care_select_session is not None:
+                csession.change(
+                    care_select_session, [cauth, cpatient, csession],
+                    [cplayer, cplay_info, csession_sel],
+                )
+            if care_live_tick is not None:
+                clive_timer.tick(
+                    care_live_tick, [cpatient, clive_seq],
+                    [cframe, clive_banner, cmon, clive_seq],
+                )
+            # Interrupt poll: urgent banner + beep even while watching live.
+            if care_alert_watch is not None:
+                calert_timer = gr.Timer(2.0, active=True)
+                calert_timer.tick(
+                    care_alert_watch, [cauth, calert_seen],
+                    [calert_watch, calert_seen],
+                )
+            if care_ack is not None:
+                _then_cr(cack.click(
+                    care_ack,
+                    [cauth, ceid, cnav, cpatient, coutcome, cnote_handle],
+                    [cinbox, caction_note, ccards, calert],
+                ))
+            if care_resolve is not None:
+                _then_cr(cres.click(
+                    care_resolve,
+                    [cauth, ceid, cnav, cpatient, coutcome, cnote_handle],
+                    [cinbox, caction_note, ccards, calert, cnav],
+                ))
+        demo.load(None, None, None, js=CV_BOARD_CLICK_JS)
+        if care_login is not None:
+            login_evt = demo.load(
+                care_login, [cuser, cpass],
+                [cauth, cmsg, ccards, cinbox, cnav, calert],
+            )
+            if care_response_preview is not None:
+                login_evt.then(
+                    care_response_preview, [cauth, calert], [cresp_summary, ceid],
+                )
     return demo

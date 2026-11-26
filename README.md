@@ -38,16 +38,37 @@ pip install -r requirements.txt
 The first run downloads two model files into `models/`: MediaPipe pose lite (~6 MB) and YOLO11n (~6 MB).
 Weights are also suitable to attach on the GitHub `v1.0` release.
 
-## How to run the app
+## How to run CareView (default)
 
 ```bash
-python app.py                     # then open http://127.0.0.1:7860
+python app.py
 ```
 
-The sidebar dashboard has **Overview**, **Video Analysis**, **Photo Analysis**, **Live Camera**, and **About The Model** pages. Video analysis returns an annotated clip, activity timeline, summary, and processing details. Test-case clips and photos are built-in examples. Models load **once** at start-up. Desktop window alternative:
-`python src/run.py --webcam 0`.
+`http://127.0.0.1:7860/` opens the **Caregiver Home** (`/caregiver`) — not the old activity-lab UI.
+
+| Who | URL | What |
+|---|---|---|
+| **Phone / caregiver** | `http://<laptop-lan-ip>:7860/caregiver` | Patients, alerts, History, live feed view |
+| **Laptop camera** | `http://127.0.0.1:7860/camera-station` | Start webcam for **Alex** (live patient) |
+| Chooser page | `http://127.0.0.1:7860/start` | Pick caregiver / camera / lab |
+| Old CV lab | `http://127.0.0.1:7860/lab` | Video / photo activity analysis (optional) |
+
+**Demo login:** `caregiver` / `care123`  
+**Demo patients (auto-seeded on first run):** **Alex** (live cam) + **Casey** (ready fall alerts + playback)
+
+### Laptop + phone test (same Wi‑Fi)
+
+1. On the laptop: `python app.py`
+2. Phone browser: `http://<laptop-ip>:7860/caregiver` → CareView Home
+3. Laptop browser: `http://127.0.0.1:7860/camera-station` → **Start Monitoring** for Alex
+4. Phone: open **Alex** to see the live feed; open **Casey** / **Alerts** for the ready fall demo
+
+First boot may take ~1 minute while Casey’s fall clip is prepared. Settings → **Reset demo** reloads Alex + Casey.
+
+Models load **once** at start-up. CLI / offline eval still work:
 
 ```bash
+python src/run.py --webcam 0
 python src/run.py --input path/to/video.mp4 --output outputs/demo/
 python src/run.py --input photo.jpg --output outputs/
 ```
