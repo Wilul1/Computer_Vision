@@ -25,9 +25,9 @@ from .monitoring import MonitoringSession
 
 LIVE_PATIENT_ID = "p1-ana"
 # Caregiver preview: small JPEG, encoded once per published frame.
-PREVIEW_MAX_W = 640
-PREVIEW_MAX_H = 360
-JPEG_QUALITY = 70
+PREVIEW_MAX_W = 480
+PREVIEW_MAX_H = 270
+JPEG_QUALITY = 55
 STALE_MAX_AGE_S = 8.0
 
 _SHARED: LiveMonitorHub | None = None
@@ -190,6 +190,8 @@ class LiveMonitorHub:
         self._publish_t0: float | None = None
         self._capture_ts: float | None = None
         self._publish_lag_ms: float | None = None
+        # Caregiver interrupt: newest possible_fall event id just created live.
+        self._interrupt_event_id: int | None = None
         # Stale ACTIVE rows from a previous process → INTERRUPTED.
         self.store.interrupt_stale_sessions()
         set_shared_hub(self)
@@ -252,6 +254,7 @@ class LiveMonitorHub:
                 "publish_count": self._publish_count,
                 "capture_ts": self._capture_ts,
                 "publish_lag_ms": self._publish_lag_ms,
+                "interrupt_event_id": self._interrupt_event_id,
             }
 
     def diagnostics_md(self) -> str:
@@ -573,6 +576,24 @@ class LiveMonitorHub:
             self._reset_runtime()
             return row
 
+    def note_interrupt_event(self, event_id: int | None, event_type: str | None = None) -> None:
+        """Mark a freshly created live event so caregiver UI can beep/banner."""
+        if event_id is None:
+            return
+        if event_type and event_type != "possible_fall":
+            return
+        try:
+            eid = int(event_id)
+        except (TypeError, ValueError):
+            return
+        with self._lock:
+            self._interrupt_event_id = eid
+
+    def clear_interrupt_event(self, event_id: int | None = None) -> None:
+        with self._lock:
+            if event_id is None or self._interrupt_event_id == int(event_id):
+                self._interrupt_event_id = None
+
     def monitor(self) -> MonitoringSession:
         with self._lock:
             if self._monitor is None:
@@ -603,3 +624,4 @@ class LiveMonitorHub:
         self._publish_t0 = None
         self._capture_ts = None
         self._publish_lag_ms = None
+        self._interrupt_event_id = None

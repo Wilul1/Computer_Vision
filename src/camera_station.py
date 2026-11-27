@@ -34,7 +34,7 @@ class ServerCameraStation:
         new_pipeline: Callable[..., Any],
         lock: threading.Lock,
         camera_index: int = 0,
-        target_fps: float = 4.0,
+        target_fps: float = 15.0,
         on_frame: Callable[[dict, str], None] | None = None,
         ui_preview_max_w: int = 480,
         ui_preview_max_h: int = 270,
@@ -350,8 +350,17 @@ class ServerCameraStation:
                 "Possible causes: no camera detected, permission denied by Windows, "
                 "or the camera is already in use by another application."
             )
+        # MJPG + modest size: USB cams deliver newer frames with less decode lag.
+        try:
+            cap.set(cv2.CAP_PROP_FOURCC, cv2.VideoWriter_fourcc(*"MJPG"))
+        except Exception:
+            pass
         cap.set(cv2.CAP_PROP_FRAME_WIDTH, 640)
         cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 480)
+        try:
+            cap.set(cv2.CAP_PROP_FPS, 30)
+        except Exception:
+            pass
         # Prefer latest frame over deep buffers (reduces capture→display lag).
         try:
             cap.set(cv2.CAP_PROP_BUFFERSIZE, 1)
@@ -461,6 +470,12 @@ class ServerCameraStation:
                 self._last_infer_ms = ms
                 self._infer_sum_ms += ms
                 mon = self.hub.monitor().update(r, r.get("annotated"))
+                # Fresh possible_fall → caregiver interrupt (banner + beep).
+                if mon.get("event_created") and mon.get("event"):
+                    self.hub.note_interrupt_event(
+                        mon["event"].get("id"),
+                        mon.get("event_type") or (mon.get("event") or {}).get("event_type"),
+                    )
                 annotated = r.get("annotated")
                 if annotated is not None:
                     annotated_rgb = cv2.cvtColor(annotated, cv2.COLOR_BGR2RGB)
@@ -518,8 +533,9 @@ class ServerCameraStation:
                     + self._diagnostics_md(rec=rec)
                 )
                 elapsed = time.perf_counter() - loop_t0
+                # Only rate-limit when ahead of target; never add sleep when already lagging.
                 delay = interval - elapsed
-                if delay > 0:
+                if delay > 0.002:
                     self._stop.wait(delay)
         except Exception as exc:
             self._last_error = f"AI thread error: {exc}"

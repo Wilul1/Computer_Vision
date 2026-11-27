@@ -331,10 +331,60 @@ def iter_file_range(
                 pass
 
 
+def resolve_event_snapshot(
+    store: EventStore,
+    event_id: int,
+    *,
+    patient_id: str,
+) -> Path:
+    """Resolve an event snapshot file under the project tree (patient_id gate)."""
+    pid = (patient_id or "").strip()
+    if not pid:
+        raise PlaybackError(
+            "patient_id_required",
+            "patient_id query parameter is required.",
+            http_status=400,
+        )
+    row = store.get(int(event_id))
+    if row is None:
+        raise PlaybackError("not_found", "Event not found.", http_status=404)
+    if str(row.get("patient_id") or "") != pid:
+        raise PlaybackError(
+            "patient_mismatch",
+            "Event does not belong to that patient.",
+            http_status=404,
+        )
+    rel = str(row.get("snapshot_path") or "").strip()
+    if not rel:
+        raise PlaybackError("no_snapshot", "No snapshot on file for this event.", http_status=404)
+    path = Path(rel)
+    if not path.is_absolute():
+        path = (config.ROOT / path).resolve()
+    else:
+        path = path.resolve()
+    root = config.ROOT.resolve()
+    try:
+        path.relative_to(root)
+    except ValueError as exc:
+        raise PlaybackError(
+            "path_escape",
+            "Snapshot path is outside the project.",
+            http_status=404,
+        ) from exc
+    if not path.is_file():
+        raise PlaybackError("missing_file", "Snapshot file is missing.", http_status=404)
+    return path
+
+
+def event_snapshot_url(event_id: int, patient_id: str) -> str:
+    """Public URL for an event snapshot (same trust model as session video)."""
+    return f"/api/events/{int(event_id)}/snapshot?patient_id={patient_id}"
+
+
 def register_playback_routes(api: Any, store: EventStore) -> None:
-    """Attach /api/sessions/{id}/meta and /video to a FastAPI app (read-only)."""
+    """Attach /api/sessions/{id}/meta|/video and /api/events/{id}/snapshot."""
     from fastapi import Header, Query
-    from fastapi.responses import JSONResponse, StreamingResponse
+    from fastapi.responses import FileResponse, JSONResponse, StreamingResponse
 
     def _error_response(exc: PlaybackError) -> JSONResponse:
         headers = {}
@@ -407,4 +457,23 @@ def register_playback_routes(api: Any, store: EventStore) -> None:
             status_code=status,
             media_type="video/mp4",
             headers=headers,
+        )
+
+    @api.get("/api/events/{event_id}/snapshot")
+    def event_snapshot_image(
+        event_id: int,
+        patient_id: str = Query(..., description="Must match the event patient (not auth)"),
+    ):
+        try:
+            path = resolve_event_snapshot(store, event_id, patient_id=patient_id)
+        except PlaybackError as exc:
+            return _error_response(exc)
+        suffix = path.suffix.lower()
+        media = "image/jpeg" if suffix in {".jpg", ".jpeg"} else (
+            "image/png" if suffix == ".png" else "application/octet-stream"
+        )
+        return FileResponse(
+            path,
+            media_type=media,
+            headers={"Cache-Control": "private, max-age=60"},
         )

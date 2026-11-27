@@ -12,6 +12,7 @@ the features both rule sets need, which evaluate.py and tune.py replay.
 """
 import time
 
+import cv2
 import numpy as np
 
 from . import config
@@ -23,7 +24,7 @@ from .inactivity_alert import InactivityAlertMonitor
 from .motion import BlobFeatures, MotionDetector, MotionEventCounter
 from .params import Params
 from .pose import PoseEstimator, pose_on_crop
-from .preprocess import preprocess
+from .preprocess import preprocess, resize_max_side
 from .visualize import draw_result
 from .zone_alert import ZoneAlertMonitor
 
@@ -45,7 +46,10 @@ class MonitorPipeline:
         # live=True (webcam only): skip MOG2 + camera optical flow. Same YOLO/pose/rules.
         # Video Analyze / evaluate keep live=False so reported FPS/accuracy stay unchanged.
         self.live = live
-        self.max_side = 480 if live else config.PROCESS_MAX_SIDE
+        # Live: much smaller frames + no CLAHE → cut end-to-end lag on CPU laptops.
+        self.max_side = 320 if live else config.PROCESS_MAX_SIDE
+        if live:
+            self.enhance = False
         self.motion = MotionDetector()
         self.events = MotionEventCounter()
         self.blobs = BlobFeatures()
@@ -58,7 +62,17 @@ class MonitorPipeline:
             from .detector import PersonDetector
             self.detector = PersonDetector()
         self.speeds = MotionFeatures()
-        self.fall_alert = FallAlertMonitor()
+        # Live thresholds slightly softer: sparse FPS still needs to catch a short drop.
+        self.fall_alert = (
+            FallAlertMonitor(
+                window_sec=1.4,
+                drop_speed_min=0.85,
+                torso_rise_min=28.0,
+                hold_sec=3.0,
+            )
+            if live
+            else FallAlertMonitor()
+        )
         self.zone_alert = ZoneAlertMonitor()
         self.inactivity = InactivityAlertMonitor()
         self.filter_main = TemporalFilter(self.params)
@@ -69,6 +83,14 @@ class MonitorPipeline:
 
     # ---- stage 1 -------------------------------------------------------------
     def preprocess(self, frame) -> dict:
+        if self.live:
+            # Skip gray/blur motion prep — live infer never uses MOG2.
+            resized = resize_max_side(frame, self.max_side)
+            return {
+                "bgr": resized,
+                "rgb": cv2.cvtColor(resized, cv2.COLOR_BGR2RGB),
+                "motion": None,
+            }
         return preprocess(frame, self.enhance, max_side=self.max_side)
 
     # ---- stage 2 -------------------------------------------------------------
@@ -77,14 +99,20 @@ class MonitorPipeline:
             m = {"mask": None, "boxes": [], "ratio": 0.0, "moving": False}
         else:
             m = self.motion(x["motion"])
-        if self.detector is not None and self.frame_idx % config.YOLO_EVERY_N_FRAMES == 0:
-            self.people = self.detector(x["bgr"])
+        # Live: cheaper YOLO less often; pose still runs every frame for fall timing.
+        yolo_every = 3 if self.live else config.YOLO_EVERY_N_FRAMES
+        if self.detector is not None and self.frame_idx % yolo_every == 0:
+            if self.live:
+                self.people = self.detector(x["bgr"], imgsz=320)
+            else:
+                self.people = self.detector(x["bgr"])
         lm, self.pose_source = None, "frame"
         person = self.people[0]["box"] if self.people else None
         small = person is not None and person[3] - person[1] < config.POSE_CROP_BELOW_PX
-        if not small:
+        # Live always uses full-frame pose (crop path is a latency spike).
+        if self.live or not small:
             lm = self.pose(x["rgb"], int(t * 1000))
-        if person is not None and (small or lm is None):
+        if (not self.live) and person is not None and (small or lm is None):
             # Small or missed person: pose on the upscaled YOLO crop.
             lm = pose_on_crop(self.crop_pose, x["rgb"], person, config.POSE_CROP_TARGET_H, config.POSE_CROP_MARGIN)
             self.pose_source = "crop"

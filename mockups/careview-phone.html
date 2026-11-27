@@ -1,0 +1,700 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>CareView · Phone mockup</title>
+  <style>
+    :root {
+      --navy: #0B1F3A;
+      --navy-2: #132A4A;
+      --blue: #2563EB;
+      --blue-soft: #EFF6FF;
+      --canvas: #EEF2F6;
+      --card: #FFFFFF;
+      --ink: #0F172A;
+      --muted: #64748B;
+      --line: #E2E8F0;
+      --safe: #16A34A;
+      --safe-bg: #DCFCE7;
+      --attn: #CA8A04;
+      --attn-bg: #FEF9C3;
+      --alert: #DC2626;
+      --alert-bg: #FEE2E2;
+      --fall: #F59E0B;
+      --dock-h: 64px;
+      --header-h: 56px;
+      --radius: 16px;
+      --font: "Segoe UI", ui-sans-serif, system-ui, sans-serif;
+    }
+    * { box-sizing: border-box; }
+    html, body {
+      margin: 0; min-height: 100%;
+      background: #0f172a;
+      font-family: var(--font);
+      color: var(--ink);
+      -webkit-tap-highlight-color: transparent;
+    }
+    body {
+      display: flex;
+      justify-content: center;
+      padding: 12px;
+      padding-bottom: 24px;
+    }
+
+    /* Desktop: phone frame. Phone: full bleed. */
+    .device {
+      width: min(390px, 100%);
+      min-height: min(844px, calc(100vh - 24px));
+      background: var(--canvas);
+      border-radius: 28px;
+      overflow: hidden;
+      position: relative;
+      box-shadow: 0 24px 64px rgba(0,0,0,.45);
+      display: flex;
+      flex-direction: column;
+    }
+    @media (max-width: 480px) {
+      body { padding: 0; background: var(--canvas); }
+      .device {
+        width: 100%; min-height: 100vh; min-height: 100dvh;
+        border-radius: 0; box-shadow: none;
+      }
+    }
+
+    .banner {
+      background: #1E3A5F;
+      color: #BFDBFE;
+      font-size: 11px;
+      font-weight: 650;
+      text-align: center;
+      padding: 6px 10px;
+      letter-spacing: .02em;
+    }
+    .banner b { color: #fff; }
+
+    .top {
+      height: var(--header-h);
+      background: var(--navy);
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 14px;
+      flex: 0 0 auto;
+    }
+    .brand {
+      display: flex; align-items: center; gap: 10px;
+    }
+    .mark {
+      width: 32px; height: 32px; border-radius: 10px;
+      background: var(--blue); display: grid; place-items: center;
+      font-weight: 750; font-size: 14px;
+    }
+    .brand-name { font-size: 16px; font-weight: 750; letter-spacing: -.2px; }
+    .top-actions { display: flex; align-items: center; gap: 8px; }
+    .bell {
+      position: relative; width: 36px; height: 36px; border: 0;
+      border-radius: 999px; background: transparent; color: #FDE68A;
+      font-size: 18px; cursor: pointer;
+    }
+    .bell .dot {
+      position: absolute; top: 6px; right: 6px;
+      min-width: 16px; height: 16px; padding: 0 4px;
+      border-radius: 999px; background: var(--alert); color: #fff;
+      font-size: 10px; font-weight: 750; display: grid; place-items: center;
+    }
+    .bell.quiet .dot { display: none; }
+
+    .screens {
+      flex: 1;
+      overflow: auto;
+      -webkit-overflow-scrolling: touch;
+      padding-bottom: calc(var(--dock-h) + 18px);
+    }
+    .screen { display: none; padding: 16px 14px 8px; }
+    .screen.is-on { display: block; }
+
+    .hello {
+      font-size: 22px; font-weight: 750; letter-spacing: -.4px;
+      margin: 2px 0 4px; line-height: 1.2;
+    }
+    .summary {
+      color: var(--muted); font-size: 13px; margin-bottom: 14px;
+    }
+    .strip {
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px;
+      margin-bottom: 16px;
+    }
+    .strip-item {
+      background: var(--card); border: 1px solid var(--line);
+      border-radius: 14px; padding: 10px 8px; text-align: center;
+    }
+    .strip-item b { display: block; font-size: 18px; font-weight: 750; }
+    .strip-item span { font-size: 11px; color: var(--muted); font-weight: 650; }
+    .strip-item.safe b { color: var(--safe); }
+    .strip-item.attn b { color: var(--attn); }
+    .strip-item.alert b { color: var(--alert); }
+
+    .section {
+      display: flex; align-items: baseline; justify-content: space-between;
+      margin: 4px 0 10px;
+    }
+    .section h2 {
+      margin: 0; font-size: 15px; font-weight: 750;
+    }
+    .section .meta { font-size: 12px; color: var(--blue); font-weight: 650; }
+
+    .list { display: grid; gap: 10px; }
+    .card {
+      background: var(--card); border: 1px solid var(--line);
+      border-radius: var(--radius); padding: 12px;
+      text-align: left; width: 100%;
+      font: inherit; color: inherit; cursor: pointer;
+    }
+    .card:active { transform: scale(.99); }
+    .card.urgent { border-color: #FECACA; background: #FFF7F7; }
+    .card.selected { border-color: var(--blue); box-shadow: inset 0 0 0 1px var(--blue); }
+
+    .row {
+      display: flex; gap: 12px; align-items: center;
+    }
+    .avatar {
+      width: 42px; height: 42px; border-radius: 12px;
+      background: var(--blue-soft); color: var(--blue);
+      display: grid; place-items: center; font-weight: 750; flex: 0 0 auto;
+    }
+    .who { flex: 1; min-width: 0; }
+    .who .name { font-size: 15px; font-weight: 750; }
+    .who .sub { margin-top: 2px; font-size: 12px; color: var(--muted); }
+    .pill {
+      padding: 4px 9px; border-radius: 999px; font-size: 10px; font-weight: 750;
+      text-transform: uppercase; letter-spacing: .03em;
+    }
+    .pill.safe { background: var(--safe-bg); color: var(--safe); }
+    .pill.attn { background: var(--attn-bg); color: #A16207; }
+    .pill.alert { background: var(--alert-bg); color: var(--alert); }
+    .pill.done { background: var(--safe-bg); color: #166534; }
+
+    .title-red {
+      margin-top: 8px; font-size: 14px; font-weight: 750; color: #B91C1C;
+    }
+    .when { margin-top: 4px; font-size: 12px; color: var(--muted); }
+    .open-link {
+      margin-top: 10px; font-size: 12px; font-weight: 700; color: var(--blue);
+    }
+
+    .filters {
+      display: flex; gap: 8px; overflow-x: auto; padding-bottom: 4px;
+      margin-bottom: 12px; -webkit-overflow-scrolling: touch;
+    }
+    .chip {
+      flex: 0 0 auto; border: 1px solid var(--line); background: #fff;
+      border-radius: 999px; padding: 7px 12px; font-size: 12px; font-weight: 650;
+      color: var(--muted); cursor: pointer;
+    }
+    .chip.on { background: var(--navy); border-color: var(--navy); color: #fff; }
+    .chip.hot.on { background: var(--alert); border-color: var(--alert); }
+
+    .empty {
+      padding: 28px 16px; text-align: center; color: var(--muted);
+      background: var(--card); border: 1px dashed var(--line); border-radius: var(--radius);
+      font-size: 13px; line-height: 1.45;
+    }
+
+    .detail-head {
+      display: flex; align-items: center; gap: 10px; margin-bottom: 12px;
+    }
+    .back {
+      border: 0; background: #fff; border: 1px solid var(--line);
+      border-radius: 999px; padding: 8px 12px; font-size: 13px; font-weight: 700;
+      cursor: pointer; color: var(--ink);
+    }
+    .panel {
+      background: var(--card); border: 1px solid var(--line);
+      border-radius: var(--radius); padding: 14px; margin-bottom: 10px;
+    }
+    .panel h3 {
+      margin: 0 0 10px; font-size: 13px; font-weight: 750;
+    }
+    .kv {
+      display: flex; justify-content: space-between; gap: 12px;
+      padding: 7px 0; border-top: 1px solid #F1F5F9; font-size: 12px;
+    }
+    .kv:first-of-type { border-top: 0; padding-top: 0; }
+    .kv span { color: var(--muted); }
+    .kv b { font-weight: 650; text-align: right; max-width: 62%; }
+
+    .snap {
+      width: 100%; aspect-ratio: 16/10; object-fit: cover;
+      border-radius: 12px; background: #0F172A; display: block;
+    }
+    .fake-video {
+      width: 100%; aspect-ratio: 16/10; border-radius: 12px;
+      background: linear-gradient(160deg, #1e293b, #0f172a);
+      display: grid; place-items: center; color: #94A3B8; font-size: 13px;
+      position: relative; overflow: hidden;
+    }
+    .fake-video::after {
+      content: "▶"; position: absolute; width: 44px; height: 44px;
+      border-radius: 999px; background: rgba(255,255,255,.18);
+      display: grid; place-items: center; color: #fff; font-size: 16px;
+      line-height: 44px; text-align: center;
+    }
+    .incident {
+      margin-top: 10px;
+    }
+    .incident-chip {
+      display: inline-flex; padding: 6px 10px; border-radius: 999px;
+      background: #FEF3C7; color: #92400E; border: 1px solid var(--fall);
+      font-size: 12px; font-weight: 750;
+    }
+    .track {
+      margin-top: 10px; height: 12px; border-radius: 999px; background: #E2E8F0;
+      position: relative;
+    }
+    .mark {
+      position: absolute; top: 50%; left: 64%; transform: translate(-50%, -50%);
+      width: 10px; height: 16px; border-radius: 3px; background: var(--fall);
+      box-shadow: 0 0 0 4px rgba(245,158,11,.3);
+    }
+    .jump {
+      margin-top: 10px; border: 1px solid var(--fall); background: #FFFBEB;
+      color: #92400E; border-radius: 10px; padding: 9px 12px;
+      font-size: 12px; font-weight: 750; cursor: pointer; width: 100%;
+    }
+
+    .settings-list { display: grid; gap: 8px; }
+    .settings-list .card { cursor: default; }
+    .settings-list .card .sub { margin-top: 4px; }
+
+    .cta {
+      margin-top: 12px; width: 100%; border: 0; border-radius: 12px;
+      background: var(--blue); color: #fff; font-weight: 750;
+      padding: 12px; font-size: 14px; cursor: pointer;
+    }
+    .cta.ghost {
+      background: #fff; color: var(--ink); border: 1px solid var(--line);
+    }
+
+    .dock {
+      position: absolute; left: 0; right: 0; bottom: 0;
+      height: var(--dock-h);
+      background: rgba(11, 31, 58, .96);
+      backdrop-filter: blur(8px);
+      display: grid; grid-template-columns: repeat(4, 1fr);
+      padding: 6px 8px calc(6px + env(safe-area-inset-bottom, 0px));
+      border-top: 1px solid rgba(255,255,255,.06);
+    }
+    .dock button {
+      border: 0; background: transparent; color: #94A3B8;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      gap: 2px; font-size: 10px; font-weight: 700; cursor: pointer;
+      border-radius: 12px;
+    }
+    .dock button .ico { font-size: 16px; line-height: 1; opacity: .9; }
+    .dock button.on {
+      color: #fff; background: var(--blue);
+    }
+
+    .toast {
+      position: absolute; left: 50%; bottom: calc(var(--dock-h) + 12px);
+      transform: translateX(-50%);
+      background: var(--navy); color: #fff; font-size: 12px; font-weight: 650;
+      padding: 8px 12px; border-radius: 999px; opacity: 0; pointer-events: none;
+      transition: opacity .2s;
+      white-space: nowrap;
+    }
+    .toast.show { opacity: 1; }
+  </style>
+</head>
+<body>
+  <div class="device" id="app">
+    <div class="banner">MOCKUP ONLY · not live CareView · tap dock + cards to explore</div>
+
+    <header class="top">
+      <div class="brand">
+        <div class="mark">⌂</div>
+        <div class="brand-name">CareView</div>
+      </div>
+      <div class="top-actions">
+        <button type="button" class="bell" id="bellBtn" aria-label="Alerts" title="Open Alerts">
+          🔔<span class="dot" id="bellDot">1</span>
+        </button>
+      </div>
+    </header>
+
+    <main class="screens">
+      <!-- HOME -->
+      <section class="screen is-on" data-screen="home" id="screen-home">
+        <div class="hello">Good evening</div>
+        <div class="summary">2 patients · all safe right now</div>
+        <div class="strip">
+          <div class="strip-item safe"><b>2</b><span>Safe</span></div>
+          <div class="strip-item attn"><b>0</b><span>Attention</span></div>
+          <div class="strip-item alert"><b>0</b><span>Alert</span></div>
+        </div>
+        <div class="section">
+          <h2>My patients</h2>
+          <div class="meta">2 rooms</div>
+        </div>
+        <div class="list">
+          <button type="button" class="card" data-open="patient-alex">
+            <div class="row">
+              <div class="avatar">A</div>
+              <div class="who">
+                <div class="name">Alex</div>
+                <div class="sub">Room 01 · Live camera</div>
+              </div>
+              <span class="pill safe">Safe</span>
+            </div>
+            <div class="open-link">Open patient →</div>
+          </button>
+          <button type="button" class="card" data-open="patient-casey">
+            <div class="row">
+              <div class="avatar">C</div>
+              <div class="who">
+                <div class="name">Casey</div>
+                <div class="sub">Room 02 · Demo video</div>
+              </div>
+              <span class="pill safe">Safe</span>
+            </div>
+            <div class="open-link">Open patient →</div>
+          </button>
+        </div>
+      </section>
+
+      <!-- ALERTS -->
+      <section class="screen" data-screen="alerts" id="screen-alerts">
+        <div class="hello">Alerts</div>
+        <div class="summary">Open findings that still need a response</div>
+        <div class="filters" id="alertFilters">
+          <button type="button" class="chip on" data-filter="all">All</button>
+          <button type="button" class="chip hot" data-filter="high">High</button>
+          <button type="button" class="chip" data-filter="med">Medium</button>
+          <button type="button" class="chip" data-filter="ack">Acked</button>
+        </div>
+        <div class="list" id="alertList">
+          <button type="button" class="card urgent" data-open="case-fall" data-prio="high">
+            <div class="row">
+              <div class="avatar">A</div>
+              <div class="who">
+                <div class="name">Alex · Room 01</div>
+                <div class="sub">1 open finding</div>
+              </div>
+              <span class="pill alert">High</span>
+            </div>
+            <div class="title-red">Possible fall detected</div>
+            <div class="when">Standing → lying · 25s ago</div>
+            <div class="open-link">Review case →</div>
+          </button>
+          <button type="button" class="card" data-open="case-inactive" data-prio="med">
+            <div class="row">
+              <div class="avatar">A</div>
+              <div class="who">
+                <div class="name">Alex · Room 01</div>
+                <div class="sub">Same patient</div>
+              </div>
+              <span class="pill attn">Med</span>
+            </div>
+            <div class="title-red" style="color:#A16207">Prolonged inactivity</div>
+            <div class="when">Still 8s · 40s ago</div>
+            <div class="open-link">Review case →</div>
+          </button>
+        </div>
+        <div class="empty" id="alertEmpty" hidden>
+          No open alerts. You’re clear — check History for closed cases.
+        </div>
+      </section>
+
+      <!-- HISTORY -->
+      <section class="screen" data-screen="history" id="screen-history">
+        <div class="hello">History</div>
+        <div class="summary">8 closed · avg response 5h</div>
+        <div class="section">
+          <h2>Closed cases</h2>
+          <div class="meta">Newest first</div>
+        </div>
+        <div class="list">
+          <button type="button" class="card selected" data-open="case-history">
+            <div class="row">
+              <div class="avatar">AL</div>
+              <div class="who">
+                <div class="name">Alex</div>
+                <div class="sub">Nov 27 · 10:56 AM</div>
+              </div>
+              <span class="pill done">Resolved</span>
+            </div>
+            <div class="title-red">Possible fall detected</div>
+          </button>
+          <button type="button" class="card" data-open="case-history">
+            <div class="row">
+              <div class="avatar">AL</div>
+              <div class="who">
+                <div class="name">Alex</div>
+                <div class="sub">Nov 27 · 10:56 AM</div>
+              </div>
+              <span class="pill done">Resolved</span>
+            </div>
+            <div class="title-red" style="color:#A16207">Prolonged inactivity</div>
+          </button>
+          <button type="button" class="card" data-open="case-history">
+            <div class="row">
+              <div class="avatar">AL</div>
+              <div class="who">
+                <div class="name">Alex</div>
+                <div class="sub">Nov 27 · 7:01 AM</div>
+              </div>
+              <span class="pill done">Resolved</span>
+            </div>
+            <div class="title-red">Possible fall detected</div>
+          </button>
+        </div>
+      </section>
+
+      <!-- SETTINGS -->
+      <section class="screen" data-screen="settings" id="screen-settings">
+        <div class="hello">Settings</div>
+        <div class="summary">Signed in as caregiver1</div>
+        <div class="settings-list">
+          <div class="card">
+            <div class="name" style="font-weight:750">Account</div>
+            <div class="sub">caregiver1 · demo login</div>
+          </div>
+          <div class="card">
+            <div class="name" style="font-weight:750">Live monitoring</div>
+            <div class="sub">Camera Station on the laptop</div>
+          </div>
+          <div class="card">
+            <div class="name" style="font-weight:750">Add patient</div>
+            <div class="sub">Name, room, live or video source</div>
+          </div>
+        </div>
+        <button type="button" class="cta ghost" id="signOutBtn">Sign out (mock)</button>
+      </section>
+
+      <!-- PATIENT (lean) -->
+      <section class="screen" data-screen="patient" id="screen-patient">
+        <div class="detail-head">
+          <button type="button" class="back" data-back="home">← Back</button>
+        </div>
+        <div class="panel">
+          <div class="row">
+            <div class="avatar" id="pAvatar">A</div>
+            <div class="who">
+              <div class="name" id="pName" style="font-size:20px">Alex</div>
+              <div class="sub" id="pRoom">Room 01 · Live camera</div>
+            </div>
+            <span class="pill safe" id="pStatus">Safe</span>
+          </div>
+        </div>
+        <div class="panel">
+          <h3>Patient actions</h3>
+          <button type="button" class="cta" data-toast="Room check would run here">Run room check</button>
+          <button type="button" class="cta ghost" data-back="home" style="margin-top:8px">Back to patients</button>
+        </div>
+        <div class="empty">
+          Alert tools (Care Response / Watch recording) appear when you open this patient from an <b>alert</b>.
+        </div>
+      </section>
+
+      <!-- CASE DETAIL -->
+      <section class="screen" data-screen="case" id="screen-case">
+        <div class="detail-head">
+          <button type="button" class="back" id="caseBack">← Back</button>
+        </div>
+        <div class="panel" style="background:#FEF2F2;border-color:#FECACA">
+          <div class="row">
+            <div class="avatar">A</div>
+            <div class="who">
+              <div class="name" id="cName">Alex · Room 01</div>
+              <div class="sub" id="cWhen">Nov 27 · 10:56 AM</div>
+            </div>
+            <span class="pill alert" id="cPill">High</span>
+          </div>
+          <div class="title-red" id="cTitle">Possible fall detected</div>
+          <div class="when" id="cBlurb">Standing → lying / tilt · check the patient now</div>
+        </div>
+
+        <div class="panel" id="careBlock">
+          <h3>Care response</h3>
+          <div class="kv"><span>Outcome</span><b id="cOutcome">—</b></div>
+          <div class="kv"><span>Care notes</span><b id="cNotes">—</b></div>
+          <div class="kv"><span>Resolved by</span><b id="cWho">—</b></div>
+          <button type="button" class="cta" id="cAction" data-toast="Would open Care Response">Respond now</button>
+        </div>
+
+        <div class="panel">
+          <h3>Snapshot</h3>
+          <div class="fake-video" style="aspect-ratio:4/3" aria-hidden="true">
+            <span style="position:relative;z-index:1;margin-top:56px;font-size:11px">Tap to enlarge (mock)</span>
+          </div>
+        </div>
+
+        <div class="panel">
+          <h3>Session recording</h3>
+          <div class="fake-video">Issue clip</div>
+          <div class="incident">
+            <div class="incident-chip" id="cChip">Possible fall · 0:42 into recording</div>
+            <div class="track"><div class="mark"></div></div>
+            <button type="button" class="jump" data-toast="Would jump to fall time">Jump to fall</button>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <nav class="dock" aria-label="Main">
+      <button type="button" class="on" data-nav="home"><span class="ico">⌂</span>Home</button>
+      <button type="button" data-nav="alerts"><span class="ico">!</span>Alerts</button>
+      <button type="button" data-nav="history"><span class="ico">◷</span>History</button>
+      <button type="button" data-nav="settings"><span class="ico">⚙</span>Settings</button>
+    </nav>
+    <div class="toast" id="toast"></div>
+  </div>
+
+  <script>
+    const screens = [...document.querySelectorAll('.screen')];
+    const dockBtns = [...document.querySelectorAll('.dock [data-nav]')];
+    let caseReturn = 'alerts';
+
+    function showScreen(id) {
+      screens.forEach((s) => s.classList.toggle('is-on', s.dataset.screen === id));
+      const tab = ['home', 'alerts', 'history', 'settings'].includes(id) ? id : null;
+      if (tab) {
+        dockBtns.forEach((b) => b.classList.toggle('on', b.dataset.nav === tab));
+      }
+      document.querySelector('.screens').scrollTop = 0;
+    }
+
+    function toast(msg) {
+      const el = document.getElementById('toast');
+      el.textContent = msg;
+      el.classList.add('show');
+      clearTimeout(toast._t);
+      toast._t = setTimeout(() => el.classList.remove('show'), 1600);
+    }
+
+    dockBtns.forEach((b) => {
+      b.addEventListener('click', () => showScreen(b.dataset.nav));
+    });
+
+    document.getElementById('bellBtn').addEventListener('click', () => {
+      showScreen('alerts');
+    });
+
+    document.querySelectorAll('[data-back]').forEach((b) => {
+      b.addEventListener('click', () => showScreen(b.dataset.back));
+    });
+
+    document.getElementById('caseBack').addEventListener('click', () => {
+      showScreen(caseReturn);
+    });
+
+    document.querySelectorAll('[data-toast]').forEach((b) => {
+      b.addEventListener('click', () => toast(b.dataset.toast));
+    });
+
+    document.getElementById('signOutBtn').addEventListener('click', () => {
+      toast('Sign out is mocked');
+    });
+
+    document.querySelectorAll('[data-open="patient-alex"]').forEach((b) => {
+      b.addEventListener('click', () => {
+        document.getElementById('pAvatar').textContent = 'A';
+        document.getElementById('pName').textContent = 'Alex';
+        document.getElementById('pRoom').textContent = 'Room 01 · Live camera';
+        showScreen('patient');
+      });
+    });
+    document.querySelectorAll('[data-open="patient-casey"]').forEach((b) => {
+      b.addEventListener('click', () => {
+        document.getElementById('pAvatar').textContent = 'C';
+        document.getElementById('pName').textContent = 'Casey';
+        document.getElementById('pRoom').textContent = 'Room 02 · Demo video';
+        showScreen('patient');
+      });
+    });
+
+    function openCase(kind, from) {
+      caseReturn = from;
+      const title = document.getElementById('cTitle');
+      const blurb = document.getElementById('cBlurb');
+      const pill = document.getElementById('cPill');
+      const chip = document.getElementById('cChip');
+      const outcome = document.getElementById('cOutcome');
+      const notes = document.getElementById('cNotes');
+      const who = document.getElementById('cWho');
+      const action = document.getElementById('cAction');
+
+      if (kind === 'fall') {
+        title.textContent = 'Possible fall detected';
+        blurb.textContent = 'Standing → lying / tilt · check the patient now';
+        pill.textContent = 'High';
+        pill.className = 'pill alert';
+        chip.textContent = 'Possible fall · 0:42 into recording';
+        outcome.textContent = '—';
+        notes.textContent = 'Not resolved yet';
+        who.textContent = '—';
+        action.textContent = 'Respond now';
+        action.hidden = false;
+      } else if (kind === 'inactive') {
+        title.textContent = 'Prolonged inactivity';
+        blurb.textContent = 'Still 8s · confirm the patient is OK';
+        pill.textContent = 'Med';
+        pill.className = 'pill attn';
+        chip.textContent = 'Inactivity · 0:49 into recording';
+        outcome.textContent = '—';
+        notes.textContent = 'Not resolved yet';
+        who.textContent = '—';
+        action.textContent = 'Respond now';
+        action.hidden = false;
+      } else {
+        title.textContent = 'Possible fall detected';
+        blurb.textContent = 'Closed case · snapshot + recording kept';
+        pill.textContent = 'Resolved';
+        pill.className = 'pill done';
+        chip.textContent = 'Possible fall · 0:42 into recording';
+        outcome.textContent = 'Patient is safe';
+        notes.textContent = 'oks';
+        who.textContent = 'caregiver1';
+        action.hidden = true;
+      }
+      showScreen('case');
+    }
+
+    document.querySelectorAll('[data-open="case-fall"]').forEach((b) => {
+      b.addEventListener('click', () => openCase('fall', 'alerts'));
+    });
+    document.querySelectorAll('[data-open="case-inactive"]').forEach((b) => {
+      b.addEventListener('click', () => openCase('inactive', 'alerts'));
+    });
+    document.querySelectorAll('[data-open="case-history"]').forEach((b) => {
+      b.addEventListener('click', () => {
+        document.querySelectorAll('#screen-history .card').forEach((c) => c.classList.remove('selected'));
+        b.classList.add('selected');
+        openCase('history', 'history');
+      });
+    });
+
+    const filters = document.getElementById('alertFilters');
+    const alertList = document.getElementById('alertList');
+    const alertEmpty = document.getElementById('alertEmpty');
+    filters.addEventListener('click', (e) => {
+      const chip = e.target.closest('.chip');
+      if (!chip) return;
+      filters.querySelectorAll('.chip').forEach((c) => c.classList.remove('on'));
+      chip.classList.add('on');
+      const f = chip.dataset.filter;
+      let shown = 0;
+      alertList.querySelectorAll('.card').forEach((card) => {
+        const p = card.dataset.prio;
+        let ok = f === 'all' || (f === 'high' && p === 'high') || (f === 'med' && p === 'med');
+        if (f === 'ack') ok = false;
+        card.hidden = !ok;
+        if (ok) shown += 1;
+      });
+      alertEmpty.hidden = shown > 0;
+    });
+  </script>
+</body>
+</html>

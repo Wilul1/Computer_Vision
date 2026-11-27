@@ -18,9 +18,12 @@ from src.care_demo import get_caregiver  # noqa: E402
 from src.event_store import EventStore  # noqa: E402
 from src.patient_details import (  # noqa: E402
     EMPTY_PLAYER_HTML,
+    build_incident_timeline_html,
     build_patient_details_html,
     build_playback_player_html,
     empty_playback_panel,
+    incident_marker_payload,
+    incident_offset_s,
     playback_panel_for_patient,
     recording_availability,
     select_session_playback,
@@ -111,14 +114,15 @@ class PlaybackUiTestCase(unittest.TestCase):
         )
         return self.store.get_session(sid)
 
-    def test_history_shows_recording_availability(self):
-        ready = self._session("p1-ana", status="READY")
-        failed = self._session("p1-ana", status="FAILED", with_file=False)
-        html = build_patient_details_html(self.store, self.user, "p1-ana")
-        self.assertIn("Recording available", html)
-        self.assertIn("Recording failed", html)
-        self.assertIn(f"Session #{ready['id']}", html)
-        self.assertIn(f"Session #{failed['id']}", html)
+    def test_patient_page_hides_session_history(self):
+        self._session("p1-ana", status="READY")
+        self._session("p1-ana", status="FAILED", with_file=False)
+        html = build_patient_details_html(
+            self.store, self.user, "p1-ana", alert_context=True,
+        )
+        self.assertNotIn("Monitoring session history", html)
+        self.assertNotIn("Recording available", html)
+        self.assertNotIn("Recording failed", html)
         self.assertNotIn("Pedro", html)
 
     def test_ready_vs_unavailable_labels(self):
@@ -210,6 +214,93 @@ class PlaybackUiTestCase(unittest.TestCase):
         for label, _ in choices:
             self.assertIn("Playable", label)
 
+    def test_incident_offset_math_and_timeline_html(self):
+        event = {
+            "id": 9,
+            "event_type": "possible_fall",
+            "created_at": "2026-11-27T12:00:42+00:00",
+        }
+        session = {
+            "recording_started_at": "2026-11-27T12:00:00+00:00",
+            "recording_duration_s": 76.0,
+        }
+        self.assertAlmostEqual(incident_offset_s(event, session), 42.0, places=3)
+        # Clamp to duration when alert is after the clip ends.
+        late = dict(event, created_at="2026-11-27T12:10:00+00:00")
+        self.assertAlmostEqual(incident_offset_s(late, session), 76.0, places=3)
+        self.assertIsNone(
+            incident_offset_s(event, {"started_at": "", "recording_duration_s": 10})
+        )
+        marker = incident_marker_payload(event, session)
+        self.assertTrue(marker["is_fall"])
+        self.assertAlmostEqual(marker["jump_s"], 37.0, places=3)
+        self.assertAlmostEqual(marker["pct"], 100.0 * 42.0 / 76.0, places=2)
+        html = build_incident_timeline_html(marker)
+        self.assertIn("cv-incident-mark-fall", html)
+        self.assertIn("Jump to fall", html)
+        self.assertIn("Possible fall", html)
+        self.assertIn('data-offset="42.000"', html)
+        self.assertIn("0:42 into recording", html)
+        missing = build_incident_timeline_html(
+            incident_marker_payload(
+                {"id": 1, "event_type": "inactive", "created_at": ""},
+                session,
+            )
+        )
+        self.assertIn("Incident time unavailable", missing)
+        self.assertNotIn("cv-incident-mark", missing)
+
+    def test_issue_playback_loads_only_linked_session(self):
+        ready = self._session("p1-ana", status="READY")
+        older = self._session("p1-ana", status="READY")
+        # Prefer the first READY as the issue session; second must not be listed.
+        event = self.store.create_event(
+            patient_id="p1-ana",
+            event_type="possible_fall",
+            action_text="Check Ana",
+            reason_text="fall",
+            session_id=int(ready["id"]),
+        )
+        # Pin alert 12s into the recording for a deterministic yellow tick.
+        with self.store._lock:
+            conn = self.store._connect()
+            try:
+                conn.execute(
+                    "UPDATE events SET created_at = ? WHERE id = ?",
+                    ("2026-11-25T12:00:12+00:00", int(event["id"])),
+                )
+                conn.commit()
+            finally:
+                conn.close()
+        dd, player, info, sid = playback_panel_for_patient(
+            self.store, self.user, "p1-ana", focus_event_id=int(event["id"]),
+        )
+        self.assertEqual(sid, int(ready["id"]))
+        self.assertIn("<video", player)
+        self.assertIn(f"/api/sessions/{ready['id']}/video?patient_id=p1-ana", player)
+        self.assertNotIn(f"/api/sessions/{older['id']}/", player)
+        self.assertIn("cv-incident-bar", player)
+        self.assertIn("cv-incident-mark-fall", player)
+        self.assertIn("Jump to fall", player)
+        self.assertIn('data-offset="12.000"', player)
+        self.assertIn("Possible fall", info)
+        # Hidden single-choice dropdown — never a past-session list.
+        choices = getattr(dd, "choices", None)
+        if choices is None and isinstance(dd, dict):
+            choices = dd.get("choices")
+        if choices is not None:
+            self.assertEqual(len(choices), 1)
+            self.assertEqual(choices[0][1], int(ready["id"]))
+
+    def test_issue_playback_empty_without_focus(self):
+        self._session("p1-ana", status="READY")
+        dd, player, info, sid = playback_panel_for_patient(
+            self.store, self.user, "p1-ana",
+        )
+        self.assertIsNone(sid)
+        self.assertNotIn("<video", player)
+        self.assertIn("No issue recording", player)
+
     def test_switch_patient_clears_player(self):
         self._session("p1-ana", status="READY")
         dd, player, info, sid = playback_panel_for_patient(
@@ -217,7 +308,7 @@ class PlaybackUiTestCase(unittest.TestCase):
         )
         self.assertIsNone(sid)
         self.assertNotIn("<video", player)
-        self.assertIn("Select a session", player)
+        self.assertIn("No issue recording", player)
         # Dropdown for Pedro should not list Ana's sessions
         # gr.update choices are in dd
         self.assertTrue(hasattr(dd, "choices") or isinstance(dd, dict) or dd is not None)

@@ -16,13 +16,15 @@ from .alert_center import (
     build_alert_center_html,
     event_display_title,
     list_caregiver_active_alerts,
+    list_caregiver_patient_alerts,
     outcome_label,
-    snapshot_data_uri,
+    parse_alert_bundle,
+    session_ready_for_event,
 )
 from .care_demo import get_caregiver, get_patient, patients_for, resolve_video_path
 from .event_store import ACTIVE_STATUSES, EventStore
 from .monitoring import MonitoringSession
-from .playback import recordings_root
+from .playback import event_snapshot_url, recordings_root
 
 
 def _attach_source_video_recording(
@@ -174,6 +176,12 @@ def _initials(name: str) -> str:
 
 def _build_resolved_history_html(store: EventStore, caregiver_id: str) -> tuple[str, int]:
     """History board: clickable event list + detail/snapshot panel (no icons)."""
+    # Lazy import — patient_details already imports care_home helpers.
+    from .patient_details import (
+        build_incident_timeline_html,
+        incident_marker_payload,
+    )
+
     patients = patients_for(caregiver_id)
     if not patients:
         empty = (
@@ -191,7 +199,7 @@ def _build_resolved_history_html(store: EventStore, caregiver_id: str) -> tuple[
     if not resolved:
         empty = (
             '<div class="cv-alert-empty">No resolved events yet. '
-            "Resolve an open alert and it appears here with its snapshot.</div>"
+            "Resolve an open alert and it appears here with its snapshot and recording.</div>"
         )
         return empty, 0
 
@@ -229,13 +237,47 @@ def _build_resolved_history_html(store: EventStore, caregiver_id: str) -> tuple[
         who = str(e.get("handled_by") or "caregiver")
         resolved_when = _fmt_hist_when(e.get("resolved_at") or e.get("created_at"))
         resp = _fmt_response(_response_secs(e))
-        uri = snapshot_data_uri(e.get("snapshot_path"), max_bytes=600_000)
-        snap_count = 1 if uri else 0
-        snap_html = (
-            f'<img class="cv-hist2-snap" src="{uri}" alt="Event {eid} snapshot">'
-            if uri
-            else '<div class="cv-hist2-snap-empty">No snapshot on file</div>'
-        )
+        snap_rel = str(e.get("snapshot_path") or "").strip()
+        snap_path = Path(snap_rel) if snap_rel else None
+        if snap_path is not None and not snap_path.is_absolute():
+            snap_path = config.ROOT / snap_path
+        has_snap = bool(snap_path and snap_path.is_file())
+        snap_count = 1 if has_snap else 0
+        if has_snap:
+            snap_src = html_lib.escape(event_snapshot_url(int(eid), pid), quote=True)
+            snap_html = (
+                f'<button type="button" class="cv-snap-zoom cv-hist2-snap-zoom" '
+                f'aria-label="Enlarge snapshot">'
+                f'<img class="cv-hist2-snap" src="{snap_src}" alt="Event {html_lib.escape(eid)} snapshot">'
+                f"</button>"
+            )
+        else:
+            snap_html = '<div class="cv-hist2-snap-empty">No snapshot on file</div>'
+        ready = session_ready_for_event(store, e)
+        if ready:
+            sid_i = int(ready["session_id"])
+            sess_row = store.get_session(sid_i) or {}
+            marker = incident_marker_payload(e, sess_row)
+            timeline = build_incident_timeline_html(marker)
+            video_src = html_lib.escape(
+                f"/api/sessions/{sid_i}/video?patient_id={pid}",
+                quote=True,
+            )
+            video_html = (
+                f'<div class="pd-player-panel cv-hist2-player" data-session="{sid_i}">'
+                f'<video class="cv-hist2-video pd-player" controls playsinline preload="metadata" '
+                f'src="{video_src}"></video>'
+                f"{timeline}"
+                f'<div class="cv-hist2-row-time" style="margin-top:8px">'
+                f"Session #{sid_i} · issue recording</div>"
+                f"</div>"
+            )
+            video_stat = "Ready"
+        else:
+            video_html = (
+                '<div class="cv-hist2-snap-empty">No session recording linked to this alert.</div>'
+            )
+            video_stat = "None"
         blurb = (
             "The system detected a possible sudden fall."
             if is_fall
@@ -267,6 +309,7 @@ def _build_resolved_history_html(store: EventStore, caregiver_id: str) -> tuple[
                 <div class="cv-hist2-alert-blurb">{html_lib.escape(blurb)}</div>
                 <div class="cv-hist2-alert-stats">
                   <div><span>Snapshots</span><b>{snap_count} image{'s' if snap_count != 1 else ''}</b></div>
+                  <div><span>Recording</span><b>{video_stat}</b></div>
                   <div><span>Response time</span><b>{html_lib.escape(resp)}</b></div>
                   <div><span>Status</span><b class="ok">Resolved</b></div>
                 </div>
@@ -292,22 +335,22 @@ def _build_resolved_history_html(store: EventStore, caregiver_id: str) -> tuple[
                 <div class="cv-hist2-card-h">Event snapshots</div>
                 <div class="cv-hist2-snaps">{snap_html}</div>
               </div>
+              <div class="cv-hist2-card">
+                <div class="cv-hist2-card-h">Session recording</div>
+                {video_html}
+              </div>
             </div>
             """
         )
 
     html = f"""
     <style>
-      .cv-hist2{{display:grid;gap:14px}}
-      .cv-hist2-stats{{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}}
-      .cv-hist2-stat{{background:#fff;border:1px solid #E2E8F0;border-radius:14px;padding:14px 16px}}
-      .cv-hist2-stat-l{{font-size:11px;font-weight:700;color:#64748B;text-transform:uppercase;letter-spacing:.04em}}
-      .cv-hist2-stat-n{{margin-top:6px;font-size:24px;font-weight:750;color:#0F172A}}
-      .cv-hist2-stat-s{{margin-top:4px;font-size:11px;color:#94A3B8}}
-      .cv-hist2-stat.fall .cv-hist2-stat-n{{color:#B91C1C}}
-      .cv-hist2-stat.ok .cv-hist2-stat-n{{color:#15803D}}
+      .cv-hist2{{display:grid;gap:12px}}
+      .cv-hist2-summary{{font-size:13px;color:#64748B;font-weight:650;padding:2px 2px 4px}}
+      .cv-hist2-summary b{{color:#0F172A;font-weight:750}}
+      .cv-hist2-summary .fall{{color:#B91C1C;font-weight:750}}
       .cv-hist2-grid{{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,.95fr);gap:14px;align-items:start}}
-      .cv-hist2-panel{{background:#fff;border:1px solid #E2E8F0;border-radius:16px;padding:14px;min-height:320px}}
+      .cv-hist2-panel{{background:#fff;border:1px solid #E2E8F0;border-radius:16px;padding:14px;min-height:280px}}
       .cv-hist2-panel-h{{font-size:15px;font-weight:750;color:#0F172A;margin:0 0 12px}}
       .cv-hist2-list{{display:grid;gap:8px;max-height:min(70vh,720px);overflow:auto}}
       .cv-hist2-row{{display:flex;gap:12px;align-items:center;width:100%;text-align:left;
@@ -333,7 +376,7 @@ def _build_resolved_history_html(store: EventStore, caregiver_id: str) -> tuple[
       .cv-hist2-alert-fall .cv-hist2-alert-title{{color:#7F1D1D}}
       .cv-hist2-alert-meta{{margin-top:4px;font-size:12px;color:#64748B}}
       .cv-hist2-alert-blurb{{margin-top:8px;font-size:13px;color:#334155;line-height:1.45}}
-      .cv-hist2-alert-stats{{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:12px}}
+      .cv-hist2-alert-stats{{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:12px}}
       .cv-hist2-alert-stats span{{display:block;font-size:10px;font-weight:700;color:#94A3B8;margin-bottom:2px}}
       .cv-hist2-alert-stats b{{font-size:13px;color:#0F172A}}
       .cv-hist2-alert-stats b.ok{{color:#15803D}}
@@ -345,43 +388,30 @@ def _build_resolved_history_html(store: EventStore, caregiver_id: str) -> tuple[
       .cv-hist2-kv span{{color:#64748B}}
       .cv-hist2-kv b{{color:#0F172A;font-weight:650;text-align:right;max-width:65%}}
       .cv-hist2-snaps{{display:grid;gap:10px}}
-      .cv-hist2-snap{{width:100%;max-height:260px;object-fit:cover;border-radius:12px;border:1px solid #E2E8F0;background:#F8FAFC}}
+      .cv-hist2-snap{{width:100%;max-height:260px;object-fit:cover;border-radius:12px;border:1px solid #E2E8F0;background:#F8FAFC;display:block}}
+      .cv-hist2-snap-zoom{{appearance:none;border:0;padding:0;margin:0;background:transparent;width:100%;
+        cursor:zoom-in;display:block;border-radius:12px;overflow:hidden}}
+      .cv-hist2-video{{width:100%;max-height:280px;border-radius:12px;background:#0F172A;display:block}}
       .cv-hist2-snap-empty{{padding:28px;text-align:center;color:#94A3B8;font-size:13px;background:#F8FAFC;border-radius:12px}}
       @media(max-width:900px){{
-        .cv-hist2-stats{{grid-template-columns:repeat(2,minmax(0,1fr))}}
         .cv-hist2-grid{{grid-template-columns:1fr}}
+        .cv-hist2-list-panel{{order:1}}
+        .cv-hist2-detail-panel{{order:2}}
         .cv-hist2-alert-stats{{grid-template-columns:1fr}}
+        .cv-hist2-panel{{min-height:0}}
       }}
     </style>
     <div class="cv-hist2" id="cv-hist2" data-hist-active="{html_lib.escape(first_id)}">
-      <div class="cv-hist2-stats">
-        <div class="cv-hist2-stat">
-          <div class="cv-hist2-stat-l">Total events</div>
-          <div class="cv-hist2-stat-n">{total}</div>
-          <div class="cv-hist2-stat-s">Resolved cases</div>
-        </div>
-        <div class="cv-hist2-stat fall">
-          <div class="cv-hist2-stat-l">Fall alerts</div>
-          <div class="cv-hist2-stat-n">{fall_n}</div>
-          <div class="cv-hist2-stat-s">Possible fall</div>
-        </div>
-        <div class="cv-hist2-stat ok">
-          <div class="cv-hist2-stat-l">Resolved</div>
-          <div class="cv-hist2-stat-n">{total}</div>
-          <div class="cv-hist2-stat-s">Closed in History</div>
-        </div>
-        <div class="cv-hist2-stat">
-          <div class="cv-hist2-stat-l">Avg response</div>
-          <div class="cv-hist2-stat-n">{html_lib.escape(_fmt_response(avg_resp))}</div>
-          <div class="cv-hist2-stat-s">Created → resolved</div>
-        </div>
+      <div class="cv-hist2-summary">
+        <b>{total}</b> closed · <span class="fall">{fall_n} falls</span> ·
+        avg response {html_lib.escape(_fmt_response(avg_resp))}
       </div>
       <div class="cv-hist2-grid">
-        <div class="cv-hist2-panel">
-          <div class="cv-hist2-panel-h">Event History</div>
+        <div class="cv-hist2-panel cv-hist2-list-panel">
+          <div class="cv-hist2-panel-h">Closed cases</div>
           <div class="cv-hist2-list">{"".join(list_rows)}</div>
         </div>
-        <div class="cv-hist2-panel">
+        <div class="cv-hist2-panel cv-hist2-detail-panel">
           {"".join(detail_panels)}
         </div>
       </div>
@@ -399,21 +429,54 @@ def _status_from_event_type(event_type: str) -> str:
 
 
 def effective_status(store: EventStore, patient_id: str) -> tuple[str, dict, list[dict]]:
-    """Board status = max(last check, any still-open events)."""
+    """Board status = live/last signal, elevated by still-open events.
+
+    Without open events, a stale ALERT/ATTENTION in patient_state alone must not
+    keep the card red after the caregiver already resolved everything.
+    """
     st = store.get_patient_state(patient_id) or {}
+    active = store.list_active(patient_id)
     status = st.get("status") or "SAFE"
     if status not in _STATUS_RANK:
         status = "SAFE"
-    active = store.list_active(patient_id)
+
+    # Prefer live hub status when this is the live patient with a fresh frame.
+    try:
+        from .live_hub import get_shared_hub
+
+        hub = get_shared_hub()
+        if hub is not None and hub.patient_id == patient_id:
+            snap = hub.snapshot()
+            if snap.get("has_fresh_frame"):
+                live_st = snap.get("status") or "SAFE"
+                if live_st in _STATUS_RANK:
+                    status = live_st
+    except Exception:
+        pass
+
     for e in active:
         cand = _status_from_event_type(e.get("event_type") or "")
         if _STATUS_RANK[cand] > _STATUS_RANK[status]:
             status = cand
+
+    # No open findings + not live-fresh → don't keep sticky ALERT from old state.
+    if not active and status in ("ALERT", "ATTENTION"):
+        live_fresh = False
+        try:
+            from .live_hub import get_shared_hub
+
+            hub = get_shared_hub()
+            if hub is not None and hub.patient_id == patient_id:
+                live_fresh = bool(hub.snapshot().get("has_fresh_frame"))
+        except Exception:
+            live_fresh = False
+        if not live_fresh:
+            status = "SAFE"
     return status, st, active
 
 
 def reconcile_patient_status(store: EventStore, patient_id: str) -> str:
-    """Persist elevated status when open events outrank the last frame."""
+    """Persist board status (open events elevate; clears sticky ALERT when none)."""
     status, st, _active = effective_status(store, patient_id)
     store.upsert_patient_state(
         patient_id,
@@ -438,8 +501,15 @@ def _open_alert_total(store: EventStore, caregiver_id: str) -> int:
 
 
 def _open_events_for_caregiver(store: EventStore, caregiver_id: str, limit: int = 8) -> list[dict]:
-    """Active alerts for caregiver, prioritized (High → Medium → Low)."""
+    """Active findings for caregiver (flat), prioritized (High → Medium → Low)."""
     return list_caregiver_active_alerts(store, caregiver_id, limit=limit, status="Active")
+
+
+def _open_patient_alerts_for_caregiver(
+    store: EventStore, caregiver_id: str, limit: int = 20,
+) -> list[dict]:
+    """Active patient-level alert groups for caregiver (P4.1)."""
+    return list_caregiver_patient_alerts(store, caregiver_id, limit=limit, status="Active")
 
 
 def normalize_panel(panel: str | None) -> str:
@@ -469,51 +539,35 @@ def build_dashboard_html(
     for p in patients_for(caregiver_id):
         status, st, active = effective_status(store, p["id"])
         activity = (st.get("activity") or "").replace("_", " ").title()
+        # Keep subtitle short for phone rows (mockup-style).
         if active and status != "SAFE":
-            top = active[0]
-            activity_line = (
-                f"{_event_title(top.get('event_type'))} · {_rel_time(top.get('created_at'))}"
-            )
-        elif activity:
-            activity_line = f"{activity} · {_rel_time(st.get('updated_at'))}"
+            sub = _event_title(active[0].get("event_type"))
+        elif activity and activity.lower() not in ("", "unknown"):
+            sub = activity
+        elif p.get("source_type") == "live":
+            sub = "Live camera"
+        elif p.get("source_type") == "video":
+            sub = "Demo video"
         else:
-            sessions = store.list_sessions(p["id"], limit=1)
-            if sessions:
-                activity_line = (
-                    f"Ready demo · session #{sessions[0].get('id')} · "
-                    f"{_rel_time(sessions[0].get('started_at'))}"
-                )
-            elif p.get("source_type") == "video":
-                activity_line = "Video linked · open → Run room check"
-            elif p.get("source_type") == "live":
-                activity_line = "Live camera · start Camera Station"
-            else:
-                activity_line = "No monitoring yet"
-        n_open = len(active)
+            sub = "No monitoring yet"
         pill = {
-            "SAFE": ("#DCFCE7", CV["safe"]),
-            "ATTENTION": ("#FEF9C3", "#A16207"),
-            "ALERT": ("#FEE2E2", CV["alert"]),
-        }.get(status, ("#F1F5F9", CV["muted"]))
-        bell = (
-            f'<span style="background:{CV["alert"]};color:#fff;border-radius:999px;'
-            f'font-size:10px;padding:2px 7px;font-weight:700">{n_open}</span>'
-            if n_open else
-            '<span style="color:#94A3B8;font-size:12px">0</span>'
-        )
+            "SAFE": ("#DCFCE7", CV["safe"], "Safe"),
+            "ATTENTION": ("#FEF9C3", "#A16207", "Attention"),
+            "ALERT": ("#FEE2E2", CV["alert"], "Alert"),
+        }.get(status, ("#F1F5F9", CV["muted"], status.title()))
         cards.append(
             f"""
-            <div class="cv-patient-card cv-clickable" data-patient-id="{p['id']}" role="button" tabindex="0"
-                 title="Click to open {p['name']}">
-              <div class="cv-patient-top">
-                <div class="cv-avatar">{p.get('initials', p['name'][:1])}</div>
-                <span class="cv-pill" style="background:{pill[0]};color:{pill[1]}">{status}</span>
+            <div class="cv-patient-card cv-clickable" data-patient-id="{p['id']}"
+                 role="button" tabindex="0" title="Open {p['name']}">
+              <div class="cv-patient-row">
+                <div class="cv-avatar">{html_lib.escape(str(p.get('initials', p['name'][:1])))}</div>
+                <div class="cv-patient-who">
+                  <div class="cv-patient-name">{html_lib.escape(str(p['name']))}</div>
+                  <div class="cv-patient-room">{html_lib.escape(str(p['room']))} · {html_lib.escape(sub)}</div>
+                </div>
+                <span class="cv-pill" style="background:{pill[0]};color:{pill[1]}">{pill[2]}</span>
               </div>
-              <div class="cv-patient-name">{p['name']}</div>
-              <div class="cv-patient-room">{p['room']}</div>
-              <div class="cv-patient-act">{activity_line}</div>
-              <div class="cv-patient-bell">Alerts {bell}</div>
-              <div class="cv-card-hint">Click to open</div>
+              <div class="cv-open-link">Open patient →</div>
             </div>
             """
         )
@@ -528,39 +582,40 @@ def build_dashboard_html(
             """
         )
 
-    def _event_row(e: dict, *, open_style: bool) -> str:
-        p = get_patient(e["patient_id"])
-        pname = p["name"] if p else e["patient_id"]
-        room = p["room"] if p else ""
-        title = _event_title(e.get("event_type"))
-        eid = e.get("id")
-        accent = "#B91C1C" if open_style else "#64748B"
-        thumb_bg = "#FEE2E2" if open_style else "#E2E8F0"
-        thumb_fg = "#DC2626" if open_style else "#64748B"
-        clickable = (
-            f' class="cv-alert-row cv-clickable" data-event-id="{eid}" role="button" tabindex="0"'
-            f' title="Click to review event {eid}"'
-            if open_style else
-            ' class="cv-alert-row"'
+    def _patient_alert_row(g: dict) -> str:
+        """Home Recent Alerts: one row per patient (P4.1 bundle)."""
+        pname = g.get("patient_name") or g.get("patient_id") or "Patient"
+        room = g.get("room") or ""
+        title = g.get("short_title") or _event_title(
+            (g.get("primary_event") or {}).get("event_type")
         )
+        eid = int(g.get("primary_event_id") or 0)
+        n = int(g.get("finding_count") or 1)
+        token = g.get("bundle_token") or str(eid)
+        extra = f" · {n} findings" if n > 1 else ""
+        status = g.get("overall_status") or "OPEN"
+        accent = "#B91C1C"
         return f"""
-            <div{clickable}>
-              <div class="cv-alert-thumb" style="background:{thumb_bg};color:{thumb_fg}">#{eid}</div>
+            <div class="cv-alert-row cv-clickable" data-event-id="{eid}"
+                 data-patient-id="{g.get('patient_id') or ''}"
+                 data-bundle="{token}" role="button" tabindex="0"
+                 title="Review patient alert ({n} finding{'s' if n != 1 else ''})">
+              <div class="cv-alert-thumb" style="background:#FEE2E2;color:#DC2626">#{eid}</div>
               <div class="cv-alert-body">
                 <div class="cv-alert-title">{pname} — {room}</div>
-                <div class="cv-alert-desc" style="color:{accent}">{title}</div>
-                <div class="cv-alert-time">{_rel_time(e.get('created_at'))} · {e.get('event_status')}</div>
+                <div class="cv-alert-desc" style="color:{accent}">{title}{extra}</div>
+                <div class="cv-alert-time">{_rel_time(g.get('latest_created_at'))} · {status}</div>
               </div>
-              <div class="cv-alert-open" style="color:{accent};background:{thumb_bg}">
-                {"Open" if open_style else f"Event {eid}"}
-              </div>
+              <div class="cv-alert-open" style="color:{accent};background:#FEE2E2">Open</div>
             </div>
             """
 
-    open_events = _open_events_for_caregiver(store, caregiver_id, limit=20)
-    alerts_html = [_event_row(e, open_style=True) for e in open_events]
+    open_groups = _open_patient_alerts_for_caregiver(store, caregiver_id, limit=20)
+    alerts_html = [_patient_alert_row(g) for g in open_groups]
     if not alerts_html:
         alerts_html = ['<div class="cv-alert-empty">No open alerts right now.</div>']
+    # Patient-level open count for Home (one row == one patient alert).
+    open_patient_n = len(open_groups)
 
     history_body, hist_n = _build_resolved_history_html(store, caregiver_id)
 
@@ -574,49 +629,54 @@ def build_dashboard_html(
         )
 
     greet = _greeting()
+    if open_patient_n == 0 and counts["ALERT"] == 0 and counts["ATTENTION"] == 0 and patient_n:
+        home_sub = f"{patient_n} patients · all safe right now"
+    else:
+        home_sub = (
+            f"{patient_n} patients · {counts['SAFE']} safe · "
+            f"{counts['ATTENTION']} attention · {counts['ALERT']} alert"
+            + (f" · {open_patient_n} open" if open_patient_n else "")
+        )
     titles = {
         "Home": (
-            f"{greet}, {caregiver_name}!",
-            f"{patient_n} patients · {open_n} open alert{'s' if open_n != 1 else ''} · "
-            f"{counts['ALERT']} alert · {counts['ATTENTION']} attention · {counts['SAFE']} safe",
+            greet,
+            home_sub,
         ),
         "Alerts": (
-            "Alert Center",
-            f"{open_n} active alert{'s' if open_n != 1 else ''} (OPEN + ACKNOWLEDGED) across your rooms",
+            "Alerts",
+            f"{open_patient_n} open patient case{'s' if open_patient_n != 1 else ''} · "
+            f"{open_n} finding{'s' if open_n != 1 else ''}",
         ),
         "History": (
             "History",
-            "View past events, responses, and snapshots",
+            f"{hist_n} closed case{'s' if hist_n != 1 else ''}",
         ),
-        "Settings": ("Settings", "Demo rooms and account"),
+        "Settings": ("Settings", f"Signed in as {caregiver_name}"),
     }
     hello, sub = titles[panel]
     filters = alert_filters or {}
 
     if panel == "Home":
         body = f"""
-          <div class="cv-stats">
+          <div class="cv-stats cv-stats-compact">
             <div class="cv-stat cv-stat-safe">
-              <div class="cv-stat-icon">✓</div>
-              <div><div class="cv-stat-n">{counts['SAFE']}</div><div class="cv-stat-l">Safe</div></div>
+              <div class="cv-stat-n">{counts['SAFE']}</div><div class="cv-stat-l">Safe</div>
             </div>
             <div class="cv-stat cv-stat-att">
-              <div class="cv-stat-icon">!</div>
-              <div><div class="cv-stat-n">{counts['ATTENTION']}</div><div class="cv-stat-l">Attention</div></div>
+              <div class="cv-stat-n">{counts['ATTENTION']}</div><div class="cv-stat-l">Attention</div>
             </div>
             <div class="cv-stat cv-stat-alert">
-              <div class="cv-stat-icon">!</div>
-              <div><div class="cv-stat-n">{counts['ALERT']}</div><div class="cv-stat-l">Alert</div></div>
+              <div class="cv-stat-n">{counts['ALERT']}</div><div class="cv-stat-l">Alert</div>
             </div>
           </div>
           <div class="cv-section-head">
-            <h2>My Patients</h2>
+            <h2>My patients</h2>
             <span class="cv-link">{patient_n} rooms</span>
           </div>
           <div class="cv-patients">{''.join(cards)}</div>
-          <div class="cv-section-head" style="margin-top:20px">
-            <h2>Recent Alerts</h2>
-            <span class="cv-link">{open_n} open</span>
+          <div class="cv-section-head" style="margin-top:18px">
+            <h2>Open alerts</h2>
+            <span class="cv-link">{open_patient_n} open</span>
           </div>
           <div class="cv-alerts">{''.join(alerts_html[:4])}</div>
         """
@@ -633,57 +693,35 @@ def build_dashboard_html(
             date_from=filters.get("date_from"),
             date_to=filters.get("date_to"),
         )
-        body += (
-            '<p class="cv-muted" style="margin-top:12px">'
-            "Expand an alert for details. Select the matching event below, then Acknowledge or Resolve. "
-            "Open patient jumps to that patient's details and session playback.</p>"
-        )
     elif panel == "History":
-        body = f"""
-          <div class="cv-section-head">
-            <h2>History</h2>
-            <span class="cv-link">{hist_n} closed</span>
-          </div>
-          <p class="cv-muted" style="margin:0 0 12px">
-            Tap a patient event to open its summary, caregiver response, and snapshot.
-          </p>
-          {history_body}
-        """
+        body = history_body
     else:
         if not settings_rooms:
             settings_rooms = [
                 '<div class="cv-alert-empty">No rooms yet — add a patient below.</div>'
             ]
         body = f"""
-          <div class="cv-section-head">
-            <h2>Settings</h2>
-            <span class="cv-link">CareView</span>
-          </div>
           <div class="cv-alerts" style="margin-bottom:14px">
             <div class="cv-alert-row"><div class="cv-alert-body">
-              <div class="cv-alert-title">Signed in as {caregiver_name}</div>
-              <div class="cv-alert-time">Demo login · caregiver / care123</div>
+              <div class="cv-alert-title">Account</div>
+              <div class="cv-alert-time">{caregiver_name} · demo login caregiver / care123</div>
             </div></div>
           </div>
-          <div class="cv-section-head"><h2>Your patients / rooms</h2></div>
+          <div class="cv-section-head"><h2>Your patients</h2></div>
           <div class="cv-alerts">{''.join(settings_rooms)}</div>
           <p class="cv-muted" style="margin-top:12px">
-            Use <b>Add patient</b> under this page to register a name and room.
-            Optional: mark one patient for the laptop <b>/camera-station</b> live camera.
+            Use <b>Add patient</b> below for a name and room. Optional live camera via
+            laptop <b>/camera-station</b>.
           </p>
         """
 
     return f"""
     <div id="careview-root" class="cv-app cv-app-mainonly">
-      <section class="cv-main" style="width:100%;padding:22px 28px 20px;background:#F1F5F9;min-height:70vh">
+      <section class="cv-main">
         <div class="cv-top">
           <div>
             <div class="cv-hello">{hello}</div>
             <div class="cv-sub">{sub}</div>
-          </div>
-          <div class="cv-top-right">
-            <span class="cv-live-pill"><i></i> Live Monitoring</span>
-            <span class="cv-user">{caregiver_name}</span>
           </div>
         </div>
         {body}
@@ -819,17 +857,20 @@ def gr_patient_choices(caregiver_id: str | None):
 
 
 def gr_open_event_choices(store: EventStore, caregiver_id: str | None):
-    """Dropdown labels for open/ack events — values are event ids."""
+    """Dropdown labels for patient alert bundles — values are reviewed-ID tokens."""
     if not caregiver_id:
         return []
     choices = []
-    for e in _open_events_for_caregiver(store, caregiver_id, limit=20):
-        name = e.get("patient_name") or (
-            (get_patient(e["patient_id"]) or {}).get("name") or e["patient_id"]
+    for g in _open_patient_alerts_for_caregiver(store, caregiver_id, limit=20):
+        name = g.get("patient_name") or g.get("patient_id") or "Patient"
+        title = g.get("short_title") or _event_title(
+            (g.get("primary_event") or {}).get("event_type")
         )
-        title = e.get("short_title") or _event_title(e.get("event_type"))
-        pri = e.get("priority") or ""
-        choices.append((f"#{e['id']} [{pri}] {name} · {title}", int(e["id"])))
+        pri = g.get("priority") or ""
+        n = int(g.get("finding_count") or 1)
+        extra = f" (+{n - 1} more)" if n > 1 else ""
+        token = g.get("bundle_token") or str(g.get("primary_event_id") or "")
+        choices.append((f"[{pri}] {name} · {title}{extra}", token))
     return choices
 
 
@@ -1062,17 +1103,17 @@ def run_room_check(
 
 
 def review_alert(user, event_id, store: EventStore, new_pipeline, lock, progress=None, panel="Home"):
-    """Open the patient case for an alert and focus that event id."""
+    """Open the patient case for an alert and focus that event id / bundle."""
     import gradio as gr
 
     if not user:
         raise gr.Error("Sign in first.")
     if event_id is None or event_id == "":
         raise gr.Error("Pick an open alert first.")
-    try:
-        eid = int(event_id)
-    except (TypeError, ValueError) as exc:
-        raise gr.Error("Event id must be a number.") from exc
+    primary, _ids = parse_alert_bundle(event_id)
+    if primary is None:
+        raise gr.Error("Pick a valid patient alert first.")
+    eid = int(primary)
     row = store.get(eid)
     if row is None:
         raise gr.Error(f"Event {eid} not found.")

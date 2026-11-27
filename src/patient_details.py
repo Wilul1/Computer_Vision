@@ -1,7 +1,6 @@
 """Patient details page for CareView (filtered to one patient)."""
 from __future__ import annotations
 
-import base64
 import html as html_lib
 from datetime import datetime, timezone
 from pathlib import Path
@@ -17,20 +16,20 @@ from .care_home import (
     reconcile_patient_status,
 )
 from .event_store import EventStore
-from .playback import PlaybackError, session_meta_payload
+from .playback import PlaybackError, event_snapshot_url, session_meta_payload
 
 _ACTIVITIES = ("sitting", "standing", "walking", "running", "lying", "unknown")
 
 EMPTY_PLAYER_HTML = """
 <div class="pd-player-panel" data-patient="" data-session="">
-  <div class="pd-empty">Select a session with a ready recording to watch it here.
-  The player stays empty until you choose one.</div>
+  <div class="pd-empty">No issue recording to play yet.
+  Open an alert to load the session video linked to that finding.</div>
 </div>
 """
 
 EMPTY_PLAYER_INFO_HTML = """
-<div class="pd-player-info pd-muted">Session recording details appear after you select a playable session.
-Older recordings may not play on every phone.</div>
+<div class="pd-player-info pd-muted">The recording for this alert appears here when available.
+Past sessions are not listed.</div>
 """
 
 
@@ -54,6 +53,139 @@ def _fmt_dur(seconds: float) -> str:
         return f"{m}m {rem}s"
     h, m = divmod(m, 60)
     return f"{h}h {m}m"
+
+
+def _fmt_clock(seconds: float) -> str:
+    """Compact mm:ss / h:mm:ss for incident labels."""
+    s = max(0, int(round(float(seconds or 0))))
+    m, rem = divmod(s, 60)
+    if m < 60:
+        return f"{m}:{rem:02d}"
+    h, m = divmod(m, 60)
+    return f"{h}:{m:02d}:{rem:02d}"
+
+
+def _parse_iso(iso: str | None) -> datetime | None:
+    raw = (iso or "").strip()
+    if not raw:
+        return None
+    try:
+        dt = datetime.fromisoformat(raw.replace("Z", "+00:00"))
+    except ValueError:
+        return None
+    if dt.tzinfo is None:
+        dt = dt.replace(tzinfo=timezone.utc)
+    return dt
+
+
+def incident_offset_s(
+    event: dict[str, Any] | None,
+    session: dict[str, Any] | None,
+) -> float | None:
+    """Seconds from recording start to alert time, clamped to session duration.
+
+    Uses ``recording_started_at`` then ``started_at``. Returns None when timing
+    cannot be computed.
+    """
+    if not event or not session:
+        return None
+    created = _parse_iso(str(event.get("created_at") or ""))
+    started = _parse_iso(
+        str(session.get("recording_started_at") or session.get("started_at") or "")
+    )
+    if created is None or started is None:
+        return None
+    offset = (created - started).total_seconds()
+    if offset < 0:
+        offset = 0.0
+    duration = float(
+        session.get("recording_duration_s")
+        or session.get("duration_s")
+        or 0.0
+    )
+    if duration > 0:
+        offset = min(offset, duration)
+    return float(offset)
+
+
+def incident_marker_payload(
+    event: dict[str, Any] | None,
+    session: dict[str, Any] | None,
+) -> dict[str, Any] | None:
+    """UI payload for classification chip + yellow timeline tick."""
+    if not event:
+        return None
+    et = str(event.get("event_type") or "")
+    label = _event_title(et)
+    is_fall = et == "possible_fall"
+    offset = incident_offset_s(event, session)
+    duration = float(
+        (session or {}).get("recording_duration_s")
+        or (session or {}).get("duration_s")
+        or 0.0
+    )
+    pct = None
+    jump_s = None
+    if offset is not None:
+        jump_s = max(0.0, float(offset) - 5.0)
+        if duration > 0:
+            pct = min(100.0, max(0.0, 100.0 * float(offset) / duration))
+    try:
+        eid = int(event.get("id") or 0) or None
+    except (TypeError, ValueError):
+        eid = None
+    return {
+        "event_id": eid,
+        "label": label,
+        "is_fall": is_fall,
+        "offset_s": offset,
+        "jump_s": jump_s,
+        "pct": pct,
+        "duration_s": duration if duration > 0 else None,
+    }
+
+
+def build_incident_timeline_html(marker: dict[str, Any] | None) -> str:
+    """Custom timeline strip (YouTube-ad-style tick) under the native player."""
+    if not marker:
+        return ""
+    label = html_lib.escape(str(marker.get("label") or "Alert"))
+    is_fall = bool(marker.get("is_fall"))
+    chip_cls = "cv-incident-chip cv-incident-fall" if is_fall else "cv-incident-chip"
+    jump_label = "Jump to fall" if is_fall else "Jump to incident"
+    offset = marker.get("offset_s")
+    if offset is None:
+        return f"""
+<div class="cv-incident-bar cv-incident-unavailable">
+  <div class="{chip_cls}">{label} · Incident time unavailable</div>
+</div>
+"""
+    clock = html_lib.escape(_fmt_clock(float(offset)))
+    jump_s = float(marker.get("jump_s") if marker.get("jump_s") is not None else offset)
+    pct = marker.get("pct")
+    duration = marker.get("duration_s")
+    pct_attr = f'{float(pct):.2f}' if isinstance(pct, (int, float)) else ""
+    dur_attr = f'{float(duration):.3f}' if isinstance(duration, (int, float)) else ""
+    left_style = (
+        f'style="left:{float(pct):.2f}%"'
+        if isinstance(pct, (int, float))
+        else ""
+    )
+    mark_cls = "cv-incident-mark cv-incident-mark-fall" if is_fall else "cv-incident-mark"
+    return f"""
+<div class="cv-incident-bar" data-offset="{float(offset):.3f}"
+     data-jump="{jump_s:.3f}" data-duration="{dur_attr}" data-pct="{pct_attr}">
+  <div class="cv-incident-row">
+    <div class="{chip_cls}">{label} · {clock} into recording</div>
+    <button type="button" class="cv-incident-jump">{jump_label}</button>
+  </div>
+  <div class="cv-incident-track" role="img"
+       aria-label="{label} at {clock}">
+    <button type="button" class="{mark_cls}" {left_style}
+            aria-label="{jump_label} at {clock}"></button>
+  </div>
+</div>
+"""
 
 
 def _today_prefix() -> str:
@@ -202,11 +334,11 @@ def session_playback_choices(
 
 
 def empty_playback_panel() -> tuple[Any, str, str, None]:
-    """Cleared session dropdown + player (used on patient switch / back)."""
+    """Cleared player (used on patient switch / back). Session picker stays hidden."""
     import gradio as gr
 
     return (
-        gr.update(choices=[], value=None),
+        gr.update(choices=[], value=None, visible=False),
         EMPTY_PLAYER_HTML,
         EMPTY_PLAYER_INFO_HTML,
         None,
@@ -217,17 +349,68 @@ def playback_panel_for_patient(
     store: EventStore,
     user,
     patient_id: str,
-) -> tuple[Any, str, str, None]:
-    """Populate session dropdown for the open patient; player stays empty (no auto-load)."""
+    *,
+    focus_event_id: int | None = None,
+) -> tuple[Any, str, str, int | None]:
+    """Watch recording for one alert only — no past-session picker.
+
+    When ``focus_event_id`` is set, auto-loads that event's linked session video
+    (if READY). Otherwise the player stays empty.
+    """
     import gradio as gr
 
     _assert_access(user, patient_id)
-    choices = session_playback_choices(store, patient_id)
+    hidden_dd = gr.update(choices=[], value=None, visible=False)
+    if focus_event_id in (None, ""):
+        return hidden_dd, EMPTY_PLAYER_HTML, EMPTY_PLAYER_INFO_HTML, None
+    try:
+        eid = int(focus_event_id)
+    except (TypeError, ValueError):
+        return (
+            hidden_dd,
+            EMPTY_PLAYER_HTML,
+            '<div class="pd-empty">Invalid alert — cannot load a recording.</div>',
+            None,
+        )
+
+    event = store.get(eid)
+    if event is None or str(event.get("patient_id") or "") != patient_id:
+        return (
+            hidden_dd,
+            EMPTY_PLAYER_HTML,
+            '<div class="pd-empty">That alert is not available for this patient.</div>',
+            None,
+        )
+
+    sid_raw = event.get("session_id")
+    if sid_raw in (None, ""):
+        return (
+            hidden_dd,
+            EMPTY_PLAYER_HTML,
+            '<div class="pd-empty">This alert has no linked session recording yet.</div>',
+            None,
+        )
+    try:
+        sid = int(sid_raw)
+    except (TypeError, ValueError):
+        return (
+            hidden_dd,
+            EMPTY_PLAYER_HTML,
+            '<div class="pd-empty">This alert has no linked session recording yet.</div>',
+            None,
+        )
+
+    player, info, loaded = select_session_playback(
+        user, patient_id, sid, store, event=event,
+    )
+    if loaded is None:
+        return hidden_dd, player, info, None
+    label = f"Issue recording · session #{sid}"
     return (
-        gr.update(choices=choices, value=None),
-        EMPTY_PLAYER_HTML,
-        EMPTY_PLAYER_INFO_HTML,
-        None,
+        gr.update(choices=[(label, sid)], value=sid, visible=False),
+        player,
+        info,
+        sid,
     )
 
 
@@ -236,14 +419,17 @@ def build_playback_player_html(
     patient_id: str,
     session_id: int,
     video_url: str,
+    incident: dict[str, Any] | None = None,
 ) -> str:
     """Trusted P2 video_url only — never invent paths."""
     safe_url = html_lib.escape(video_url, quote=True)
     safe_pid = html_lib.escape(patient_id, quote=True)
+    timeline = build_incident_timeline_html(incident)
     return f"""
 <div class="pd-player-panel" data-patient="{safe_pid}" data-session="{int(session_id)}">
   <video class="pd-player" controls playsinline preload="metadata"
     src="{safe_url}"></video>
+  {timeline}
   <div class="pd-muted" style="margin-top:8px">
     Uses the browser player (Range streaming). Older recordings may not play on every phone.
   </div>
@@ -257,6 +443,8 @@ def build_playback_info_html(
     patient_id: str,
     session_id: int,
     meta: dict[str, Any],
+    *,
+    incident: dict[str, Any] | None = None,
 ) -> str:
     patient = _assert_access(user, patient_id)
     row = store.get_session(int(session_id)) or {}
@@ -274,6 +462,18 @@ def build_playback_info_html(
         final_act = final_act.replace("_", " ").title()
     final_act = html_lib.escape(str(final_act))
     rec_st = html_lib.escape(str(meta.get("recording_status") or row.get("recording_status") or "—"))
+    incident_row = ""
+    if incident:
+        lab = html_lib.escape(str(incident.get("label") or "Alert"))
+        off = incident.get("offset_s")
+        when_inc = (
+            html_lib.escape(_fmt_clock(float(off)))
+            if off is not None
+            else "unavailable"
+        )
+        incident_row = (
+            f"<div><b>Incident</b><br>{lab} · {when_inc}</div>"
+        )
     return f"""
 <div class="pd-player-info">
   <div class="pd-meta" style="margin-top:0">
@@ -284,6 +484,7 @@ def build_playback_info_html(
     <div><b>Session status</b><br>{sess_st}</div>
     <div><b>Final activity</b><br>{final_act}</div>
     <div><b>Recording status</b><br>{rec_st}</div>
+    {incident_row}
   </div>
 </div>
 """
@@ -294,6 +495,8 @@ def select_session_playback(
     patient_id: str,
     session_id,
     store: EventStore,
+    *,
+    event: dict[str, Any] | None = None,
 ) -> tuple[str, str, int | None]:
     """Revalidate P2 meta and build player HTML. Rejects cross-patient / stale ids."""
     pid = (patient_id or "").strip()
@@ -347,10 +550,16 @@ def select_session_playback(
             None,
         )
 
+    incident = incident_marker_payload(event, row) if event else None
     player = build_playback_player_html(
-        patient_id=pid, session_id=sid, video_url=str(meta["video_url"]),
+        patient_id=pid,
+        session_id=sid,
+        video_url=str(meta["video_url"]),
+        incident=incident,
     )
-    info = build_playback_info_html(store, user, pid, sid, meta)
+    info = build_playback_info_html(
+        store, user, pid, sid, meta, incident=incident,
+    )
     return player, info, sid
 
 
@@ -360,11 +569,17 @@ def build_patient_details_html(
     patient_id: str,
     *,
     focus_event_id: int | None = None,
+    alert_context: bool = False,
 ) -> str:
-    """HTML for one patient's details page (server-filtered)."""
+    """HTML for one patient's details page (server-filtered).
+
+    ``alert_context`` (from alert banner / review) shows Current alerts + snapshots.
+    Plain patient open stays lean: identity + monitoring info only (live cam is separate).
+    """
     patient = _assert_access(user, patient_id)
     reconcile_patient_status(store, patient_id)
     status, st, active = effective_status(store, patient_id)
+    show_alerts = bool(alert_context or focus_event_id is not None)
     activity = (st.get("activity") or "—").replace("_", " ").title()
     reason = st.get("reason") or "No recent monitoring reason recorded."
     updated = _rel_time(st.get("updated_at"))
@@ -439,58 +654,6 @@ def build_patient_details_html(
             f'<div class="pd-acts">{"".join(activity_cards)}</div>'
         )
 
-    # Sessions (recording availability labels — playback controls live in Gradio widgets)
-    if not sessions:
-        if source_type == "video":
-            session_rows = (
-                '<div class="pd-empty">No sessions yet — use <b>Run room check</b> '
-                "to analyze the linked room video and unlock <b>Watch recording</b>.</div>"
-            )
-        else:
-            session_rows = (
-                '<div class="pd-empty">No saved monitoring sessions yet for this patient.</div>'
-            )
-    else:
-        bits = []
-        for s in sessions:
-            secs = s.get("activity_seconds") or {}
-            top = ""
-            if secs:
-                lab, _ = max(secs.items(), key=lambda kv: kv[1])
-                top = f" · mostly {str(lab).replace('_', ' ')}"
-            sess_st = s.get("session_status") or "COMPLETED"
-            final_act = (s.get("final_activity") or "—")
-            if isinstance(final_act, str):
-                final_act = final_act.replace("_", " ").title()
-            avail = recording_availability(store, s)
-            rec_label = avail["label"]
-            chip = "pd-chip pd-chip-rec-ok" if avail["playable"] else "pd-chip"
-            when = _fmt_session_when(s.get("started_at"))
-            dur_s = float(s.get("recording_duration_s") or s.get("duration_s") or 0)
-            bits.append(
-                f"""
-                <div class="pd-row">
-                  <div>
-                    <div class="pd-row-title">Session #{s.get('id')} · {sess_st} · {when}</div>
-                    <div class="pd-row-sub">
-                      {_fmt_dur(dur_s)} · {_rel_time(s.get('started_at'))} ·
-                      {s.get('room_id') or patient.get('room') or ''} ·
-                      final activity {final_act} · {s.get('event_count', 0)} events{top}<br>
-                      Recording: <b>{html_lib.escape(rec_label)}</b>
-                    </div>
-                  </div>
-                  <div class="{chip}">{html_lib.escape(rec_label)}</div>
-                </div>
-                """
-            )
-        session_rows = (
-            '<div class="pd-muted" style="margin-bottom:8px">'
-            "Use <b>Session recording</b> below the page tools to play a ready recording. "
-            "Availability here does not guarantee every older file plays on every phone."
-            "</div>"
-            + "".join(bits)
-        )
-
     # Current issues only — resolved events + snapshots move to History.
     current_events = [e for e in events if e.get("event_status") != "RESOLVED"]
     if not current_events:
@@ -528,36 +691,26 @@ def build_patient_details_html(
             + "".join(bits)
         )
 
-    # Snapshots for current (non-resolved) alerts only
+    # Snapshots for current (non-resolved) alerts only — served via API (no data-URL tabs).
     snaps = []
     for e in current_events:
         path = _snapshot_abs(e.get("snapshot_path"))
         if not path:
             continue
-        try:
-            rel = str(path.relative_to(config.ROOT)).replace("\\", "/")
-        except ValueError:
-            rel = str(path)
-        thumb = ""
-        try:
-            raw = path.read_bytes()
-            if len(raw) <= 1_500_000:
-                b64 = base64.b64encode(raw).decode("ascii")
-                mime = "image/jpeg" if path.suffix.lower() in {".jpg", ".jpeg"} else "image/png"
-                thumb = (
-                    f'<a href="data:{mime};base64,{b64}" target="_blank" rel="noopener">'
-                    f'<img class="pd-snap-img" src="data:{mime};base64,{b64}" alt="event {e.get("id")}"/></a>'
-                )
-        except OSError:
-            thumb = ""
+        eid = int(e.get("id") or 0)
+        if not eid:
+            continue
+        snap_src = html_lib.escape(event_snapshot_url(eid, patient_id), quote=True)
         snaps.append(
             f"""
             <div class="pd-snap">
-              {thumb or '<div class="pd-empty">Image unavailable</div>'}
+              <button type="button" class="cv-snap-zoom" aria-label="Enlarge snapshot">
+                <img class="pd-snap-img" src="{snap_src}" alt="event {eid} snapshot"/>
+              </button>
               <div class="pd-snap-meta">
                 <b>{_event_title(e.get('event_type'))}</b><br>
-                {_rel_time(e.get('created_at'))} · event #{e.get('id')}<br>
-                <span class="pd-muted">{rel}</span>
+                {_rel_time(e.get('created_at'))} · event #{eid}<br>
+                <span class="pd-muted">Tap image to enlarge</span>
               </div>
             </div>
             """
@@ -617,6 +770,28 @@ def build_patient_details_html(
             "or Run room check for prerecorded rooms."
         )
 
+    if show_alerts:
+        alert_block = f"""
+      <div class="pd-sec">
+        <h2>Current alerts</h2>
+        {event_rows}
+      </div>
+
+      <div class="pd-sec">
+        <h2>Current alert snapshots</h2>
+        {snap_body}
+      </div>
+        """
+    else:
+        alert_block = """
+      <div class="pd-sec">
+        <div class="pd-muted">
+          Alert details, snapshots, Care Response, and Watch recording appear when you open
+          this patient from an <b>alert banner</b> or the Alert Center.
+        </div>
+      </div>
+        """
+
     return f"""
     <div id="careview-root" class="pd-page">
       <style>
@@ -654,7 +829,9 @@ def build_patient_details_html(
         .pd-stat-n{{margin-top:4px;font-size:20px;font-weight:750;color:#0F172A!important}}
         .pd-snaps{{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:10px}}
         .pd-snap{{border:1px solid #E2E8F0!important;border-radius:12px;padding:10px;background:#F8FAFC!important}}
-        .pd-snap-img{{width:100%;height:120px;object-fit:cover;border-radius:8px;display:block;margin-bottom:8px}}
+        .pd-snap-img{{width:100%;height:120px;object-fit:cover;border-radius:8px;display:block}}
+        .cv-snap-zoom{{appearance:none;border:0;padding:0;margin:0 0 8px;background:transparent;width:100%;
+          cursor:zoom-in;display:block;border-radius:8px;overflow:hidden}}
         .pd-snap-meta{{font-size:12px;color:#334155!important;line-height:1.45}}
         .pd-snap-meta b{{color:#1E293B!important}}
         .pd-player-panel{{background:#0F172A;border-radius:14px;overflow:hidden;padding:0}}
@@ -694,24 +871,11 @@ def build_patient_details_html(
       </div>
 
       <div class="pd-sec">
-        <h2>Monitoring session history</h2>
-        {session_rows}
-      </div>
-
-      <div class="pd-sec">
-        <h2>Current alerts</h2>
-        {event_rows}
-      </div>
-
-      <div class="pd-sec">
-        <h2>Current alert snapshots</h2>
-        {snap_body}
-      </div>
-
-      <div class="pd-sec">
         <h2>Activity and monitoring results</h2>
         {results}
       </div>
+
+      {alert_block}
     </div>
     """
 
@@ -737,24 +901,26 @@ def open_patient_details(user, patient_id: str, store: EventStore, focus_event_i
             focus_val = int(focus_event_id)
         except (TypeError, ValueError):
             focus_val = None
+    alert_context = focus_val is not None
     html = build_patient_details_html(
-        store, user, patient_id, focus_event_id=focus_val,
+        store, user, patient_id,
+        focus_event_id=focus_val,
+        alert_context=alert_context,
     )
-    if focus_val is not None:
+    if alert_context:
         note = (
-            f"**{patient['name']}** · {patient['room']} · event #{focus_val}. "
-            "Use **Handle alert** or **Watch recording** below."
+            f"**{patient['name']}** · {patient['room']} · reviewing alert. "
+            "Use **Care Response** / **Watch recording** below."
         )
     elif patient.get("source_type") == "live":
         note = (
             f"**{patient['name']}** · {patient['room']} — "
-            "live feed below when Camera Station is on. "
-            "Open **Watch recording** / **Handle alert** if needed."
+            "patient info and live feed. Open an **alert banner** to respond."
         )
     else:
         note = (
             f"**{patient['name']}** · {patient['room']} — "
-            "**Run room check**, or open **Watch recording** / **Handle alert** below."
+            "patient info. Use **Run room check**, or open an **alert** to respond."
         )
     preview = _latest_snapshot_rgb(store, patient_id)
     live_banner = (
@@ -784,8 +950,8 @@ def open_patient_details(user, patient_id: str, store: EventStore, focus_event_i
     except Exception:
         pass
     choices = _event_choices(store, patient_id)
-    if focus_val is None and choices:
-        focus_val = choices[0][1]
+    # Do not auto-select an alert when opening the patient card — only when
+    # arriving from an alert banner (focus_val set).
     show_live = patient.get("source_type") == "live"
     return (
         html,
@@ -795,8 +961,9 @@ def open_patient_details(user, patient_id: str, store: EventStore, focus_event_i
         patient_id,
         gr.update(choices=choices, value=focus_val),
         focus_val,
-        gr.update(visible=True),   # details toolbar
-        gr.update(visible=show_live),  # live camera panel (Ana)
+        gr.update(visible=True),   # details toolbar (Back / Run room check)
+        gr.update(visible=show_live),  # live camera panel
+        bool(alert_context),  # show Care Response + Watch recording
     )
 
 

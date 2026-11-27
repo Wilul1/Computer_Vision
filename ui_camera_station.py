@@ -118,8 +118,8 @@ def build_camera_station_ui(
         outs = [wtitle, win, wout, whead, wmon, wsum, werr, wevents, wfooter]
         wstart.click(station_start, [cam_index], outs)
         wstop.click(station_stop, None, outs)
-        # 0.5s + server-side skip when frame unchanged (avoids Gradio re-encode thrash).
-        timer = gr.Timer(0.5, active=True)
+        # Fast poll; station_tick still skips Gradio update when frame seq unchanged.
+        timer = gr.Timer(0.2, active=True)
         timer.tick(station_tick, None, outs)
         demo.load(station_tick, None, outs)
     return demo

@@ -20,16 +20,40 @@ def draw_result(frame, r: dict):
     h, w = out.shape[:2]
     color = COLORS.get(r["activity"], (255, 255, 255))
     live = bool(r.get("live"))
-
-    # Middle-ground overlay size: readable on live 480p, without eating the frame.
-    scale = max(0.55, min(h / 640.0, 1.0))
     font = cv2.FONT_HERSHEY_SIMPLEX
-    hud_scale = 0.52 if live else 0.55 * scale
-    hud_thick = 2 if live else 1
-    line_h = 20 if live else max(18, int(20 * scale))
-    pad = 8 if live else max(6, int(7 * scale))
-    banner_h = 34 if live else max(30, int(38 * scale))
-    banner_scale = 0.55 if live else 0.58 * scale
+
+    # Live: skip skeleton + alpha blends (big CPU win); keep box + solid banners.
+    if live:
+        if r.get("people"):
+            x1, y1, x2, y2 = r["people"][0]["box"]
+            cv2.rectangle(out, (x1, y1), (x2, y2), color, 2)
+        act = r["activity"].upper() if r["activity"] != "unknown" else "UNKNOWN"
+        hud = f"{act}  {r['confidence']:.0%}  {r['fps']:.0f} FPS"
+        cv2.rectangle(out, (0, 0), (min(w, 280), 28), (0, 0, 0), -1)
+        cv2.putText(out, hud[:48], (8, 20), font, 0.5, color, 1)
+        msg = bg = fg = None
+        if r.get("fall_alert"):
+            bg, fg, msg = (0, 0, 220), (255, 255, 255), "FALL ALERT"
+            if r.get("fall_reason") and r["fall_reason"] != "alert hold":
+                msg = f"FALL ALERT · {r['fall_reason']}"
+        elif r.get("inactive_alert"):
+            bg, fg, msg = (0, 140, 220), (255, 255, 255), "INACTIVE"
+        elif r.get("zone_alert"):
+            bg, fg = (0, 180, 220), (20, 20, 20)
+            msg = str(r.get("zone_label") or "ZONE")
+        if msg is not None:
+            cv2.rectangle(out, (0, h - 30), (w, h), bg, -1)
+            cv2.putText(out, msg[: max(18, w // 10)], (8, h - 10), font, 0.5, fg, 1)
+        return out
+
+    # Middle-ground overlay size: readable on recorded analysis frames.
+    scale = max(0.55, min(h / 640.0, 1.0))
+    hud_scale = 0.55 * scale
+    hud_thick = 1
+    line_h = max(18, int(20 * scale))
+    pad = max(6, int(7 * scale))
+    banner_h = max(30, int(38 * scale))
+    banner_scale = 0.58 * scale
 
     for (x, y, bw, bh) in r["motion_boxes"]:
         cv2.rectangle(out, (x, y), (x + bw, y + bh), (0, 220, 255), 1)

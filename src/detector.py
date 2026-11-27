@@ -10,8 +10,11 @@ class PersonDetector:
         config.MODELS_DIR.mkdir(parents=True, exist_ok=True)
         self.model = YOLO(str(config.MODELS_DIR / weights))
 
-    def __call__(self, bgr) -> list[dict]:
-        result = self.model.predict(bgr, classes=[0], conf=config.YOLO_CONF, verbose=False)[0]
+    def __call__(self, bgr, *, imgsz: int | None = None) -> list[dict]:
+        kwargs = {"classes": [0], "conf": config.YOLO_CONF, "verbose": False}
+        if imgsz is not None:
+            kwargs["imgsz"] = int(imgsz)
+        result = self.model.predict(bgr, **kwargs)[0]
         people = []
         for box, conf in zip(result.boxes.xyxy.tolist(), result.boxes.conf.tolist()):
             x1, y1, x2, y2 = map(int, box)

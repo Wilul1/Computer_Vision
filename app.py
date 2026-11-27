@@ -27,7 +27,6 @@ ROOT = Path(__file__).resolve().parent
 sys.path.insert(0, str(ROOT))
 from src.alert_actions import decide, format_decision  # noqa: E402
 from src.alert_center import (  # noqa: E402
-    build_urgent_watch_html,
     caregiver_owns_event,
 )
 from src.care_home import (  # noqa: E402
@@ -114,6 +113,15 @@ if not _WIPE_FLAG.exists():
         print(f"Caregiver board wiped; ready demo skipped: {exc}")
     _WIPE_FLAG.write_text("cleared_v3\n", encoding="utf-8")
 
+# Every launch: close yesterday's leftover OPEN/ACK alerts so they don't beep / sticky-banner.
+_stale_n = EVENT_STORE.resolve_stale_active_events()
+if _stale_n:
+    from src.care_demo import patients_for as _patients_for
+
+    print(f"Closed {_stale_n} stale alert(s) from before today (UTC).")
+    for _p in _patients_for("cg1"):
+        reconcile_patient_status(EVENT_STORE, _p["id"])
+
 
 # Server-side webcam owner for /camera-station (avoids browser getUserMedia / LAN HTTP block).
 CAMERA_STATION = ServerCameraStation(
@@ -121,7 +129,8 @@ CAMERA_STATION = ServerCameraStation(
     new_pipeline=new_pipeline,
     lock=LOCK,
     camera_index=0,
-    target_fps=4.0,
+    # Cap ~15; actual rate follows CPU. Live pipeline is slimmed to cut lag.
+    target_fps=15.0,
     on_frame=lambda mon, activity: sync_live_patient_state(
         EVENT_STORE, LIVE_PATIENT, mon, activity,
     ),
@@ -403,7 +412,7 @@ def webcam_step(frame, state):
     text = (f"### {r['activity'].upper()}  ·  {r['confidence']:.0%}  ·  "
             f"{ms:.0f} ms/frame ({1000 / max(ms, 1):.0f} FPS)"
             f"{flag}")
-    live_fps = 4.0
+    live_fps = 12.0
     dur = len(state["labels"]) / live_fps
     summary = (
         _station_status_md(snap)
@@ -452,7 +461,7 @@ def stop_webcam(state):
             f"Caregiver phone can open {who}'s details to review this session."
         )
     elif isinstance(state, dict) and state.get("labels"):
-        live_fps = 4.0
+        live_fps = 12.0
         dur = len(state["labels"]) / live_fps
         blurb = session_blurb(
             state["labels"], duration_s=dur,
@@ -559,18 +568,30 @@ def care_alert_watch(user, last_seen_id=0):
     """Poll OPEN alerts for a sticky interrupt banner (works while watching live).
 
     last_seen_id must come from a Textbox (not State) — Gradio Timer drops State.
+    See `poll_urgent_watch` for last_seen encoding (+seed / -sticky).
     """
+    from src.alert_center import poll_urgent_watch
+
     user = _care_user(user)
     if not user:
         return "", "0"
+    interrupt_id = 0
     try:
-        prev = int(float(last_seen_id or 0))
-    except (TypeError, ValueError):
-        prev = 0
-    html, newest = build_urgent_watch_html(EVENT_STORE, user["id"], prev)
-    if not html:
-        return "", str(prev)
-    return html, str(newest)
+        interrupt_id = int(LIVE_HUB.snapshot().get("interrupt_event_id") or 0)
+    except Exception:
+        interrupt_id = 0
+    html, seen = poll_urgent_watch(
+        EVENT_STORE,
+        user["id"],
+        last_seen_id,
+        interrupt_event_id=interrupt_id,
+    )
+    if interrupt_id > 0 and html:
+        try:
+            LIVE_HUB.clear_interrupt_event(interrupt_id)
+        except Exception:
+            pass
+    return html, seen
 
 
 def care_live_tick(patient_id, last_seq=0):
@@ -800,7 +821,7 @@ def care_refresh(user, panel="Home", patient_id=None,
     user = _care_user(user)
     pid = (patient_id or "").strip() if isinstance(patient_id, str) else patient_id
     if pid:
-        html, _n, _p, _m, _pid, alerts, _eid, _vis, _live = care_open_details_fn(
+        html, _n, _p, _m, _pid, alerts, _eid, _vis, _live, *_ = care_open_details_fn(
             user, pid, EVENT_STORE,
         )
         from src.care_home import _inbox_df
@@ -875,8 +896,8 @@ def care_switch_panel_phone(user, panel, priority=None, patient_filter=None, sta
         '<div class="cv-live-empty cv-live-empty-compact">'
         "Live feed appears here when Camera Station is running.</div>"
     )
-    handle_vis, filters_vis, settings_vis, events_vis = _tool_group_vis(
-        details_open=False, panel=label,
+    handle_vis, play_vis, filters_vis, settings_vis, events_vis = _tool_group_vis(
+        details_open=False, panel=label, alert_context=False,
     )
     return (
         html,
@@ -888,6 +909,7 @@ def care_switch_panel_phone(user, panel, priority=None, patient_filter=None, sta
         gr.update(visible=False),  # live panel
         0,  # live seq
         handle_vis,
+        play_vis,
         filters_vis,
         settings_vis,
         events_vis,
@@ -937,19 +959,27 @@ def _preview_html_for_caregiver(preview, patient_id: str) -> str:
     )
 
 
-def _playback_for(user, patient_id: str):
-    """Cleared playback widgets for one authorized patient (no auto-load)."""
+def _playback_for(user, patient_id: str, focus_event_id=None):
+    """Issue recording only — auto-loads the alert's linked session video."""
     user = _care_user(user)
     pid = (patient_id or "").strip()
     if not pid:
         return empty_playback_panel()
-    return playback_panel_for_patient(EVENT_STORE, user, pid)
+    return playback_panel_for_patient(
+        EVENT_STORE, user, pid, focus_event_id=focus_event_id,
+    )
 
 
-def _tool_group_vis(*, details_open: bool, panel: str = "Home"):
+def _tool_group_vis(
+    *,
+    details_open: bool,
+    panel: str = "Home",
+    alert_context: bool = False,
+):
     """Visibility for caregiver tool cards under the board.
 
-    - Handle alert: patient details or Alerts
+    - Care Response + Watch recording: only with alert context (banner / Alert Center)
+      or on the Alerts board (no patient case open)
     - Alert filters: Alerts board only
     - Add patient: Settings only (never on a patient case)
     - Events log: History only
@@ -958,8 +988,13 @@ def _tool_group_vis(*, details_open: bool, panel: str = "Home"):
     on_alerts = label == "Alerts"
     on_settings = label == "Settings"
     on_history = label == "History"
+    show_response = (bool(details_open) and bool(alert_context)) or (
+        on_alerts and not details_open
+    )
+    show_play = bool(details_open) and bool(alert_context)
     return (
-        gr.update(visible=bool(details_open) or on_alerts),  # chandle_group
+        gr.update(visible=show_response),  # chandle_group (Care Response)
+        gr.update(visible=show_play),  # cplay_group (Watch recording)
         gr.update(visible=on_alerts and not details_open),  # calert_filters
         gr.update(visible=on_settings and not details_open),  # csettings_tools
         gr.update(visible=on_history and not details_open),  # cevents_log
@@ -967,22 +1002,30 @@ def _tool_group_vis(*, details_open: bool, panel: str = "Home"):
 
 
 def _as_caregiver_details(out):
-    """Convert open_patient_details (9) → caregiver live HTML + seq (10)."""
+    """Convert open_patient_details → caregiver live HTML + seq.
+
+    open_patient_details returns 10 items; last is alert_context (bool).
+    Caregiver UI uses the first 9 + seq; alert_context is handled by callers.
+    """
     items = list(out)
-    pid = items[4] if len(items) > 4 else ""
-    items[2] = _preview_html_for_caregiver(items[2], pid if isinstance(pid, str) else "")
-    items.append(0)  # clive_seq
-    return tuple(items)
+    alert_context = bool(items[9]) if len(items) > 9 else False
+    core = items[:9]
+    pid = core[4] if len(core) > 4 else ""
+    core[2] = _preview_html_for_caregiver(core[2], pid if isinstance(pid, str) else "")
+    core.append(0)  # clive_seq
+    return tuple(core), alert_context
 
 
 def _lab_open_with_playback(user, patient_id: str, focus_event_id=None):
-    """Lab care page: open details (drop live_panel flag) + cleared playback."""
+    """Lab care page: open details + issue recording (when opened from an alert)."""
     user = _care_user(user)
     base = care_open_details_fn(
         user, patient_id, EVENT_STORE, focus_event_id=focus_event_id,
     )
-    # base: html, note, preview, banner, pid, alerts, eid, details_vis, live_vis
-    return tuple(base[:8]) + tuple(_playback_for(user, patient_id))
+    # base: html…details_vis, live_vis, alert_context — lab uses first 8 + playback
+    return tuple(base[:8]) + tuple(
+        _playback_for(user, patient_id, focus_event_id=focus_event_id)
+    )
 
 
 def care_open_ana(user, panel="Home"):
@@ -1018,13 +1061,13 @@ def _phone_open_with_playback(user, patient_id: str, focus_event_id=None):
     base = care_open_details_fn(
         user, patient_id, EVENT_STORE, focus_event_id=focus_event_id,
     )
-    phone = _as_caregiver_details(base)
-    handle_vis, filters_vis, settings_vis, events_vis = _tool_group_vis(
-        details_open=True, panel="Home",
+    phone, alert_context = _as_caregiver_details(base)
+    handle_vis, play_vis, filters_vis, settings_vis, events_vis = _tool_group_vis(
+        details_open=True, panel="Home", alert_context=alert_context,
     )
-    return phone + (handle_vis, filters_vis, settings_vis, events_vis) + tuple(
-        _playback_for(user, patient_id)
-    )
+    return phone + (
+        handle_vis, play_vis, filters_vis, settings_vis, events_vis,
+    ) + tuple(_playback_for(user, patient_id, focus_event_id=focus_event_id))
 
 
 def care_open_patient_phone(user, patient_id, panel="Home"):
@@ -1202,12 +1245,12 @@ def care_back_to_patients_phone(user, panel="Home"):
         '<div class="cv-live-empty cv-live-empty-compact">'
         "Live feed appears here when Camera Station is running.</div>"
     )
-    handle_vis, filters_vis, settings_vis, events_vis = _tool_group_vis(
-        details_open=False, panel=panel,
+    handle_vis, play_vis, filters_vis, settings_vis, events_vis = _tool_group_vis(
+        details_open=False, panel=panel, alert_context=False,
     )
-    # cards…live_vis (10) + seq + handle/filters/settings/events + playback (4)
+    # cards…live_vis (10) + seq + handle/play/filters/settings/events + playback (4)
     return tuple(base) + (
-        0, handle_vis, filters_vis, settings_vis, events_vis,
+        0, handle_vis, play_vis, filters_vis, settings_vis, events_vis,
     ) + tuple(empty_playback_panel())
 
 
@@ -1219,7 +1262,7 @@ def care_run_details(user, patient_id, panel="Home", progress=gr.Progress()):
     note, frame, mon, _cards, inbox, _alerts, pid = care_room_check(
         user, patient_id, panel=panel, progress=progress,
     )
-    html, _note, prev, banner, pid2, alerts, eid, vis, _live_vis = care_open_details_fn(
+    html, _note, prev, banner, pid2, alerts, eid, vis, _live_vis, *_ = care_open_details_fn(
         user, pid, EVENT_STORE,
     )
     base = (
@@ -1236,22 +1279,26 @@ def care_run_details_phone(user, patient_id, panel="Home", progress=gr.Progress(
     note, frame, mon, _cards, inbox, _alerts, pid = care_room_check(
         user, patient_id, panel=panel, progress=progress,
     )
-    opened = care_open_details_fn(user, pid, EVENT_STORE)
-    phone = list(_as_caregiver_details(opened))
+    # If room check opened findings, jump into alert context on the first one.
+    active = EVENT_STORE.list_active(pid)
+    focus = int(active[0]["id"]) if active else None
+    opened = care_open_details_fn(user, pid, EVENT_STORE, focus_event_id=focus)
+    phone, alert_context = _as_caregiver_details(opened)
+    phone = list(phone)
     # Prefer room-check preview frame when present.
     if frame is not None:
         phone[2] = _preview_html_for_caregiver(frame, pid)
     phone[1] = note
     live_vis = opened[8]
     seq = phone[9] if len(phone) > 9 else 0
-    handle_vis, filters_vis, settings_vis, events_vis = _tool_group_vis(
-        details_open=True, panel=panel,
+    handle_vis, play_vis, filters_vis, settings_vis, events_vis = _tool_group_vis(
+        details_open=True, panel=panel, alert_context=alert_context,
     )
-    # html…eid, details, inbox, live, seq, handle, filters, settings, events, playback
+    # html…eid, details, inbox, live, seq, handle, play, filters, settings, events, playback
     core = list(phone[:8]) + [
-        inbox, live_vis, seq, handle_vis, filters_vis, settings_vis, events_vis,
+        inbox, live_vis, seq, handle_vis, play_vis, filters_vis, settings_vis, events_vis,
     ]
-    return tuple(core) + tuple(_playback_for(user, pid))
+    return tuple(core) + tuple(_playback_for(user, pid, focus_event_id=focus))
 
 
 def care_select_session(user, patient_id, session_id):
@@ -1266,18 +1313,88 @@ def care_select_session(user, patient_id, session_id):
 
 
 def care_response_preview(user, event_id):
-    """Refresh Care Response incident card when the selected alert changes."""
-    from src.alert_center import build_care_response_summary_html, caregiver_owns_event
+    """Refresh Care Response incident card when the selected patient alert changes."""
+    from src.alert_center import (
+        build_care_response_summary_html,
+        caregiver_owns_event,
+        find_patient_alert_group,
+        parse_alert_bundle,
+    )
 
     user = _care_user(user)
     if not user or event_id in (None, ""):
         return build_care_response_summary_html(None), None
-    owned = caregiver_owns_event(EVENT_STORE, event_id, user["id"])
-    return build_care_response_summary_html(owned), event_id
+    primary, reviewed = parse_alert_bundle(event_id)
+    if primary is None:
+        return build_care_response_summary_html(None), None
+    owned = caregiver_owns_event(EVENT_STORE, primary, user["id"])
+    if owned is None:
+        return build_care_response_summary_html(None), None
+    group = find_patient_alert_group(
+        EVENT_STORE,
+        user["id"],
+        primary_event_id=primary,
+        patient_id=str(owned.get("patient_id") or ""),
+        reviewed_ids=reviewed or [primary],
+    )
+    # Prefer the reviewed ID snapshot so confirmation matches what will be closed.
+    if group is not None and reviewed:
+        group = dict(group)
+        group["child_event_ids"] = list(reviewed)
+        group["finding_count"] = len(reviewed)
+        group["bundle_token"] = (
+            f"{primary}|{','.join(str(i) for i in reviewed)}"
+        )
+    return build_care_response_summary_html(owned, group=group), primary
+
+
+def _care_bundle_auth(user, bundle_value):
+    """Validate caregiver ownership for a reviewed bundle. Returns (primary, ids, patient_id, err)."""
+    from src.alert_center import (
+        caregiver_owns_event,
+        caregiver_owns_patient,
+        find_patient_alert_group,
+        parse_alert_bundle,
+    )
+
+    primary, reviewed = parse_alert_bundle(bundle_value)
+    if primary is None or not reviewed:
+        return None, [], None, "Select a patient alert first."
+    owned = caregiver_owns_event(EVENT_STORE, primary, user["id"])
+    if owned is None:
+        return None, [], None, "Not allowed: event not found or not assigned to you."
+    pid = str(owned.get("patient_id") or "")
+    if not caregiver_owns_patient(user["id"], pid):
+        return None, [], None, "Not allowed: patient not assigned to you."
+
+    # Plain event id (no ``|`` token): expand to the current patient alert group so
+    # Resolve closes fall + inactivity together when the UI only passed the primary id.
+    # Explicit multi-id tokens stay frozen (late-arriving findings are not added).
+    raw = str(bundle_value or "")
+    if "|" not in raw and len(reviewed) == 1:
+        group = find_patient_alert_group(
+            EVENT_STORE,
+            user["id"],
+            primary_event_id=primary,
+            patient_id=pid,
+        )
+        if group and group.get("child_event_ids"):
+            reviewed = [int(x) for x in group["child_event_ids"]]
+
+    # Re-check every reviewed id belongs to this patient + caregiver (reject foreign).
+    for eid in reviewed:
+        row = EVENT_STORE.get(int(eid))
+        if row is None:
+            continue
+        if str(row.get("patient_id") or "") != pid:
+            return None, [], None, "Not allowed: reviewed findings include another patient."
+        if not caregiver_owns_patient(user["id"], str(row.get("patient_id") or "")):
+            return None, [], None, "Not allowed: reviewed findings include another patient."
+    return primary, reviewed, pid, None
 
 
 def care_ack(user, event_id, panel="Home", patient_id=None, outcome=None, handle_note=None):
-    """Caregiver ACK — requires event patient assigned to this caregiver.
+    """Caregiver ACK for a reviewed patient bundle (OPEN children only).
 
     Does not trust browser-supplied patient_id for authorization.
     Lab tools keep using acknowledge_event() without roster checks.
@@ -1289,29 +1406,36 @@ def care_ack(user, event_id, panel="Home", patient_id=None, outcome=None, handle
         empty = refresh_dashboard(None, EVENT_STORE)
         return empty[1], "Sign in first.", empty[0], empty[2]
     on_details = bool(patient_id and str(patient_id).strip())
-    owned = caregiver_owns_event(EVENT_STORE, event_id, user["id"])
-    if owned is None:
-        note = "Not allowed: event not found or not assigned to you."
+    primary, reviewed, pid, err = _care_bundle_auth(user, event_id)
+    if err:
+        note = err
         if on_details:
-            html, _n, _p, _m, _pid, alerts, _eid, _vis, _live = care_open_details_fn(
+            html, _n, _p, _m, _pid, alerts, _eid, _vis, _live, *_ = care_open_details_fn(
                 user, patient_id, EVENT_STORE,
             )
             return _inbox_df(EVENT_STORE, user["id"]), note, html, alerts
         cards, inbox, alerts = refresh_dashboard(user, EVENT_STORE, panel=panel)
         return inbox, note, cards, alerts
     who = user.get("name") or user.get("username") or "caregiver"
-    # Ack = "I'm responding"; optional note only (outcome saved on Resolve).
-    _df, note = acknowledge_event(
-        event_id,
-        handled_by=who,
-        note=handle_note,
+    result = EVENT_STORE.acknowledge_events_for_patient(
+        pid, reviewed, handled_by=who, note=handle_note,
     )
-    reconcile_patient_status(EVENT_STORE, owned["patient_id"])
+    if not result.get("ok"):
+        note = "Not allowed: reviewed findings include another patient."
+        cards, inbox, alerts = refresh_dashboard(user, EVENT_STORE, panel=panel)
+        return inbox, note, cards, alerts
+    n_up = len(result.get("updated") or [])
+    n_skip = len(result.get("skipped") or [])
+    note = (
+        f"Acknowledged **{n_up}** reviewed finding{'s' if n_up != 1 else ''} "
+        f"for this patient"
+        + (f" · {n_skip} skipped" if n_skip else "")
+        + ". Alert stays active until Resolve. Does **not** force SAFE."
+    )
+    reconcile_patient_status(EVENT_STORE, pid)
     if on_details:
-        # Refresh the open patient page only if it matches the event's patient.
-        focus_pid = owned["patient_id"]
-        html, _n, _p, _m, _pid, alerts, _eid, _vis, _live = care_open_details_fn(
-            user, focus_pid, EVENT_STORE, focus_event_id=event_id,
+        html, _n, _p, _m, _pid, alerts, _eid, _vis, _live, *_ = care_open_details_fn(
+            user, pid, EVENT_STORE, focus_event_id=primary,
         )
         return _inbox_df(EVENT_STORE, user["id"]), note, html, alerts
     cards, inbox, alerts = refresh_dashboard(user, EVENT_STORE, panel=panel)
@@ -1319,7 +1443,9 @@ def care_ack(user, event_id, panel="Home", patient_id=None, outcome=None, handle
 
 
 def care_resolve(user, event_id, panel="Home", patient_id=None, outcome=None, handle_note=None):
-    """Caregiver resolve — saves outcome + note, then opens History for that case."""
+    """Caregiver resolve for a reviewed patient bundle — then opens History."""
+    from src.alert_center import outcome_label
+    from src.care_demo import get_patient
     from src.care_home import _inbox_df
 
     user = _care_user(user)
@@ -1328,11 +1454,11 @@ def care_resolve(user, event_id, panel="Home", patient_id=None, outcome=None, ha
         empty = refresh_dashboard(None, EVENT_STORE)
         return empty[1], "Sign in first.", empty[0], empty[2], stay
     on_details = bool(patient_id and str(patient_id).strip())
-    owned = caregiver_owns_event(EVENT_STORE, event_id, user["id"])
-    if owned is None:
-        note = "Not allowed: event not found or not assigned to you."
+    primary, reviewed, pid, err = _care_bundle_auth(user, event_id)
+    if err:
+        note = err
         if on_details:
-            html, _n, _p, _m, _pid, alerts, _eid, _vis, _live = care_open_details_fn(
+            html, _n, _p, _m, _pid, alerts, _eid, _vis, _live, *_ = care_open_details_fn(
                 user, patient_id, EVENT_STORE,
             )
             return _inbox_df(EVENT_STORE, user["id"]), note, html, alerts, stay
@@ -1342,17 +1468,33 @@ def care_resolve(user, event_id, panel="Home", patient_id=None, outcome=None, ha
     out = (outcome or "checked_ok")
     if isinstance(out, (list, tuple)) and out:
         out = out[0]
-    _df, note = resolve_event(
-        event_id,
+    out_code = str(out).strip() or "checked_ok"
+    n_review = len(reviewed)
+    pname = (get_patient(pid) or {}).get("name") or pid
+    result = EVENT_STORE.resolve_events_for_patient(
+        pid,
+        reviewed,
         handled_by=who,
-        outcome=str(out).strip() or "checked_ok",
+        outcome=out_code,
         note=handle_note,
     )
-    reconcile_patient_status(EVENT_STORE, owned["patient_id"])
-    # Resolved cases live in History — show list + detail/snapshot panel.
+    if not result.get("ok"):
+        note = "Not allowed: reviewed findings include another patient."
+        cards, inbox, alerts = refresh_dashboard(user, EVENT_STORE, panel=stay)
+        return inbox, note, cards, alerts, stay
+    n_up = len(result.get("updated") or [])
+    n_skip = len(result.get("skipped") or [])
+    note = (
+        f"Resolved **{n_up}** of {n_review} reviewed finding{'s' if n_review != 1 else ''} "
+        f"for **{pname}**"
+        + (f" · outcome **{outcome_label(out_code)}**" if out_code else "")
+        + (f" · {n_skip} skipped" if n_skip else "")
+        + ". New findings that arrived after this review stay open."
+    )
+    reconcile_patient_status(EVENT_STORE, pid)
     cards, inbox, alerts = refresh_dashboard(user, EVENT_STORE, panel="History")
     note = (
-        f"{note}  \nOpened in **History** — tap the patient event for summary & snapshot."
+        f"{note}  \nOpened in **History** — each finding is listed separately with its own snapshot."
     )
     return inbox, note, cards, alerts, "History"
 

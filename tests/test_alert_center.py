@@ -20,6 +20,7 @@ from src.alert_center import (
     event_priority,
     filter_alerts,
     list_caregiver_active_alerts,
+    poll_urgent_watch,
     sort_alerts,
 )
 from src.care_demo import get_caregiver
@@ -209,7 +210,8 @@ class TestOwnershipAndLifecycle(unittest.TestCase):
             snapshot_path="outputs/alerts/snapshots/missing_file.jpg",
         )
         html = build_alert_center_html(self.store, "cg1")
-        self.assertIn("Alert Center", html)
+        self.assertIn("Open cases", html)
+        self.assertIn("cv-ac-chips", html)
         self.assertIn("Possible fall", html)
         self.assertNotIn("outputs/alerts", html)
         self.assertIn("Open patient", html)
@@ -222,8 +224,9 @@ class TestOwnershipAndLifecycle(unittest.TestCase):
             self.store, "cg1", "caregiver1", panel="Alerts",
             alert_filters={"priority": "Medium"},
         )
-        self.assertIn("Alert Center", html)
+        self.assertIn("Open cases", html)
         self.assertIn("Camera unavailable", html)
+        self.assertNotIn("Live Monitoring", html)
 
     def test_history_keeps_resolved(self):
         e = self.store.create_event(
@@ -238,13 +241,87 @@ class TestOwnershipAndLifecycle(unittest.TestCase):
         )
         html = build_dashboard_html(self.store, "cg1", "caregiver1", panel="History")
         self.assertIn("History", html)
-        self.assertIn("Event History", html)
+        self.assertIn("Closed cases", html)
         self.assertIn("Event Details", html)
+        self.assertIn("cv-hist2-summary", html)
         self.assertIn(f'data-hist-select="{e["id"]}"', html)
         self.assertIn("Pedro", html)
         self.assertIn("Pedro inactive case", html)
         self.assertIn("all clear", html)
         self.assertIn("cv-hist2", html)
+        self.assertIn("Session recording", html)
+
+    def test_history_includes_issue_video_when_ready(self):
+        from unittest import mock
+
+        import imageio_ffmpeg
+        import numpy as np
+
+        from src.patient_roster import reset_roster_singleton
+
+        tmp = tempfile.TemporaryDirectory()
+        self.addCleanup(tmp.cleanup)
+        base = Path(tmp.name)
+        db = base / "e.db"
+        store = EventStore(db)
+        roster = reset_roster_singleton(db)
+        roster.seed_demo()
+        rec_root = (base / "outputs" / "recordings").resolve()
+        rec_root.mkdir(parents=True)
+        sess = store.create_session(
+            patient_id="p1-ana",
+            started_at="2026-11-27T10:00:00+00:00",
+            ended_at="2026-11-27T10:01:00+00:00",
+            duration_s=60.0,
+            source_type="live",
+            source="laptop_webcam",
+            session_status="COMPLETED",
+            room_id="Room 01",
+        )
+        sid = int(sess["id"])
+        video = rec_root / "p1-ana" / f"session_{sid}.mp4"
+        video.parent.mkdir(parents=True, exist_ok=True)
+        gen = imageio_ffmpeg.write_frames(
+            str(video), (64, 48), fps=10.0, codec="libx264",
+            pix_fmt_in="bgr24", pix_fmt_out="yuv420p", macro_block_size=1,
+            output_params=["-movflags", "+faststart", "-crf", "28"],
+            ffmpeg_log_level="error",
+        )
+        gen.send(None)
+        for i in range(10):
+            gen.send(np.full((48, 64, 3), (i * 20) % 255, dtype=np.uint8))
+        gen.close()
+        store.update_session_recording(
+            sid,
+            recording_path=str(video),
+            recording_status="READY",
+            recording_bytes=video.stat().st_size,
+            recording_codec="avc1",
+            recording_duration_s=1.0,
+        )
+        snap = base / "outputs" / "alerts" / "snapshots" / "fall.jpg"
+        snap.parent.mkdir(parents=True, exist_ok=True)
+        snap.write_bytes(b"\xff\xd8\xff\xd9")  # tiny jpeg marker
+        e = store.create_event(
+            patient_id="p1-ana",
+            event_type="possible_fall",
+            action_text="Notify",
+            reason_text="fall case",
+            snapshot_path=str(snap),
+            session_id=sid,
+        )
+        store.resolve(e["id"], handled_by="caregiver1", outcome="assistance_given")
+        with mock.patch("src.playback.RECORDINGS_ROOT", rec_root), mock.patch(
+            "src.config.ROOT", base
+        ):
+            html = build_dashboard_html(store, "cg1", "caregiver1", panel="History")
+        self.assertIn("Session recording", html)
+        self.assertIn(f"/api/sessions/{sid}/video?patient_id=p1-ana", html)
+        self.assertIn("cv-hist2-video", html)
+        self.assertIn("cv-incident-bar", html)
+        self.assertIn("Jump to fall", html)
+        self.assertIn(f"/api/events/{e['id']}/snapshot?patient_id=p1-ana", html)
+        self.assertNotIn("data:image/jpeg;base64,", html)
 
 
 class TestCareAckAuthInApp(unittest.TestCase):
@@ -264,6 +341,50 @@ class TestCareAckAuthInApp(unittest.TestCase):
         self.assertIsNone(caregiver_owns_event(store, e["id"], "cg-other"))
         self.assertIsNotNone(caregiver_owns_event(store, e["id"], "cg1"))
         self.assertEqual(store.get(e["id"])["event_status"], "OPEN")
+
+
+class TestUrgentWatchReopen(unittest.TestCase):
+    """Reopening the page with leftover OPEN falls must not pop the alarm again."""
+
+    def setUp(self):
+        self.tmp = tempfile.TemporaryDirectory()
+        self.addCleanup(self.tmp.cleanup)
+        db = Path(self.tmp.name) / "e.db"
+        self.store = EventStore(db)
+        roster = reset_roster_singleton(db)
+        roster.seed_careview_pack(caregiver_id="cg1")
+        self.event = self.store.create_event(
+            patient_id="p-casey",
+            event_type="possible_fall",
+            action_text="Check now",
+            reason_text="demo fall",
+        )
+
+    def test_quiet_on_reopen_then_arms_on_new(self):
+        html, seen = poll_urgent_watch(self.store, "cg1", 0)
+        self.assertEqual(html, "")
+        self.assertEqual(seen, str(self.event["id"]))
+
+        html2, seen2 = poll_urgent_watch(self.store, "cg1", seen)
+        self.assertEqual(html2, "")
+        self.assertEqual(seen2, str(self.event["id"]))
+
+        # Same patient dedupes OPEN possible_fall — use the other demo patient.
+        newer = self.store.create_event(
+            patient_id="p1-ana",
+            event_type="possible_fall",
+            action_text="Check now",
+            reason_text="live fall",
+        )
+        self.assertIsNotNone(newer)
+        html3, seen3 = poll_urgent_watch(self.store, "cg1", seen2)
+        self.assertIn("cv-urgent-modal", html3)
+        self.assertIn(str(newer["id"]), html3)
+        self.assertEqual(seen3, str(-newer["id"]))
+
+        html4, seen4 = poll_urgent_watch(self.store, "cg1", seen3)
+        self.assertIn("cv-urgent-modal", html4)
+        self.assertEqual(seen4, str(-newer["id"]))
 
 
 if __name__ == "__main__":

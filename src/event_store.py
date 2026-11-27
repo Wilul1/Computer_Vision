@@ -263,6 +263,149 @@ class EventStore:
             note=note,
         )
 
+    def acknowledge_events_for_patient(
+        self,
+        patient_id: str,
+        event_ids: list[int],
+        *,
+        handled_by: str | None = None,
+        note: str | None = None,
+    ) -> dict[str, Any]:
+        """Acknowledge only reviewed OPEN events that belong to ``patient_id``.
+
+        Foreign-patient IDs abort with no writes. Missing / ineligible IDs are skipped.
+        """
+        return self._bulk_set_status_for_patient(
+            patient_id,
+            event_ids,
+            status="ACKNOWLEDGED",
+            time_col="acknowledged_at",
+            handled_by=handled_by,
+            note=note,
+            eligible_from=("OPEN",),
+        )
+
+    def resolve_events_for_patient(
+        self,
+        patient_id: str,
+        event_ids: list[int],
+        *,
+        handled_by: str | None = None,
+        outcome: str | None = None,
+        note: str | None = None,
+    ) -> dict[str, Any]:
+        """Resolve only reviewed OPEN/ACK events that belong to ``patient_id``.
+
+        Foreign-patient IDs abort with no writes. Missing / already-resolved IDs are skipped.
+        """
+        return self._bulk_set_status_for_patient(
+            patient_id,
+            event_ids,
+            status="RESOLVED",
+            time_col="resolved_at",
+            handled_by=handled_by,
+            outcome=outcome,
+            note=note,
+            eligible_from=ACTIVE_STATUSES,
+        )
+
+    def _bulk_set_status_for_patient(
+        self,
+        patient_id: str,
+        event_ids: list[int],
+        *,
+        status: str,
+        time_col: str,
+        handled_by: str | None = None,
+        outcome: str | None = None,
+        note: str | None = None,
+        eligible_from: tuple[str, ...] = ACTIVE_STATUSES,
+    ) -> dict[str, Any]:
+        pid = str(patient_id or "").strip()
+        seen: set[int] = set()
+        ids: list[int] = []
+        for raw in event_ids or []:
+            try:
+                eid = int(raw)
+            except (TypeError, ValueError):
+                continue
+            if eid in seen:
+                continue
+            seen.add(eid)
+            ids.append(eid)
+
+        result: dict[str, Any] = {
+            "ok": True,
+            "error": None,
+            "patient_id": pid,
+            "requested_ids": list(ids),
+            "updated": [],
+            "skipped": [],
+        }
+        if not pid or not ids:
+            result["ok"] = False
+            result["error"] = "empty"
+            return result
+
+        with self._lock:
+            conn = self._connect()
+            try:
+                rows_by_id: dict[int, dict[str, Any]] = {}
+                for eid in ids:
+                    row = self._get(conn, eid)
+                    if row is None:
+                        result["skipped"].append({"id": eid, "reason": "not_found"})
+                        continue
+                    if str(row.get("patient_id") or "") != pid:
+                        result["ok"] = False
+                        result["error"] = "foreign_patient"
+                        result["updated"] = []
+                        result["skipped"] = [
+                            {
+                                "id": eid,
+                                "reason": "foreign_patient",
+                                "patient_id": row.get("patient_id"),
+                            },
+                        ]
+                        return result
+                    rows_by_id[eid] = row
+
+                now = _utc_now()
+                for eid in ids:
+                    row = rows_by_id.get(eid)
+                    if row is None:
+                        continue
+                    cur = str(row.get("event_status") or "")
+                    if cur not in eligible_from:
+                        reason = "resolved" if cur == "RESOLVED" else "not_eligible"
+                        if status == "ACKNOWLEDGED" and cur == "ACKNOWLEDGED":
+                            reason = "already_acknowledged"
+                        result["skipped"].append({"id": eid, "reason": reason})
+                        continue
+                    sets = ["event_status = ?", f"{time_col} = ?"]
+                    args: list[Any] = [status, now]
+                    if handled_by is not None and str(handled_by).strip():
+                        sets.append("handled_by = ?")
+                        args.append(str(handled_by).strip()[:80])
+                    if outcome is not None and str(outcome).strip():
+                        sets.append("handle_outcome = ?")
+                        args.append(str(outcome).strip()[:64])
+                    if note is not None and str(note).strip():
+                        sets.append("handle_note = ?")
+                        args.append(str(note).strip()[:500])
+                    args.append(eid)
+                    conn.execute(
+                        f"UPDATE events SET {', '.join(sets)} WHERE id = ?",
+                        args,
+                    )
+                    updated = self._get(conn, eid)
+                    if updated is not None:
+                        result["updated"].append(updated)
+                conn.commit()
+                return result
+            finally:
+                conn.close()
+
     def _set_status(
         self,
         event_id: int,
@@ -367,6 +510,26 @@ class EventStore:
                     (patient_id, limit),
                 ).fetchall()
                 return [dict(r) for r in rows]
+            finally:
+                conn.close()
+
+    def set_event_snapshot(self, event_id: int, snapshot_path: str) -> dict[str, Any] | None:
+        """Attach / replace snapshot path when an event was created without one."""
+        path = (snapshot_path or "").strip()
+        if not path:
+            return None
+        with self._lock:
+            conn = self._connect()
+            try:
+                row = self._get(conn, int(event_id))
+                if row is None:
+                    return None
+                conn.execute(
+                    "UPDATE events SET snapshot_path = ? WHERE id = ?",
+                    (path[:500], int(event_id)),
+                )
+                conn.commit()
+                return self._get(conn, int(event_id))
             finally:
                 conn.close()
 
@@ -825,6 +988,46 @@ class EventStore:
                 ):
                     conn.execute(f"DELETE FROM {table}")
                 conn.commit()
+            finally:
+                conn.close()
+
+    def resolve_stale_active_events(
+        self,
+        *,
+        before_iso: str | None = None,
+        handled_by: str = "system",
+        outcome: str = "monitoring",
+        note: str = "Auto-closed stale alert from a previous session",
+    ) -> int:
+        """Resolve OPEN/ACK events created before `before_iso` (default: today UTC midnight).
+
+        Stops yesterday's unresolved falls from beeping / blocking the board on relaunch.
+        """
+        if not before_iso:
+            before_iso = (
+                datetime.now(timezone.utc)
+                .replace(hour=0, minute=0, second=0, microsecond=0)
+                .isoformat()
+            )
+        now = datetime.now(timezone.utc).replace(microsecond=0).isoformat()
+        with self._lock:
+            conn = self._connect()
+            try:
+                cur = conn.execute(
+                    """
+                    UPDATE events
+                    SET event_status = 'RESOLVED',
+                        resolved_at = ?,
+                        handled_by = COALESCE(NULLIF(handled_by, ''), ?),
+                        handle_outcome = COALESCE(NULLIF(handle_outcome, ''), ?),
+                        handle_note = COALESCE(NULLIF(handle_note, ''), ?)
+                    WHERE event_status IN ('OPEN', 'ACKNOWLEDGED')
+                      AND created_at < ?
+                    """,
+                    (now, handled_by, outcome, note, before_iso),
+                )
+                conn.commit()
+                return int(cur.rowcount or 0)
             finally:
                 conn.close()
 

@@ -264,6 +264,36 @@ class PlaybackApiTestCase(unittest.TestCase):
         self.assertTrue(payload["playback_available"])
         self.assertNotIn("recording_path", payload)
 
+    def test_event_snapshot_route(self):
+        snap_dir = self.base / "outputs" / "alerts" / "snapshots"
+        snap_dir.mkdir(parents=True)
+        snap = snap_dir / "ana_fall.jpg"
+        # Minimal valid-enough JPEG bytes for FileResponse.
+        snap.write_bytes(
+            b"\xff\xd8\xff\xe0\x00\x10JFIF\x00\x01\x01\x00\x00\x01\x00\x01\x00\x00"
+            b"\xff\xd9"
+        )
+        with mock.patch("src.config.ROOT", self.base):
+            e = self.store.create_event(
+                patient_id="p1-ana",
+                event_type="possible_fall",
+                action_text="Check",
+                reason_text="fall",
+                snapshot_path=str(snap.relative_to(self.base)).replace("\\", "/"),
+            )
+            r = self.client.get(
+                f"/api/events/{e['id']}/snapshot",
+                params={"patient_id": "p1-ana"},
+            )
+            self.assertEqual(r.status_code, 200)
+            self.assertIn("image/jpeg", r.headers.get("content-type", ""))
+            self.assertTrue(r.content.startswith(b"\xff\xd8"))
+            bad = self.client.get(
+                f"/api/events/{e['id']}/snapshot",
+                params={"patient_id": "p2-ben"},
+            )
+            self.assertEqual(bad.status_code, 404)
+
 
 if __name__ == "__main__":
     unittest.main()

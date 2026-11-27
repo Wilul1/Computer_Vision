@@ -227,7 +227,7 @@ html,body{height:auto!important;max-height:none!important;overflow-x:hidden!impo
 .cv-nav-active{background:#2563EB!important;color:#FFFFFF!important}
 .cv-nav-badge{margin-left:8px;background:#EF4444!important;color:#fff!important;border-radius:999px;font-size:10px;padding:2px 7px}
 .cv-nav-foot{padding:14px 12px;color:#94A3B8!important;font-size:12px;font-weight:600;border-top:1px solid rgba(255,255,255,.12);margin-top:12px}
-.cv-main{flex:1;min-width:0;padding:28px 28px 20px;background:#F1F5F9}
+.cv-main{flex:1;min-width:0;padding:22px 28px 20px;background:#EEF2F6;width:100%;box-sizing:border-box}
 .cv-top{display:flex;justify-content:space-between;gap:16px;align-items:flex-start;margin-bottom:20px}
 .cv-hello{font-size:30px;font-weight:750;color:#0F172A;letter-spacing:-.6px}
 .cv-sub{margin-top:6px;font-size:14px;color:#64748B}
@@ -236,27 +236,36 @@ html,body{height:auto!important;max-height:none!important;overflow-x:hidden!impo
 .cv-live-pill i{width:7px;height:7px;border-radius:50%;background:#16A34A;display:inline-block}
 .cv-user{padding:8px 14px;border-radius:999px;background:#fff;border:1px solid #E2E8F0;font-size:12px;color:#1E293B;font-weight:600}
 .cv-stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin-bottom:22px}
+.cv-stats-compact{gap:8px;margin-bottom:14px}
 .cv-stat{background:#fff;border:1px solid #E2E8F0;border-radius:18px;padding:18px 20px;min-height:96px;display:flex;gap:14px;align-items:center;box-shadow:0 1px 2px rgba(15,23,42,.04)}
+.cv-stats-compact .cv-stat{min-height:0;padding:12px 10px;border-radius:14px;flex-direction:column;align-items:center;text-align:center;gap:2px}
 .cv-stat-icon{width:44px;height:44px;border-radius:14px;display:grid;place-items:center;font-weight:800;font-size:16px}
 .cv-stat-safe .cv-stat-icon{background:#DCFCE7;color:#16A34A}
 .cv-stat-att .cv-stat-icon{background:#FEF9C3;color:#A16207}
 .cv-stat-alert .cv-stat-icon{background:#FEE2E2;color:#DC2626}
+.cv-stat-safe .cv-stat-n{color:#16A34A!important}
+.cv-stat-att .cv-stat-n{color:#CA8A04!important}
+.cv-stat-alert .cv-stat-n{color:#DC2626!important}
 .cv-stat-n{font-size:30px;font-weight:750;color:#0F172A;line-height:1}
+.cv-stats-compact .cv-stat-n{font-size:20px}
 .cv-stat-l{margin-top:4px;font-size:12px;color:#64748B;font-weight:600}
+.cv-stats-compact .cv-stat-l{margin-top:0;font-size:11px}
 .cv-section-head{display:flex;justify-content:space-between;align-items:baseline;margin:6px 0 12px}
 .cv-section-head h2{margin:0;font-size:17px;color:#0F172A;font-weight:700}
 .cv-link{font-size:12px;color:#2563EB;font-weight:650}
 .cv-muted{font-size:11px;color:#94A3B8}
-.cv-patients{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
-.cv-patient-card{background:#fff;border:1px solid #E2E8F0;border-radius:18px;padding:16px;min-height:176px;box-shadow:0 1px 2px rgba(15,23,42,.04)}
+.cv-patients{display:grid;grid-template-columns:1fr;gap:10px;width:100%;max-width:100%;box-sizing:border-box}
+.cv-patient-card{background:#fff;border:1px solid #E2E8F0;border-radius:16px;padding:12px;box-shadow:none;
+  width:100%;max-width:100%;box-sizing:border-box;overflow:hidden}
+.cv-patient-row{display:flex;align-items:center;gap:12px;min-height:0;padding:0;width:100%;max-width:100%;box-sizing:border-box}
+.cv-patient-who{flex:1 1 auto;min-width:0;overflow:hidden}
 .cv-patient-top{display:flex;justify-content:space-between;align-items:flex-start}
-.cv-avatar{width:52px;height:52px;border-radius:16px;display:grid;place-items:center;background:linear-gradient(145deg,#93C5FD,#2563EB);color:#fff;font-weight:750;font-size:18px}
-.cv-pill{padding:4px 10px;border-radius:999px;font-size:10px;font-weight:750;letter-spacing:.3px}
-.cv-patient-name{margin-top:14px;font-size:16px;font-weight:700;color:#0F172A}
-.cv-patient-room{margin-top:3px;font-size:12px;color:#64748B}
-.cv-patient-act{margin-top:12px;font-size:12px;color:#334155}
-.cv-patient-bell{margin-top:12px;font-size:11px;color:#64748B;display:flex;gap:6px;align-items:center}
-.cv-card-hint{margin-top:10px;font-size:11px;font-weight:650;color:#2563EB}
+.cv-avatar{width:42px;height:42px;border-radius:12px;display:grid;place-items:center;background:#EFF6FF;color:#2563EB;font-weight:750;font-size:15px;flex:0 0 42px}
+.cv-pill{padding:4px 9px;border-radius:999px;font-size:10px;font-weight:750;letter-spacing:.03em;flex:0 0 auto;text-transform:uppercase;white-space:nowrap}
+.cv-patient-name{margin-top:0;font-size:15px;font-weight:750;color:#0F172A}
+.cv-patient-room{margin-top:2px;font-size:12px;color:#64748B;line-height:1.35;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+.cv-open-link{margin-top:10px;font-size:12px;font-weight:700;color:#2563EB}
+.cv-patient-act,.cv-patient-bell,.cv-card-hint{display:none}
 .cv-clickable{cursor:pointer!important;transition:border-color .15s ease,box-shadow .15s ease,transform .12s ease}
 .cv-clickable:hover{border-color:#2563EB!important;box-shadow:0 4px 14px rgba(37,99,235,.16)!important;transform:translateY(-1px)}
 .cv-alerts{background:#fff;border:1px solid #E2E8F0;border-radius:18px;overflow:hidden;box-shadow:0 1px 2px rgba(15,23,42,.04)}
@@ -268,7 +277,8 @@ html,body{height:auto!important;max-height:none!important;overflow-x:hidden!impo
 .cv-alert-desc{font-size:12px;color:#DC2626;font-weight:600;margin-top:2px}
 .cv-alert-time{font-size:10px;color:#94A3B8;margin-top:2px}
 .cv-alert-open{margin-left:auto;padding:8px 14px;border-radius:999px;background:#FEE2E2;color:#B91C1C;font-size:11px;font-weight:700;white-space:nowrap}
-.cv-alert-empty{padding:18px;color:#94A3B8;font-size:13px}
+.cv-alert-empty{padding:28px 16px;text-align:center;color:#64748B;font-size:13px;line-height:1.45;
+  background:#fff;border:1px dashed #E2E8F0;border-radius:16px}
 .cv-tools{margin:0;padding:12px 22px 28px;background:#F1F5F9!important;border:0;border-radius:0;border-top:0}
 #careview-shell .cv-toolbar label{color:#334155!important;font-weight:600!important}
 #careview-shell .cv-exit button{background:#fff!important;color:#1A2B4B!important;border:1px solid #CBD5E1!important}
@@ -525,56 +535,123 @@ body ul.options li:hover{
     max-height:100vh!important;align-self:flex-start!important;overflow:hidden!important}
   #careview-shell{flex:1 1 auto!important;min-height:100vh!important;padding-bottom:48px!important}
 }
-/* Mobile-first caregiver: hide permanent sidebar, bottom nav, full-width cards */
+/* Mobile-first caregiver: full-bleed phone shell matching mockup */
 @media(max-width:768px){
   html,body{
     -webkit-overflow-scrolling:touch!important;overscroll-behavior-y:auto;
-    touch-action:pan-y!important;position:static!important}
-  #care-page-wrap{min-height:100dvh!important;touch-action:pan-y}
+    touch-action:pan-y!important;position:static!important;margin:0!important;padding:0!important;
+    background:#EEF2F6!important;overflow-x:hidden!important;max-width:100vw!important}
+  .gradio-container,.gradio-container .main,.gradio-container .wrap,.gradio-container .app,
+  .gradio-container .fillable,.gradio-container .contain,#root{
+    max-width:100%!important;width:100%!important;margin:0!important;padding:0!important;
+    border:0!important;border-radius:0!important;box-shadow:none!important;
+    background:#EEF2F6!important;overflow-x:hidden!important}
+  #care-page-wrap{min-height:100dvh!important;touch-action:pan-y;margin:0!important;padding:0!important;
+    width:100%!important;max-width:100vw!important;overflow-x:hidden!important;background:#EEF2F6!important;
+    border:0!important;border-radius:0!important;box-shadow:none!important}
   #care-page-wrap > .form,#care-page-wrap > div,
   #care-page-wrap .bubble-wrap,#care-page-wrap .block,
+  #care-page-wrap .html-container,#care-page-wrap .prose,
   #cv-layout,#careview-shell,#careview-shell .block,#careview-shell .form{
-    flex:none!important}
-  #cv-layout{flex-direction:column!important;align-items:stretch!important;display:flex!important;min-height:0!important}
+    flex:none!important;width:100%!important;max-width:100%!important;min-width:0!important;margin:0!important;
+    padding:0!important;border:0!important;border-radius:0!important;box-shadow:none!important;
+    background:transparent!important;box-sizing:border-box!important;overflow-x:hidden!important}
+  #cv-layout{display:flex!important;flex-direction:column!important;flex-wrap:nowrap!important;
+    align-items:stretch!important;min-height:0!important;width:100%!important;max-width:100vw!important}
+  #cv-layout > *{min-width:0!important;max-width:100%!important;box-sizing:border-box!important}
+  /* Kill Gradio HTML/prose padding that pushes cards off-screen */
+  #careview-shell .prose,#careview-shell .markdown-body,#careview-shell .html-container,
+  #careview-shell .gap,#careview-shell .wrap,#careview-shell .panel-full,
+  #careview-shell .panel-wrapper,#careview-shell .svelte-frame{
+    padding:0!important;margin:0!important;max-width:100%!important;min-width:0!important;
+    overflow-x:hidden!important;border:0!important;box-shadow:none!important;background:transparent!important}
+  #careview-shell .prose #careview-root,#careview-shell .prose .cv-main{
+    max-width:100%!important;overflow-x:hidden!important;box-sizing:border-box!important}
+  /* Header: edge-to-edge navy like mockup */
+  #care-page-wrap .html-container:has(#cv-mobile-top),
+  #care-page-wrap .prose:has(#cv-mobile-top),
+  #care-page-wrap div:has(> #cv-mobile-top){
+    padding:0!important;margin:0!important;border:0!important;border-radius:0!important;
+    background:transparent!important;max-width:100%!important}
   #cv-mobile-top{display:flex!important;align-items:center;justify-content:space-between;gap:10px;
-    position:sticky;top:0;z-index:90;padding:10px 14px;background:#15233F!important;color:#F8FAFC!important;
-    border-bottom:1px solid rgba(255,255,255,.1)}
-  #cv-mobile-top .cv-m-brand{display:flex;align-items:center;gap:10px;font-weight:750;font-size:15px;color:#fff!important}
-  #cv-mobile-top .cv-m-mark{width:32px;height:32px;border-radius:10px;background:#3B82F6;display:grid;place-items:center;color:#fff;font-weight:700}
+    position:sticky;top:0;z-index:90;height:56px;padding:0 14px;background:#0B1F3A!important;color:#F8FAFC!important;
+    border:0!important;border-radius:0!important;margin:0!important;width:100%!important;
+    max-width:100vw!important;box-sizing:border-box}
+  #cv-mobile-top .cv-m-brand{display:flex;align-items:center;gap:10px;font-weight:750;font-size:16px;color:#fff!important}
+  #cv-mobile-top .cv-m-mark{width:32px;height:32px;border-radius:10px;background:#2563EB;display:grid;place-items:center;color:#fff;font-weight:700}
   #cv-mobile-top .cv-m-meta{display:flex;align-items:center;gap:8px}
-  #cv-mobile-top .cv-m-bell{width:36px;height:36px;border-radius:999px;background:rgba(255,255,255,.08);display:grid;place-items:center;color:#F8FAFC;font-size:14px}
-  #cv-mobile-top .cv-m-user{padding:6px 10px;border-radius:999px;background:rgba(255,255,255,.1);font-size:11px;font-weight:650;color:#E2E8F0}
-  /* Turn desktop rail into fixed bottom navigation */
+  #cv-mobile-top .cv-m-bell{width:36px;height:36px;border-radius:999px;background:transparent;display:grid;place-items:center;color:#FDE68A;font-size:18px;cursor:pointer;border:0;padding:0}
+  #cv-mobile-top .cv-m-user{display:none!important}
+  /* Slim fixed bottom dock — out of document flow so it cannot widen the page */
   #cv-gradio-rail{position:fixed!important;left:0!important;right:0!important;bottom:0!important;top:auto!important;
-    width:100%!important;max-width:none!important;min-width:0!important;flex:none!important;height:auto!important;
-    z-index:95!important;padding:6px 6px calc(6px + env(safe-area-inset-bottom,0px))!important;
-    background:#15233F!important;border-top:1px solid rgba(255,255,255,.12)!important;box-shadow:0 -6px 20px rgba(15,23,42,.25)}
+    width:100%!important;max-width:100vw!important;min-width:0!important;flex:0 0 0!important;
+    height:56px!important;max-height:56px!important;margin:0!important;
+    z-index:95!important;padding:4px 6px calc(4px + env(safe-area-inset-bottom,0px))!important;
+    background:#0B1F3A!important;border:0!important;border-top:1px solid rgba(255,255,255,.08)!important;
+    border-radius:0!important;box-shadow:none!important;box-sizing:border-box!important;overflow:visible!important}
   #cv-gradio-rail .cv-brand,#cv-gradio-rail .cv-nav-foot{display:none!important}
-  #cv-side-nav{width:100%!important}
-  #cv-side-nav fieldset{flex-direction:row!important;justify-content:space-between!important;gap:4px!important;width:100%!important}
-  #cv-side-nav label{flex:1 1 0!important;min-width:0!important;min-height:56px!important;justify-content:center!important;
-    text-align:center!important;padding:6px 2px!important;font-size:11px!important;border-radius:12px!important;line-height:1.2}
-  #careview-shell{width:100%!important;max-width:100%!important;padding:0!important;
-    padding-bottom:calc(120px + env(safe-area-inset-bottom,0px))!important;
-    min-height:0!important;height:auto!important;overflow:visible!important;flex:1 0 auto!important}
-  #careview-shell .cv-main,.cv-main{padding:14px 14px 18px!important}
+  #cv-side-nav,#cv-side-nav .form,#cv-side-nav .block,#cv-side-nav .wrap{width:100%!important;max-width:100%!important;min-width:0!important}
+  #cv-side-nav fieldset{flex-direction:row!important;justify-content:space-between!important;gap:0!important;width:100%!important}
+  #cv-side-nav label{
+    flex:1 1 0!important;min-width:0!important;min-height:44px!important;max-height:48px!important;
+    justify-content:center!important;align-items:center!important;text-align:center!important;
+    padding:6px 2px!important;font-size:11px!important;font-weight:700!important;letter-spacing:.02em;
+    border-radius:12px!important;line-height:1.1!important;
+    background:transparent!important;background-color:transparent!important;
+    border:0!important;color:#94A3B8!important}
+  #cv-side-nav label span,#cv-side-nav label *{color:inherit!important}
+  #cv-side-nav label:has(input:checked){
+    background:#2563EB!important;background-color:#2563EB!important;color:#FFFFFF!important}
+  #cv-side-nav label:not(:has(input:checked)):hover{
+    background:rgba(255,255,255,.06)!important;color:#E2E8F0!important}
+  #careview-shell{width:100%!important;max-width:100%!important;min-width:0!important;padding:0!important;
+    padding-bottom:calc(72px + env(safe-area-inset-bottom,0px))!important;
+    min-height:0!important;height:auto!important;overflow-x:hidden!important;flex:1 1 auto!important;
+    background:#EEF2F6!important;border-radius:0!important}
+  #careview-shell .cv-main,.cv-main{
+    padding:16px 14px 18px!important;width:100%!important;max-width:100%!important;min-width:0!important;
+    box-sizing:border-box!important;overflow-x:hidden!important;background:#EEF2F6!important;min-height:0!important}
+  #careview-shell #careview-root,#careview-shell #careview-root.cv-app{
+    width:100%!important;max-width:100%!important;overflow-x:hidden!important;box-sizing:border-box!important}
   #careview-shell #careview-root.pd-page{padding-bottom:24px!important}
   #cv-live-panel{padding-bottom:12px!important}
-  .cv-hello{font-size:22px!important;letter-spacing:-.3px}
-  .cv-sub{font-size:13px!important}
-  .cv-top{flex-direction:column!important;align-items:stretch!important;gap:10px!important;margin-bottom:14px!important}
-  .cv-top-right{width:100%;justify-content:flex-start}
-  .cv-stats{grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:8px!important;margin-bottom:14px!important}
-  .cv-stat{padding:12px 10px!important;min-height:0!important;border-radius:14px!important;gap:8px!important}
-  .cv-stat-icon{width:32px;height:32px;border-radius:10px;font-size:13px}
-  .cv-stat-n{font-size:20px!important}
-  .cv-stat-l{font-size:11px!important}
-  .cv-patients{grid-template-columns:1fr!important;gap:10px!important}
-  .cv-patient-card{min-height:0!important;padding:14px!important}
-  .cv-alerts{border-radius:14px!important}
-  .cv-alert-row{padding:12px!important;align-items:flex-start!important;flex-wrap:wrap}
+  .cv-hello{font-size:22px!important;letter-spacing:-.4px;font-weight:750!important;color:#0F172A!important}
+  .cv-sub{font-size:13px!important;margin-top:4px!important;margin-bottom:0!important;color:#64748B!important}
+  .cv-top{flex-direction:column!important;align-items:stretch!important;gap:4px!important;margin-bottom:14px!important}
+  .cv-top-right{display:none!important}
+  .cv-stats,.cv-stats-compact{
+    grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:8px!important;margin-bottom:16px!important;
+    width:100%!important;max-width:100%!important;box-sizing:border-box!important}
+  .cv-stat{
+    padding:10px 8px!important;min-height:0!important;border-radius:14px!important;gap:2px!important;
+    box-shadow:none!important;width:auto!important;max-width:100%!important;box-sizing:border-box!important;
+    flex-direction:column!important;align-items:center!important;text-align:center!important}
+  .cv-stat-icon{display:none!important}
+  .cv-stat-n{font-size:18px!important;font-weight:750!important}
+  .cv-stat-safe .cv-stat-n{color:#16A34A!important}
+  .cv-stat-att .cv-stat-n{color:#CA8A04!important}
+  .cv-stat-alert .cv-stat-n{color:#DC2626!important}
+  .cv-stat-l{font-size:11px!important;font-weight:650!important;color:#64748B!important}
+  .cv-section-head{margin:4px 0 10px!important}
+  .cv-section-head h2{font-size:15px!important;font-weight:750!important}
+  .cv-patients{grid-template-columns:1fr!important;gap:10px!important;width:100%!important;max-width:100%!important}
+  .cv-patient-card{
+    min-height:0!important;padding:12px!important;border-radius:16px!important;
+    width:100%!important;max-width:100%!important;box-sizing:border-box!important;overflow:hidden!important}
+  .cv-patient-row{
+    min-height:0!important;padding:0!important;width:100%!important;max-width:100%!important;
+    box-sizing:border-box!important;overflow:hidden!important}
+  .cv-patient-who{flex:1 1 0!important;min-width:0!important}
+  .cv-pill{flex:0 0 auto!important}
+  .cv-open-link{margin-top:10px!important;font-size:12px!important;font-weight:700!important;color:#2563EB!important}
+  .cv-alerts{border-radius:16px!important;width:100%!important;max-width:100%!important;box-sizing:border-box!important;
+    background:transparent!important;border:0!important;box-shadow:none!important;overflow:visible!important}
+  .cv-alert-empty{margin:0!important}
+  .cv-alert-row{padding:12px!important;align-items:flex-start!important;flex-wrap:wrap;
+    background:#fff!important;border:1px solid #E2E8F0!important;border-radius:16px!important;margin-bottom:10px}
   .cv-alert-open{margin-left:0!important;margin-top:8px}
-  .cv-tools{padding:10px 14px 24px!important}
+  .cv-tools{padding:10px 14px 24px!important;width:100%!important;max-width:100%!important;box-sizing:border-box!important}
+  .cv-status-note{display:none!important}
   #careview-shell .cv-exit button,#careview-shell button{min-height:44px!important}
   #careview-shell #careview-root.pd-page{padding:12px 12px 8px!important}
   #careview-shell #careview-root.pd-page .pd-name{font-size:22px!important}
@@ -584,20 +661,24 @@ body ul.options li:hover{
     max-width:100%!important;width:100%!important;height:auto!important;aspect-ratio:4/3;object-fit:contain}
   #cv-live-panel{padding:12px 14px 0!important}
   .cv-lab-link{display:none!important}
+  .cv-hist2-grid{display:flex!important;flex-direction:column!important}
+  .cv-hist2-list-panel{order:1}
+  .cv-hist2-detail-panel{order:2}
 }
 #cv-live-panel{padding:12px 22px 10px;background:#F1F5F9}
 #cv-live-panel .cv-live-image{border-radius:14px;overflow:hidden}
 #cv-live-panel .cv-live-empty-compact{min-height:56px!important;max-height:88px!important;padding:12px 14px!important;
   background:#F8FAFC!important;border:1px solid #E2E8F0!important;color:#64748B!important}
-/* P4 Alert Center */
-.cv-ac-stats{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px;margin:0 0 10px}
-.cv-ac-stat{background:#fff;border:1px solid #E2E8F0;border-radius:14px;padding:12px 10px;text-align:center}
-.cv-ac-stat b{display:block;font-size:22px;color:#0F172A;line-height:1.1}
-.cv-ac-stat span{display:block;margin-top:4px;font-size:11px;color:#64748B;font-weight:650}
-.cv-ac-high{border-color:#FECACA}.cv-ac-high b{color:#DC2626}
-.cv-ac-med{border-color:#FDE68A}.cv-ac-med b{color:#A16207}
-.cv-ac-low{border-color:#BFDBFE}.cv-ac-low b{color:#2563EB}
-.cv-ac-note{margin:0 0 8px;line-height:1.45}
+/* P4 Alert Center — compact chips, list first */
+.cv-ac-chips{display:flex;flex-wrap:nowrap;gap:8px;overflow-x:auto;margin:0 0 12px;padding-bottom:2px;-webkit-overflow-scrolling:touch}
+.cv-ac-chip{flex:0 0 auto;background:#fff;border:1px solid #E2E8F0;border-radius:999px;padding:7px 12px;font-size:12px;font-weight:650;color:#64748B}
+.cv-ac-chip b{color:#0F172A;font-weight:750;margin-right:4px}
+.cv-ac-chip-high{border-color:#FECACA;background:#FEF2F2;color:#B91C1C}
+.cv-ac-chip-high b{color:#DC2626}
+.cv-ac-chip-med{border-color:#FDE68A;background:#FFFBEB;color:#A16207}
+.cv-ac-chip-med b{color:#A16207}
+.cv-ac-stats{display:none}
+.cv-ac-note{display:none}
 .cv-ac-list{display:flex;flex-direction:column;gap:10px}
 .cv-ac-card{background:#fff;border:1px solid #E2E8F0;border-radius:16px;overflow:hidden;box-shadow:0 1px 2px rgba(15,23,42,.04)}
 .cv-ac-summary{list-style:none;display:flex;gap:12px;align-items:flex-start;padding:12px 14px;cursor:pointer}
@@ -618,33 +699,78 @@ body ul.options li:hover{
 .cv-ac-title{margin-top:6px;font-size:13px;font-weight:650;color:#0F172A}
 .cv-ac-sub,.cv-ac-brief,.cv-ac-next{margin-top:3px;font-size:12px;color:#64748B;line-height:1.4}
 .cv-ac-brief b,.cv-ac-next b{color:#334155}
+.cv-ac-count{font-size:10px;font-weight:750;padding:3px 8px;border-radius:999px;background:#F1F5F9;color:#475569}
 .cv-needs-check{background:#7F1D1D;color:#FEE2E2;border-radius:999px;font-size:10px;font-weight:750;
   padding:3px 8px;letter-spacing:.02em}
 .cv-ac-detail{padding:0 14px 14px 82px;border-top:1px solid #F1F5F9;color:#334155;font-size:12px;line-height:1.5}
 .cv-ac-detail > div{margin-top:6px}
+.cv-ac-findings-head{margin-top:10px!important;font-size:12px;color:#0F172A}
+.cv-ac-finding{display:flex;gap:10px;align-items:flex-start;margin-top:10px;padding:10px;border:1px solid #E2E8F0;
+  border-radius:12px;background:#F8FAFC}
+.cv-ac-thumb-sm{width:40px;height:40px;flex:0 0 40px;border-radius:10px;font-size:10px}
+.cv-cr-findings{margin:8px 0 0;padding-left:18px;font-size:12px;color:#334155;line-height:1.45}
 .cv-ac-actions{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-top:10px}
 .cv-ac-open-patient{appearance:none;border:1px solid #2563EB;background:#2563EB;color:#fff!important;border-radius:10px;
   padding:8px 12px;font-size:12px;font-weight:700;cursor:pointer!important;pointer-events:auto!important;
   display:inline-block;text-decoration:none!important;line-height:1.2}
 .cv-ac-open-patient:hover{background:#1D4ED8!important;border-color:#1D4ED8!important}
-/* Interrupt banner — visible even while watching live */
-.cv-urgent-banner{margin:10px 14px 0;padding:14px 16px;border-radius:16px;background:#7F1D1D;color:#FEE2E2;
-  border:1px solid #B91C1C;box-shadow:0 8px 24px rgba(127,29,29,.35);position:sticky;top:8px;z-index:80}
-.cv-urgent-banner.cv-urgent-new{animation:cvUrgentPulse 1.2s ease-in-out 2}
-@keyframes cvUrgentPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.01);box-shadow:0 0 0 4px rgba(248,113,113,.35)}}
+/* Fall alert popup — loops sound until Silence alarm */
+.cv-urgent-modal{position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;
+  padding:18px;pointer-events:auto}
+.cv-urgent-modal-backdrop{position:absolute;inset:0;background:rgba(15,23,42,.62)}
+.cv-urgent-modal-card{position:relative;z-index:1;width:min(420px,100%);padding:20px 18px 16px;border-radius:18px;
+  background:#7F1D1D;color:#FEE2E2;border:1px solid #B91C1C;box-shadow:0 18px 48px rgba(127,29,29,.55);
+  animation:cvUrgentPulse 1.4s ease-in-out infinite}
+.cv-urgent-modal.cv-urgent-silenced{display:none!important}
+@keyframes cvUrgentPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.015);box-shadow:0 0 0 6px rgba(248,113,113,.28)}}
 .cv-urgent-kicker{font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:#FECACA}
-.cv-urgent-title{margin-top:6px;font-size:17px;font-weight:750;color:#fff}
-.cv-urgent-meta{margin-top:4px;font-size:13px;color:#FEE2E2}
-.cv-urgent-reason{margin-top:8px;font-size:13px;line-height:1.45;color:#FFE4E6}
-.cv-urgent-actions{margin-top:12px;display:flex;flex-wrap:wrap;gap:10px;align-items:center}
-.cv-urgent-actions .cv-ac-open-patient{background:#fff;color:#7F1D1D!important;border-color:#fff}
-.cv-urgent-actions .cv-muted{color:#FECACA!important}
+.cv-urgent-title{margin-top:8px;font-size:20px;font-weight:750;color:#fff;line-height:1.25}
+.cv-urgent-meta{margin-top:6px;font-size:13px;color:#FEE2E2}
+.cv-urgent-reason{margin-top:10px;font-size:14px;line-height:1.45;color:#FFE4E6}
+.cv-urgent-actions{margin-top:16px;display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.cv-urgent-silence{appearance:none;border:1px solid #fff;background:#fff;color:#7F1D1D;border-radius:10px;
+  padding:10px 14px;font-size:13px;font-weight:750;cursor:pointer!important}
+.cv-urgent-silence:hover{background:#FEE2E2}
+.cv-urgent-actions .cv-urgent-open,.cv-urgent-actions .cv-ac-open-patient{
+  background:transparent;color:#fff!important;border:1px solid #FECACA;border-radius:10px;
+  padding:10px 14px;font-size:13px;font-weight:750;text-decoration:none!important}
+.cv-urgent-hint{margin-top:12px;font-size:11px;line-height:1.4;color:#FECACA}
 @media(max-width:768px){
-  .cv-urgent-banner{margin:8px 10px 0;top:52px}
+  .cv-urgent-modal{padding:12px;align-items:flex-end}
+  .cv-urgent-modal-card{border-radius:16px 16px 12px 12px}
 }
+/* In-page snapshot lightbox — avoids blank data: URL tabs */
+.cv-lightbox{position:fixed;inset:0;z-index:10000;display:none;align-items:center;justify-content:center;
+  padding:16px;background:rgba(15,23,42,.82)}
+.cv-lightbox.is-open{display:flex}
+.cv-lightbox img{max-width:min(960px,100%);max-height:min(90vh,100%);border-radius:12px;
+  box-shadow:0 18px 48px rgba(0,0,0,.45);background:#0F172A}
+.cv-lightbox-close{position:absolute;top:12px;right:12px;appearance:none;border:1px solid #E2E8F0;
+  background:#fff;color:#0F172A;border-radius:999px;padding:8px 12px;font-size:13px;font-weight:700;
+  cursor:pointer!important}
+/* Incident timeline under Watch recording / History video */
+.cv-incident-bar{margin-top:10px}
+.cv-incident-row{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:space-between}
+.cv-incident-chip{display:inline-flex;align-items:center;padding:6px 10px;border-radius:999px;
+  background:#F1F5F9;color:#0F172A;font-size:12px;font-weight:700;line-height:1.2}
+.cv-incident-chip.cv-incident-fall{background:#FEF3C7;color:#92400E;border:1px solid #F59E0B}
+.cv-incident-jump{appearance:none;border:1px solid #F59E0B;background:#FFFBEB;color:#92400E;
+  border-radius:10px;padding:7px 12px;font-size:12px;font-weight:750;cursor:pointer!important}
+.cv-incident-jump:hover{background:#FDE68A}
+.cv-incident-track{position:relative;margin-top:10px;height:14px;border-radius:999px;background:#E2E8F0;
+  overflow:visible}
+.cv-incident-mark{appearance:none;position:absolute;top:50%;transform:translate(-50%,-50%);
+  width:10px;height:18px;border:0;border-radius:3px;padding:0;background:#94A3B8;
+  box-shadow:0 0 0 3px rgba(148,163,184,.25);cursor:pointer!important;z-index:2}
+.cv-incident-mark-fall{background:#F59E0B;box-shadow:0 0 0 4px rgba(245,158,11,.35)}
+.cv-incident-mark-fall::before{content:"";position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);
+  width:18px;height:100%;border-radius:4px;background:rgba(245,158,11,.35);pointer-events:none}
+.cv-incident-unavailable .cv-incident-chip{background:#F8FAFC;color:#64748B;font-weight:650}
 @media(max-width:768px){
-  .cv-ac-stats{grid-template-columns:repeat(2,minmax(0,1fr))}
   .cv-ac-detail{padding-left:14px}
+  .cv-hist2-grid{display:flex!important;flex-direction:column!important}
+  .cv-hist2-list-panel{order:1}
+  .cv-hist2-detail-panel{order:2}
 }
 @media(max-width:1100px) and (min-width:769px){
   .cv-patients{grid-template-columns:1fr 1fr}
@@ -678,15 +804,40 @@ CV_BOARD_CLICK_JS = """
       wrap.style.setProperty('bottom', 'auto', 'important');
       wrap.style.setProperty('height', 'auto', 'important');
       wrap.style.setProperty('max-height', 'none', 'important');
-      wrap.style.setProperty('overflow', 'visible', 'important');
+      wrap.style.setProperty('overflow-x', 'hidden', 'important');
+      wrap.style.setProperty('max-width', '100vw', 'important');
+      wrap.style.setProperty('padding', '0', 'important');
+      wrap.style.setProperty('margin', '0', 'important');
     }
     document.querySelectorAll(
-      '.gradio-container, main, .main, .wrap, .app, .fillable, #root'
+      '.gradio-container, main, .main, .wrap, .app, .fillable, .contain, #root'
     ).forEach((el) => {
-      el.style.setProperty('overflow', 'visible', 'important');
+      el.style.setProperty('overflow-x', 'hidden', 'important');
       el.style.setProperty('height', 'auto', 'important');
       el.style.setProperty('max-height', 'none', 'important');
+      el.style.setProperty('padding', '0', 'important');
+      el.style.setProperty('margin', '0', 'important');
+      el.style.setProperty('max-width', '100%', 'important');
     });
+    // Phone: Gradio Column min-width pushes patient pills off-screen.
+    if (window.matchMedia('(max-width: 768px)').matches) {
+      document.querySelectorAll('#cv-layout, #cv-layout > *, #careview-shell, #careview-shell *').forEach((el) => {
+        if (el && el.style) {
+          el.style.setProperty('min-width', '0', 'important');
+        }
+      });
+      const shell = document.getElementById('careview-shell');
+      if (shell) {
+        shell.style.setProperty('width', '100%', 'important');
+        shell.style.setProperty('max-width', '100%', 'important');
+      }
+      const rail = document.getElementById('cv-gradio-rail');
+      if (rail) {
+        rail.style.setProperty('min-width', '0', 'important');
+        rail.style.setProperty('max-width', '100vw', 'important');
+        rail.style.setProperty('width', '100%', 'important');
+      }
+    }
   };
   unlockPageScroll();
   window.addEventListener('resize', unlockPageScroll, { passive: true });
@@ -724,6 +875,30 @@ CV_BOARD_CLICK_JS = """
     if (!host) return;
     setNativeValue(host.querySelector('input'), val);
   };
+  const setAlertBundle = (token) => {
+    // Select the Care Response dropdown so Resolve uses the full reviewed patient bundle.
+    if (!token) return;
+    const root = document.querySelector('#careview-shell') || document;
+    const hosts = root.querySelectorAll('.cv-cr-event, label');
+    let input = null;
+    root.querySelectorAll('input, textarea, select').forEach((el) => {
+      const wrap = el.closest('.cv-cr-event');
+      if (wrap) input = el;
+    });
+    // Gradio Dropdown often uses a hidden input + visible textbox.
+    const dd = root.querySelector('.cv-cr-event input, .cv-cr-event textarea');
+    if (dd) {
+      setNativeValue(dd, token);
+      // Also try selecting matching <option> if present.
+      const sel = root.querySelector('.cv-cr-event select');
+      if (sel) {
+        sel.value = String(token);
+        sel.dispatchEvent(new Event('change', { bubbles: true }));
+      }
+      return;
+    }
+    if (input) setNativeValue(input, token);
+  };
   const setOpenPatientId = (val) => {
     const host = document.querySelector('#cv-open-pid');
     if (!host) return;
@@ -741,7 +916,8 @@ CV_BOARD_CLICK_JS = """
     setOpenPatientId(id);
     clickSoon('#cv-btn-open-patient');
   };
-  const openAlertEvent = (eid, pid) => {
+  const openAlertEvent = (eid, pid, bundle) => {
+    if (bundle) setAlertBundle(bundle);
     if (eid) setEventId(eid);
     if (pid) setOpenPatientId(pid);
     // Review opens the patient case focused on this alert (most reliable path).
@@ -749,40 +925,109 @@ CV_BOARD_CLICK_JS = """
     else openPatient(pid);
   };
 
-  // Beep/vibrate when urgent banner marks a NEW open alert (no inline <script>).
-  let lastBeepId = '';
-  const playAlertCue = () => {
-    // Three short pulses so a fall is hard to miss.
+  // Endless fall alarm until caregiver presses Silence (localStorage per event id).
+  const SILENCE_KEY = 'cv_alert_silenced';
+  let alarmTimer = null;
+  let alarmCtx = null;
+  let alarmEventId = '';
+
+  const readSilenced = () => {
+    try { return JSON.parse(localStorage.getItem(SILENCE_KEY) || '{}') || {}; }
+    catch (e) { return {}; }
+  };
+  const isSilenced = (eid) => {
+    if (!eid) return false;
+    const map = readSilenced();
+    const until = Number(map[String(eid)] || 0);
+    return until > Date.now();
+  };
+  const silenceEvent = (eid) => {
+    if (!eid) return;
+    const map = readSilenced();
+    // Keep silence for 12h so reopen/poll does not restart the same alert's sound.
+    map[String(eid)] = Date.now() + 12 * 60 * 60 * 1000;
+    try { localStorage.setItem(SILENCE_KEY, JSON.stringify(map)); } catch (e) {}
+  };
+  const stopAlarm = () => {
+    if (alarmTimer) { clearInterval(alarmTimer); alarmTimer = null; }
+    if (alarmCtx) {
+      try { alarmCtx.close(); } catch (e) {}
+      alarmCtx = null;
+    }
+    alarmEventId = '';
+    try { if (navigator.vibrate) navigator.vibrate(0); } catch (e) {}
+  };
+  const playAlarmBurst = () => {
     try {
-      if (navigator.vibrate) navigator.vibrate([140, 80, 140, 80, 140]);
+      if (navigator.vibrate) navigator.vibrate([180, 90, 180, 90, 180, 90, 180]);
     } catch (e) {}
     try {
       const Ctx = window.AudioContext || window.webkitAudioContext;
       if (!Ctx) return;
-      const ctx = new Ctx();
-      const beepAt = (startSec) => {
+      if (!alarmCtx || alarmCtx.state === 'closed') {
+        alarmCtx = new Ctx();
+      }
+      if (alarmCtx.state === 'suspended' && alarmCtx.resume) alarmCtx.resume();
+      const ctx = alarmCtx;
+      const beepAt = (startSec, freq) => {
         const o = ctx.createOscillator();
         const g = ctx.createGain();
         o.type = 'square';
-        o.frequency.value = 880;
-        g.gain.value = 0.06;
+        o.frequency.value = freq;
+        g.gain.value = 0.07;
         o.connect(g); g.connect(ctx.destination);
         o.start(ctx.currentTime + startSec);
-        o.stop(ctx.currentTime + startSec + 0.18);
+        o.stop(ctx.currentTime + startSec + 0.2);
       };
-      beepAt(0);
-      beepAt(0.32);
-      beepAt(0.64);
-      setTimeout(() => { try { ctx.close(); } catch (e) {} }, 1000);
+      beepAt(0, 880);
+      beepAt(0.28, 990);
+      beepAt(0.56, 880);
+      beepAt(0.84, 990);
     } catch (e) {}
   };
+  const startAlarmLoop = (eid) => {
+    if (!eid || isSilenced(eid)) {
+      stopAlarm();
+      return;
+    }
+    if (alarmEventId === eid && alarmTimer) return;
+    stopAlarm();
+    alarmEventId = eid;
+    playAlarmBurst();
+    alarmTimer = setInterval(() => {
+      if (isSilenced(eid)) { stopAlarm(); return; }
+      const still = document.querySelector(
+        '#cv-urgent-watch .cv-urgent-modal[data-alert-loop=\"1\"][data-event-id=\"' + eid + '\"]'
+      );
+      if (!still) { stopAlarm(); return; }
+      playAlarmBurst();
+    }, 1600);
+  };
+  const dismissUrgentModal = (root, eid) => {
+    if (eid) silenceEvent(eid);
+    stopAlarm();
+    const modal = root || document.querySelector('#cv-urgent-watch .cv-urgent-modal');
+    if (modal) modal.classList.add('cv-urgent-silenced');
+  };
+  const applySilenceUi = (root) => {
+    if (!root) return;
+    const eid = root.getAttribute('data-event-id') || '';
+    if (isSilenced(eid)) root.classList.add('cv-urgent-silenced');
+    else root.classList.remove('cv-urgent-silenced');
+  };
   const watchUrgent = () => {
-    const el = document.querySelector('#cv-urgent-watch .cv-urgent-banner[data-alert-new=\"1\"]');
-    if (!el) return;
-    const id = el.getAttribute('data-event-id') || '';
-    if (!id || id === lastBeepId) return;
-    lastBeepId = id;
-    playAlertCue();
+    const el = document.querySelector('#cv-urgent-watch .cv-urgent-modal[data-alert-loop=\"1\"]');
+    if (!el) {
+      stopAlarm();
+      return;
+    }
+    applySilenceUi(el);
+    const eid = el.getAttribute('data-event-id') || '';
+    if (!eid || isSilenced(eid)) {
+      stopAlarm();
+      return;
+    }
+    startAlarmLoop(eid);
   };
   const urgentMo = new MutationObserver(() => watchUrgent());
   urgentMo.observe(document.documentElement, { childList: true, subtree: true });
@@ -791,15 +1036,139 @@ CV_BOARD_CLICK_JS = """
     try {
       const Ctx = window.AudioContext || window.webkitAudioContext;
       if (!Ctx) return;
-      const ctx = new Ctx();
-      ctx.resume && ctx.resume();
-      setTimeout(() => { try { ctx.close(); } catch (e) {} }, 50);
+      if (!alarmCtx || alarmCtx.state === 'closed') alarmCtx = new Ctx();
+      if (alarmCtx.resume) alarmCtx.resume();
     } catch (e) {}
-  }, { once: true, passive: true });
+    watchUrgent();
+  }, { passive: true });
+  document.addEventListener('click', (e) => {
+    const btn = e.target.closest('.cv-urgent-silence');
+    if (!btn) return;
+    e.preventDefault();
+    e.stopPropagation();
+    const modal = btn.closest('.cv-urgent-modal');
+    const eid = btn.getAttribute('data-event-id')
+      || (modal && modal.getAttribute('data-event-id'))
+      || '';
+    dismissUrgentModal(modal, eid);
+  }, true);
+
+  // Mobile header bell → Alerts tab
+  document.addEventListener('click', (e) => {
+    const bell = e.target.closest('#cv-m-bell, .cv-m-bell');
+    if (!bell) return;
+    e.preventDefault();
+    const labels = document.querySelectorAll('#cv-side-nav label');
+    for (const lab of labels) {
+      const t = (lab.textContent || '').trim();
+      if (t === 'Alerts' || t.indexOf('Alerts') === 0) {
+        lab.click();
+        break;
+      }
+    }
+  }, true);
+
+  // Snapshot enlarge — in-page lightbox (data: URL tabs go blank on phones).
+  const ensureLightbox = () => {
+    let box = document.getElementById('cv-lightbox');
+    if (box) return box;
+    box = document.createElement('div');
+    box.id = 'cv-lightbox';
+    box.className = 'cv-lightbox';
+    box.innerHTML = '<button type="button" class="cv-lightbox-close" aria-label="Close">Close</button>'
+      + '<img alt="Alert snapshot">';
+    document.body.appendChild(box);
+    box.addEventListener('click', (ev) => {
+      if (ev.target === box || ev.target.closest('.cv-lightbox-close')) {
+        box.classList.remove('is-open');
+        const img = box.querySelector('img');
+        if (img) img.removeAttribute('src');
+      }
+    });
+    return box;
+  };
+  const openSnapLightbox = (src) => {
+    if (!src) return;
+    const box = ensureLightbox();
+    const img = box.querySelector('img');
+    if (img) img.src = src;
+    box.classList.add('is-open');
+  };
+  document.addEventListener('click', (e) => {
+    const zoom = e.target.closest('.cv-snap-zoom');
+    if (!zoom) return;
+    e.preventDefault();
+    e.stopPropagation();
+    const img = zoom.querySelector('img') || (zoom.tagName === 'IMG' ? zoom : null);
+    const src = img && img.getAttribute('src');
+    openSnapLightbox(src);
+  }, true);
+
+  // Fall / incident timeline: yellow tick + Jump seeks the native <video>.
+  const findIncidentVideo = (bar) => {
+    if (!bar) return null;
+    const panel = bar.closest('.pd-player-panel, .cv-hist2-player, .cv-hist2-card');
+    return (panel && panel.querySelector('video')) || null;
+  };
+  const syncIncidentMark = (bar, duration) => {
+    if (!bar || !(duration > 0)) return;
+    const offset = parseFloat(bar.getAttribute('data-offset') || '');
+    if (!Number.isFinite(offset)) return;
+    const pct = Math.max(0, Math.min(100, (offset / duration) * 100));
+    bar.setAttribute('data-duration', String(duration));
+    bar.setAttribute('data-pct', pct.toFixed(2));
+    const mark = bar.querySelector('.cv-incident-mark');
+    if (mark) mark.style.left = pct.toFixed(2) + '%';
+  };
+  const seekIncident = (bar, useJump) => {
+    const video = findIncidentVideo(bar);
+    if (!video || !bar) return;
+    const offset = parseFloat(bar.getAttribute('data-offset') || '');
+    const jump = parseFloat(bar.getAttribute('data-jump') || '');
+    if (!Number.isFinite(offset)) return;
+    let t = (useJump && Number.isFinite(jump)) ? jump : offset;
+    const go = () => {
+      const dur = Number(video.duration);
+      if (Number.isFinite(dur) && dur > 0) {
+        syncIncidentMark(bar, dur);
+        t = Math.max(0, Math.min(t, dur));
+      }
+      try { video.currentTime = t; } catch (err) {}
+    };
+    if (video.readyState >= 1 && Number.isFinite(video.duration)) go();
+    else video.addEventListener('loadedmetadata', go, { once: true });
+  };
+  const wireIncidentBars = () => {
+    document.querySelectorAll('.cv-incident-bar[data-offset]').forEach((bar) => {
+      if (bar.getAttribute('data-wired') === '1') return;
+      bar.setAttribute('data-wired', '1');
+      const video = findIncidentVideo(bar);
+      if (!video) return;
+      const onMeta = () => {
+        if (Number.isFinite(video.duration) && video.duration > 0) {
+          syncIncidentMark(bar, video.duration);
+        }
+      };
+      video.addEventListener('loadedmetadata', onMeta);
+      if (video.readyState >= 1) onMeta();
+    });
+  };
+  document.addEventListener('click', (e) => {
+    const jumpBtn = e.target.closest('.cv-incident-jump');
+    const markBtn = e.target.closest('.cv-incident-mark');
+    if (!jumpBtn && !markBtn) return;
+    e.preventDefault();
+    e.stopPropagation();
+    const bar = (jumpBtn || markBtn).closest('.cv-incident-bar');
+    seekIncident(bar, !!jumpBtn);
+  }, true);
+  const incidentMo = new MutationObserver(() => wireIncidentBars());
+  incidentMo.observe(document.documentElement, { childList: true, subtree: true });
+  wireIncidentBars();
 
   document.addEventListener('click', (e) => {
     const inApp = e.target.closest(
-      '#care-page-wrap, #careview-shell, #careview-root, .cv-ac-card, .cv-patient-card'
+      '#care-page-wrap, #careview-shell, #careview-root, .cv-ac-card, .cv-patient-card, .cv-urgent-modal'
     );
     if (!inApp) return;
 
@@ -807,17 +1176,25 @@ CV_BOARD_CLICK_JS = """
     if (openBtn) {
       e.preventDefault();
       e.stopPropagation();
+      const modal = openBtn.closest('.cv-urgent-modal');
       const card = openBtn.closest('.cv-ac-card');
-      const eid = card && card.getAttribute('data-event-id');
+      const eid = openBtn.getAttribute('data-event-id')
+        || (modal && modal.getAttribute('data-event-id'))
+        || (card && card.getAttribute('data-event-id'));
       const pid = openBtn.getAttribute('data-patient-id')
+        || (modal && modal.getAttribute('data-patient-id'))
         || (card && card.getAttribute('data-patient-id'));
-      openAlertEvent(eid, pid);
+      const bundle = card && card.getAttribute('data-bundle');
+      if (modal) dismissUrgentModal(modal, eid);
+      openAlertEvent(eid, pid, bundle);
       return;
     }
 
-    // Alert Center card body: select event only (expand stays native <details>).
+    // Alert Center card: select the full patient bundle for one-shot Resolve.
     const acCard = e.target.closest('.cv-ac-card[data-event-id]');
     if (acCard && !e.target.closest('a, button, .cv-ac-open-patient')) {
+      const bundle = acCard.getAttribute('data-bundle');
+      if (bundle) setAlertBundle(bundle);
       setEventId(acCard.getAttribute('data-event-id'));
       return;
     }
@@ -853,6 +1230,7 @@ CV_BOARD_CLICK_JS = """
       openAlertEvent(
         row.getAttribute('data-event-id'),
         row.getAttribute('data-patient-id'),
+        row.getAttribute('data-bundle'),
       );
     }
   }, true);
@@ -1078,22 +1456,23 @@ def build_ui(
                                         cback = gr.Button("← Back to patients", scale=1)
                                         crun = gr.Button("Run room check", variant="primary", scale=1)
                                     with gr.Group(elem_classes=["cv-play-block"]):
-                                        gr.Markdown("### Session recording")
+                                        gr.Markdown("### Issue recording")
                                         csession = gr.Dropdown(
-                                            label="Choose a monitoring session",
+                                            label="Issue recording",
                                             choices=[],
                                             value=None,
-                                            interactive=True,
+                                            interactive=False,
+                                            visible=False,
                                             elem_id="cv-session-select",
                                         )
                                         cplayer = gr.HTML(
                                             '<div class="pd-player-panel"><div class="pd-empty">'
-                                            "Select a session with a ready recording to watch it here.</div></div>",
+                                            "No issue recording to play yet.</div></div>",
                                             elem_id="cv-session-player",
                                         )
                                         cplay_info = gr.HTML(
                                             '<div class="pd-player-info pd-muted">'
-                                            "Session recording details appear after you select a playable session.</div>"
+                                            "The recording for this alert appears here when available.</div>"
                                         )
                                         csession_sel = gr.State(None)
                                 with gr.Row(elem_classes=["media-row"]):
@@ -1129,7 +1508,8 @@ def build_ui(
                                         interactive=False,
                                     )
                                     caction_note = gr.Markdown(
-                                        "Acknowledge = saw it (does **not** force SAFE). Resolve = close event."
+                                        "Acknowledge = saw reviewed findings (does **not** force SAFE). "
+                                        "Resolve = close those reviewed findings only — not future alerts."
                                     )
                     # open_patient_details (9) + playback panel (4): dropdown, player, info, selected id
                     detail_outs = [
@@ -1180,7 +1560,12 @@ def build_ui(
                                 csession, cplayer, cplay_info, csession_sel,
                             ],
                         )
-                    calert.change(lambda v: v, calert, ceid)
+                    def _legacy_alert_to_eid(token):
+                        from src.alert_center import parse_alert_bundle
+                        primary, _ids = parse_alert_bundle(token)
+                        return primary
+
+                    calert.change(_legacy_alert_to_eid, calert, ceid)
                     if care_select_session is not None:
                         csession.change(
                             care_select_session, [cauth, cpatient, csession],
@@ -1192,12 +1577,12 @@ def build_ui(
                         clive_timer.tick(care_live_status, [cpatient], [cmon])
                     if care_ack is not None:
                         cack.click(
-                            care_ack, [cauth, ceid, cnav, cpatient],
+                            care_ack, [cauth, calert, cnav, cpatient],
                             [cinbox, caction_note, ccards, calert],
                         )
                     if care_resolve is not None:
                         cres.click(
-                            care_resolve, [cauth, ceid, cnav, cpatient],
+                            care_resolve, [cauth, calert, cnav, cpatient],
                             [cinbox, caction_note, ccards, calert, cnav],
                         )
                 with gr.Group(visible=False) as model_page:
@@ -1243,12 +1628,12 @@ def build_ui(
 # Caregiver-only mount: light shell (no dark lab chrome). Reuses CareView CSS rules.
 _CAREVIEWS_CSS = APP_CSS.split("/* ---- CareView product", 1)
 CAREGIVER_APP_CSS = (
-    "html,body,.gradio-container{background:#F1F5F9!important;color:#0F172A!important;"
+    "html,body,.gradio-container{background:#EEF2F6!important;color:#0F172A!important;"
     "color-scheme:light!important;"
     "--background-fill-primary:#FFFFFF!important;"
     "--background-fill-secondary:#F8FAFC!important;"
     "--block-background-fill:#FFFFFF!important;"
-    "--body-background-fill:#F1F5F9!important;"
+    "--body-background-fill:#EEF2F6!important;"
     "--body-text-color:#0F172A!important;"
     "--input-background-fill:#FFFFFF!important;"
     "--input-border-color:#E2E8F0!important;"
@@ -1259,7 +1644,10 @@ CAREGIVER_APP_CSS = (
     "--neutral-400:#CBD5E1!important;--neutral-300:#E2E8F0!important;"
     "--neutral-200:#F1F5F9!important;--neutral-100:#F8FAFC!important;"
     "--neutral-50:#FFFFFF!important}"
-    ".gradio-container{max-width:none!important;padding:0!important;margin:0!important}"
+    ".gradio-container,.gradio-container .contain,.gradio-container .wrap,"
+    ".gradio-container .main,.gradio-container .app{max-width:none!important;"
+    "padding:0!important;margin:0!important;border:0!important;border-radius:0!important;"
+    "box-shadow:none!important;background:#EEF2F6!important}"
     # Global dropdown portals (listboxes often render under body, not inside cards).
     "body [role='listbox'],body ul[role='listbox'],body .options,body ul.options,"
     "body [class*='dropdown'] [role='listbox']{"
@@ -1299,8 +1687,7 @@ def build_caregiver_ui(
                 <div id="cv-mobile-top">
                   <div class="cv-m-brand"><div class="cv-m-mark">⌂</div>CareView</div>
                   <div class="cv-m-meta">
-                    <div class="cv-m-bell" title="Alerts">🔔</div>
-                    <div class="cv-m-user">caregiver1</div>
+                    <button type="button" class="cv-m-bell" id="cv-m-bell" title="Alerts" aria-label="Open alerts">🔔</button>
                   </div>
                 </div>
                 """
@@ -1379,26 +1766,29 @@ def build_caregiver_ui(
                             with gr.Row(elem_classes=["cv-toolbar", "cv-exit"]):
                                 cback = gr.Button("← Back to patients", scale=1)
                                 crun = gr.Button("Run room check", variant="primary", scale=1)
-                            gr.HTML('<div class="cv-section-label" style="margin-top:14px">Watch recording</div>')
+                        # Watch recording — only after opening from an alert banner.
+                        with gr.Group(visible=False, elem_classes=["cv-details-tools"]) as cplay_group:
+                            gr.HTML('<div class="cv-section-label">Watch recording</div>')
                             with gr.Group(elem_classes=["cv-play-block"]):
                                 csession = gr.Dropdown(
-                                    label="Monitoring session",
+                                    label="Issue recording",
                                     choices=[],
                                     value=None,
-                                    interactive=True,
+                                    interactive=False,
+                                    visible=False,
                                     elem_id="cv-session-select",
                                 )
                                 cplayer = gr.HTML(
                                     '<div class="pd-player-panel"><div class="pd-empty">'
-                                    "Pick a ready session to play it here.</div></div>",
+                                    "No issue recording to play yet.</div></div>",
                                     elem_id="cv-session-player",
                                 )
                                 cplay_info = gr.HTML(
                                     '<div class="pd-player-info pd-muted">'
-                                    "Ready recordings play here after you choose a session.</div>"
+                                    "The recording for this alert appears here when available.</div>"
                                 )
                                 csession_sel = gr.State(None)
-                        # Care response: patient details or Alerts tab.
+                        # Care response — only after alert banner / Alert Center.
                         with gr.Group(visible=False, elem_classes=["cv-handle-tools"]) as chandle_group:
                             from src.alert_center import (
                                 build_care_response_summary_html,
@@ -1409,7 +1799,7 @@ def build_caregiver_ui(
                                 elem_classes=["cv-cr-wrap"],
                             )
                             calert = gr.Dropdown(
-                                label="Alert / event",
+                                label="Patient alert",
                                 choices=[],
                                 interactive=True,
                                 elem_classes=["cv-cr-event"],
@@ -1446,17 +1836,18 @@ def build_caregiver_ui(
                             )
                             gr.HTML(
                                 '<div class="cv-cr-info">'
-                                "Make sure to provide accurate information before resolving the incident."
+                                "Resolve closes only the reviewed findings for this patient "
+                                "(shown above). New alerts that arrive after this review stay open."
                                 "</div>"
                             )
                             with gr.Row(elem_classes=["cv-cr-actions"]):
                                 cack = gr.Button(
-                                    "Keep Incident Active\nContinue monitoring",
+                                    "Keep Incident Active\nAcknowledge reviewed findings",
                                     scale=1,
                                     elem_classes=["cv-cr-keep"],
                                 )
                                 cres = gr.Button(
-                                    "Resolve Incident\nSave your response",
+                                    "Resolve Incident\nClose reviewed findings",
                                     variant="primary",
                                     scale=1,
                                     elem_classes=["cv-cr-resolve"],
@@ -1541,12 +1932,12 @@ def build_caregiver_ui(
                         )
                         cmon = gr.Markdown("Live status")
                         clive_seq = gr.State(0)
-                    clive_timer = gr.Timer(0.4, active=True)
-            # open→10 (with seq) + handle/filters/settings/events vis + playback 4
+                    clive_timer = gr.Timer(0.22, active=True)
+            # open→10 (with seq) + handle/play/filters/settings/events vis + playback 4
             detail_outs = [
                 ccards, cnote, cframe, clive_banner, cpatient, calert, ceid,
                 cdetails_bar, clive_panel, clive_seq,
-                chandle_group, calert_filters, csettings_tools, cevents_log,
+                chandle_group, cplay_group, calert_filters, csettings_tools, cevents_log,
                 csession, cplayer, cplay_info, csession_sel,
             ]
             if care_login is not None:
@@ -1561,7 +1952,7 @@ def build_caregiver_ui(
                     [
                         ccards, cnote, cframe, clive_banner, cpatient,
                         cdetails_bar, clive_panel, clive_seq,
-                        chandle_group, calert_filters, csettings_tools, cevents_log,
+                        chandle_group, cplay_group, calert_filters, csettings_tools, cevents_log,
                         csession, cplayer, cplay_info, csession_sel,
                     ],
                 )
@@ -1613,7 +2004,7 @@ def build_caregiver_ui(
                     [
                         ccards, cnote, cframe, clive_banner, cpatient, calert, ceid,
                         cdetails_bar, cinbox, clive_panel, clive_seq,
-                        chandle_group, calert_filters, csettings_tools, cevents_log,
+                        chandle_group, cplay_group, calert_filters, csettings_tools, cevents_log,
                         csession, cplayer, cplay_info, csession_sel,
                     ],
                 ))
@@ -1623,7 +2014,7 @@ def build_caregiver_ui(
                     [
                         ccards, cnote, cframe, clive_banner, cpatient, calert, ceid,
                         cdetails_bar, cinbox, clive_panel, clive_seq,
-                        chandle_group, calert_filters, csettings_tools, cevents_log,
+                        chandle_group, cplay_group, calert_filters, csettings_tools, cevents_log,
                         csession, cplayer, cplay_info, csession_sel,
                     ],
                 ))
@@ -1633,7 +2024,12 @@ def build_caregiver_ui(
                     [cresp_summary, ceid],
                 )
             else:
-                calert.change(lambda v: v, calert, ceid)
+                def _bundle_to_primary(token):
+                    from src.alert_center import parse_alert_bundle
+                    primary, _ids = parse_alert_bundle(token)
+                    return primary
+
+                calert.change(_bundle_to_primary, calert, ceid)
             if care_select_session is not None:
                 csession.change(
                     care_select_session, [cauth, cpatient, csession],
@@ -1654,13 +2050,13 @@ def build_caregiver_ui(
             if care_ack is not None:
                 _then_cr(cack.click(
                     care_ack,
-                    [cauth, ceid, cnav, cpatient, coutcome, cnote_handle],
+                    [cauth, calert, cnav, cpatient, coutcome, cnote_handle],
                     [cinbox, caction_note, ccards, calert],
                 ))
             if care_resolve is not None:
                 _then_cr(cres.click(
                     care_resolve,
-                    [cauth, ceid, cnav, cpatient, coutcome, cnote_handle],
+                    [cauth, calert, cnav, cpatient, coutcome, cnote_handle],
                     [cinbox, caction_note, ccards, calert, cnav],
                 ))
         demo.load(None, None, None, js=CV_BOARD_CLICK_JS)

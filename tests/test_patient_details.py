@@ -71,7 +71,9 @@ class TestPatientDetailsFilter(unittest.TestCase):
         self.tmp.cleanup()
 
     def test_ana_page_only_ana(self):
-        html = build_patient_details_html(self.store, self.user, "p1-ana")
+        html = build_patient_details_html(
+            self.store, self.user, "p1-ana", alert_context=True,
+        )
         self.assertIn("Ana", html)
         self.assertIn("Room 01", html)
         self.assertIn("LIVE CAMERA", html)
@@ -81,7 +83,9 @@ class TestPatientDetailsFilter(unittest.TestCase):
         self.assertIn("p1-ana", html)
 
     def test_pedro_page_only_pedro(self):
-        html = build_patient_details_html(self.store, self.user, "p2-ben")
+        html = build_patient_details_html(
+            self.store, self.user, "p2-ben", alert_context=True,
+        )
         self.assertIn("Pedro", html)
         self.assertIn("Room 02", html)
         self.assertIn("PRERECORDED VIDEO", html)
@@ -100,29 +104,43 @@ class TestPatientDetailsFilter(unittest.TestCase):
         self.assertIn("Maria fall", html)
         self.assertNotIn("Ana partial", html)
         self.assertNotIn("Pedro inactive", html)
-        self.assertIn("Session #", html)
+        self.assertNotIn("Monitoring session history", html)
         self.assertIn("lying", html.lower())
 
     def test_alert_opens_correct_patient(self):
         out = open_patient_details(
             self.user, "p3-cara", self.store, focus_event_id=self.maria_eid,
         )
-        html, note, _prev, _mon, pid, _alerts, eid, _vis, _live = out
+        html, note, _prev, _mon, pid, _alerts, eid, _vis, _live, alert_ctx = out
         self.assertEqual(pid, "p3-cara")
         self.assertEqual(eid, self.maria_eid)
+        self.assertTrue(alert_ctx)
         self.assertIn("Maria", html)
         self.assertIn("Maria", note)
+        self.assertIn("Current alerts", html)
 
     def test_sessions_filtered_by_patient(self):
         self.assertEqual(len(self.store.list_sessions("p3-cara")), 1)
         self.assertEqual(len(self.store.list_sessions("p1-ana")), 0)
         self.assertEqual(len(self.store.list_sessions("p2-ben")), 0)
 
-    def test_session_history_shows_no_recording_label(self):
-        html = build_patient_details_html(self.store, self.user, "p3-cara")
-        self.assertIn("Session #", html)
-        self.assertIn("No recording", html)
+    def test_session_history_removed_from_patient_page(self):
+        html = build_patient_details_html(
+            self.store, self.user, "p3-cara", alert_context=True,
+        )
+        self.assertNotIn("Monitoring session history", html)
+        self.assertNotIn("Recording available", html)
+        self.assertNotIn("No recording", html)
+        self.assertIn("Current alerts", html)
         self.assertNotIn("/api/sessions/", html)
+
+    def test_plain_open_hides_alert_sections(self):
+        html = build_patient_details_html(self.store, self.user, "p1-ana")
+        self.assertNotIn("Current alerts", html)
+        self.assertNotIn("Current alert snapshots", html)
+        self.assertIn("alert banner", html.lower())
+        out = open_patient_details(self.user, "p1-ana", self.store)
+        self.assertFalse(out[9])
 
     def test_ack_does_not_force_safe(self):
         self.store.acknowledge(self.maria_eid)
@@ -141,7 +159,9 @@ class TestPatientDetailsFilter(unittest.TestCase):
 
     def test_resolved_leave_patient_current_alerts(self):
         self.store.resolve(self.maria_eid)
-        html = build_patient_details_html(self.store, self.user, "p3-cara")
+        html = build_patient_details_html(
+            self.store, self.user, "p3-cara", alert_context=True,
+        )
         self.assertIn("Current alerts", html)
         self.assertIn("No open alerts", html)
         self.assertNotIn("Maria fall", html)

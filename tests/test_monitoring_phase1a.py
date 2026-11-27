@@ -187,6 +187,25 @@ class TestMonitoringSession(unittest.TestCase):
         self.assertFalse(b["event_created"])
         self.assertEqual(len(self.store.list_recent("p1")), 1)
 
+    def test_backfill_snapshot_when_missing(self):
+        mon = MonitoringSession(patient_id="p1", source="test", store=self.store)
+        # First create without a usable frame → empty snapshot path.
+        a = mon.update(
+            {"activity": "lying", "fall_alert": True, "fall_reason": "drop"},
+            None,
+        )
+        self.assertTrue(a["event_created"])
+        self.assertFalse(a["event"].get("snapshot_path"))
+        # Later frame backfills the same OPEN event.
+        b = mon.update(
+            {"activity": "lying", "fall_alert": True, "fall_reason": "drop"},
+            _frame(),
+        )
+        self.assertFalse(b["event_created"])
+        row = self.store.get(a["event"]["id"])
+        self.assertTrue(row.get("snapshot_path"))
+        self.assertTrue((ROOT / row["snapshot_path"]).exists())
+
     def test_framing_does_not_open_alert(self):
         mon = MonitoringSession(patient_id="p1", source="test", store=self.store)
         out = mon.update(

@@ -68,6 +68,10 @@ class MonitoringSession:
                     source=self.source,
                     session_id=self.session_id,
                 )
+            else:
+                # Active finding already open (dedupe). If it has no snapshot yet,
+                # backfill from this frame so caregivers still get a thumb.
+                snap_path = self._backfill_snapshot_if_missing(event_type, annotated_bgr)
 
         return {
             **decision,
@@ -92,20 +96,50 @@ class MonitoringSession:
     def resolve(self, event_id: int) -> dict | None:
         return self.store.resolve(event_id)
 
+    def _backfill_snapshot_if_missing(self, event_type: str, annotated_bgr) -> str:
+        """Attach a snapshot to the active event of this type when path is empty."""
+        try:
+            active = self.store.list_active(self.patient_id)
+        except Exception:
+            active = []
+        target = None
+        for e in active:
+            if e.get("event_type") == event_type:
+                target = e
+                break
+        if target is None:
+            return ""
+        if target.get("snapshot_path"):
+            return str(target.get("snapshot_path") or "")
+        snap_path = self._save_snapshot(event_type, annotated_bgr)
+        if not snap_path:
+            return ""
+        try:
+            self.store.set_event_snapshot(int(target["id"]), snap_path)
+        except Exception:
+            return snap_path
+        return snap_path
+
     def _save_snapshot(self, event_type: str, annotated_bgr) -> str:
         if annotated_bgr is None:
             return ""
         try:
+            import numpy as np
+
+            frame = annotated_bgr
+            # Accept RGB arrays from callers that forgot BGR (still better than no snap).
+            if isinstance(frame, np.ndarray) and frame.ndim == 3 and frame.shape[2] == 3:
+                frame = np.ascontiguousarray(frame)
             SNAPSHOT_DIR.mkdir(parents=True, exist_ok=True)
             stamp = datetime.now().strftime("%Y%m%d_%H%M%S_%f")
             name = f"{self.patient_id}_{event_type}_{stamp}.jpg"
             path = SNAPSHOT_DIR / name
-            ok = cv2.imwrite(str(path), annotated_bgr)
+            ok = cv2.imwrite(str(path), frame)
             if not ok:
                 return ""
             # Store path relative to project root when possible.
             try:
-                return str(path.relative_to(config.ROOT))
+                return str(path.relative_to(config.ROOT)).replace("\\", "/")
             except ValueError:
                 return str(path)
         except Exception:

@@ -60,14 +60,31 @@ class FallAlertMonitor:
             t1, y1, torso1, act1 = self.history[-1]
             dt = max(t1 - t0, 1e-3)
             # Image y grows downward → positive speed = hips moving down the frame.
-            drop_speed = (y1 - y0) / body_h / dt
-            torso_rise = torso1 - torso0
+            window_drop = (y1 - y0) / body_h / dt
+            window_tilt = torso1 - torso0
+            # Peak step-to-step change catches short falls between sparse live frames
+            # (window average alone can dilute a 0.4s drop across 1.2s of history).
+            peak_drop = 0.0
+            peak_tilt = 0.0
+            for i in range(1, len(self.history)):
+                ta, ya, toa, _ = self.history[i - 1]
+                tb, yb, tob, _ = self.history[i]
+                dti = max(tb - ta, 1e-3)
+                peak_drop = max(peak_drop, (yb - ya) / body_h / dti)
+                peak_tilt = max(peak_tilt, tob - toa)
+            drop_speed = max(window_drop, peak_drop)
+            torso_rise = max(window_tilt, peak_tilt)
             was_upright = act0 in ("standing", "sitting", "walking", "running")
-            now_down = act1 == "lying" or torso1 >= 50.0
+            # Also accept mid-window upright → end-down (activity may lag one frame).
+            mid_upright = any(
+                a in ("standing", "sitting", "walking", "running")
+                for _, _, _, a in self.history
+            )
+            now_down = act1 == "lying" or torso1 >= 48.0
             fast_drop = drop_speed >= self.drop_speed_min
             fast_tilt = torso_rise >= self.torso_rise_min
 
-            if was_upright and now_down and (fast_drop or fast_tilt):
+            if (was_upright or mid_upright) and now_down and (fast_drop or fast_tilt):
                 self.events += 1
                 self.last_event_t = t
                 self.alert_until = t + self.hold_sec
