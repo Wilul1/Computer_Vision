@@ -81,8 +81,16 @@ body{font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-ser
 .media-panel{min-width:0!important}
 .large-viewer{min-height:520px!important}
 .large-viewer .wrap{min-height:520px!important}
-.live-camera-viewer .image-container{min-height:420px!important}
-.live-camera-viewer img,.live-camera-viewer video{display:block!important;width:100%!important;max-height:420px!important;object-fit:contain!important;object-position:center center!important}
+.live-camera-viewer .image-container{display:flex!important;align-items:center!important;justify-content:center!important;height:420px!important;min-height:420px!important}
+.live-camera-viewer img,.live-camera-viewer video{display:block!important;width:100%!important;height:100%!important;max-height:420px!important;object-fit:contain!important;object-position:center center!important}
+#live-camera-row{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr));justify-items:center;align-items:stretch;gap:14px!important;width:100%;max-width:1100px;margin:0 auto!important}
+#live-camera-row > .live-camera-panel{width:100%!important;max-width:540px;min-width:0!important}
+.live-view-heading{height:76px;display:flex!important;align-items:center;justify-content:center;text-align:center;margin:0 0 8px!important}
+.live-view-heading .prose{width:100%;margin:0}
+.live-view-heading h3,.live-view-heading p{margin:0!important}
+#live-camera-status .prose{font-size:11px;line-height:1.35}
+#live-camera-controls{display:flex!important;justify-content:center;gap:10px!important;margin-top:12px}
+#live-camera-controls > *{flex:0 0 auto!important}
 /* Keep Gradio webcam / record controls clickable (do not cover them). */
 .live-camera-viewer button,.live-camera-viewer .source-selection,.live-camera-viewer [class*="toolbar"],.live-camera-viewer [class*="icon-button"]{pointer-events:auto!important;z-index:5!important;opacity:1!important;visibility:visible!important}
 .primary-action button,button.primary{background:linear-gradient(135deg,#d9bf7c,#b89650)!important;color:#17150f!important;border:1px solid #e1c985!important;font-weight:700!important}
@@ -99,7 +107,7 @@ button:hover{filter:brightness(1.08);transform:translateY(-1px)}
 #main-panel .prose p{color:#a5a59e;line-height:1.6}
 @media(max-width:1200px){.media-row{flex-direction:column!important}.media-row .media-panel{width:100%!important;max-width:100%!important;flex:1 1 100%!important}}
 @media(max-width:1120px){.metric-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.dashboard-grid{grid-template-columns:1fr}}
-@media(max-width:760px){#app-shell{flex-direction:column!important;flex-wrap:wrap!important;min-height:100vh;padding:9px;gap:10px}#sidebar{position:static;top:auto;width:100%;height:auto;max-height:42vh;min-height:0;flex:0 0 100%;overflow-y:auto!important;overflow-x:hidden!important;padding:12px}.brand{padding-bottom:13px}.nav-caption,.sidebar-foot{display:none}.sidebar-tip{display:block!important;margin:10px 2px 0;min-height:0}#sidebar-nav fieldset{grid-template-columns:repeat(2,minmax(0,1fr))}#main-panel{height:auto;max-height:none;min-height:0;flex:1 1 100%;overflow:visible!important;padding:2px 2px 15px}.page-heading{align-items:flex-start;flex-direction:column}.hero-card{align-items:flex-start;flex-direction:column;padding:20px}.hero-meta{min-width:0;width:100%}.metric-grid{gap:8px}.metric-card{padding:12px;min-height:105px}.quick-actions{grid-template-columns:1fr}.pipeline{flex-wrap:wrap}.pipe-step{flex-basis:42%}.pipe-arrow{display:none}}
+@media(max-width:760px){#app-shell{flex-direction:column!important;flex-wrap:wrap!important;min-height:100vh;padding:9px;gap:10px}#sidebar{position:static;top:auto;width:100%;height:auto;max-height:42vh;min-height:0;flex:0 0 100%;overflow-y:auto!important;overflow-x:hidden!important;padding:12px}.brand{padding-bottom:13px}.nav-caption,.sidebar-foot{display:none}.sidebar-tip{display:block!important;margin:10px 2px 0;min-height:0}#sidebar-nav fieldset{grid-template-columns:repeat(2,minmax(0,1fr))}#main-panel{height:auto;max-height:none;min-height:0;flex:1 1 100%;overflow:visible!important;padding:2px 2px 15px}.page-heading{align-items:flex-start;flex-direction:column}.hero-card{align-items:flex-start;flex-direction:column;padding:20px}.hero-meta{min-width:0;width:100%}.metric-grid{gap:8px}.metric-card{padding:12px;min-height:105px}.quick-actions{grid-template-columns:1fr}.pipeline{flex-wrap:wrap}.pipe-step{flex-basis:42%}.pipe-arrow{display:none}#live-camera-row{grid-template-columns:1fr}}
 @media(max-width:430px){.metric-grid{grid-template-columns:1fr 1fr}.topbar{align-items:flex-start}.local-badge{font-size:9px}.activity-list{grid-template-columns:1fr 1fr}.live-camera-viewer img{height:320px!important}}
 
 /* ---- CareView product (document scroll — Gradio nested fixed boxes block overflow) ---- */
@@ -234,6 +242,30 @@ html,body{height:auto!important;max-height:none!important;overflow-x:hidden!impo
 .cv-top-right{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
 .cv-live-pill{display:inline-flex;align-items:center;gap:7px;padding:8px 14px;border-radius:999px;background:#DCFCE7;color:#166534;font-size:12px;font-weight:650}
 .cv-live-pill i{width:7px;height:7px;border-radius:50%;background:#16A34A;display:inline-block}
+.cv-health-copy{position:relative;z-index:1;flex:1;min-width:0}
+.cv-health-kicker{margin:0 0 10px;color:#477A76;font-size:10px;font-weight:800;letter-spacing:.16em;text-transform:uppercase}
+.cv-health-card{position:relative;z-index:1;flex:0 0 min(360px,40%);min-width:230px;padding:16px 18px;
+  border:1px solid rgba(255,255,255,.88);border-radius:18px;background:rgba(255,255,255,.66);
+  box-shadow:0 10px 28px rgba(39,77,76,.07),inset 0 1px 0 rgba(255,255,255,.84);backdrop-filter:blur(14px)}
+.cv-health-card-top{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.cv-health-camera{display:inline-flex;align-items:center;gap:7px;color:#52716F;font-size:10px;font-weight:800;letter-spacing:.07em;text-transform:uppercase}
+.cv-health-camera i{width:7px;height:7px;border-radius:50%;background:#8A9E9B;display:inline-block;flex:0 0 auto}
+.cv-health-camera-live{color:#26734A}
+.cv-health-camera-live i{background:#2E9B68;box-shadow:0 0 0 0 rgba(46,155,104,.32);animation:cvHealthPulse 1.8s ease-out infinite}
+.cv-health-camera-waiting{color:#8A5A14}
+.cv-health-camera-waiting i{background:#C48B32}
+.cv-health-updated{color:#758A89;font-size:10px;white-space:nowrap}
+.cv-health-board{margin-top:11px;font-family:Georgia,"Times New Roman",serif;font-size:22px;line-height:1.15;letter-spacing:-.025em}
+.cv-health-board-safe{color:#286D50}
+.cv-health-board-attention{color:#8A5A14}
+.cv-health-board-alert{color:#A93631}
+.cv-health-board-idle{color:#385F61}
+.cv-health-detail{margin-top:5px;color:#607B7A;font-size:11px;line-height:1.45}
+.cv-health-divider{height:1px;margin:13px 0 10px;background:rgba(58,105,99,.13)}
+.cv-health-meta{display:flex;align-items:center;gap:18px;color:#6B8280;font-size:10px}
+.cv-health-meta span{display:flex;align-items:center;gap:5px}
+.cv-health-meta b{color:#23484A;font-size:12px;font-weight:750}
+@keyframes cvHealthPulse{0%{box-shadow:0 0 0 0 rgba(46,155,104,.32)}75%,100%{box-shadow:0 0 0 7px rgba(46,155,104,0)}}
 .cv-user{padding:8px 14px;border-radius:999px;background:#fff;border:1px solid #E2E8F0;font-size:12px;color:#1E293B;font-weight:600}
 .cv-stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin-bottom:22px}
 .cv-stats-compact{gap:8px;margin-bottom:14px}
@@ -1365,10 +1397,11 @@ def build_ui(
                         "Analyzes ~4 frames/sec. Keep the camera stationary, full body, ~2–5 m away. "
                         "**Start camera** begins a persistent ACTIVE session; **Stop camera** finalizes it."
                     )
-                    with gr.Row(elem_classes=["media-row"]):
-                        with gr.Column(scale=1, min_width=420, elem_classes=["content-card", "media-panel"]):
+                    with gr.Row(elem_id="live-camera-row", elem_classes=["media-row"]):
+                        with gr.Column(scale=1, min_width=0, elem_classes=["content-card", "media-panel", "live-camera-panel"]):
+                            gr.Markdown("### Camera Preview", elem_classes=["live-view-heading"])
                             win = gr.Image(
-                                label="Camera Preview",
+                                label=None,
                                 sources=["webcam"],
                                 streaming=True,
                                 type="numpy",
@@ -1376,12 +1409,16 @@ def build_ui(
                                 elem_classes=["large-viewer", "live-camera-viewer"],
                                 webcam_options=gr.WebcamOptions(mirror=True),
                             )
-                        with gr.Column(scale=1, min_width=420, elem_classes=["content-card", "media-panel"]):
-                            wout = gr.Image(label="Live Annotated View", height=480, elem_classes=["large-viewer", "live-camera-viewer"])
-                    with gr.Row():
+                        with gr.Column(scale=1, min_width=0, elem_classes=["content-card", "media-panel", "live-camera-panel"]):
+                            whead = gr.Markdown(
+                                "### Waiting for camera",
+                                elem_id="live-camera-status",
+                                elem_classes=["live-view-heading"],
+                            )
+                            wout = gr.Image(label=None, height=480, elem_classes=["large-viewer", "live-camera-viewer"])
+                    with gr.Row(elem_id="live-camera-controls"):
                         wstart = gr.Button("Start camera", variant="primary", elem_classes=["primary-action"], scale=0, min_width=140)
                         wstop = gr.Button("Stop camera", elem_classes=["secondary"], scale=0, min_width=140)
-                        whead = gr.Markdown("Click **Start camera**, allow access, then the orange record button if shown.")
                     wmon = gr.Markdown("Monitoring status (SAFE / ATTENTION / ALERT) will appear while the camera runs.")
                     wsum = gr.Markdown("Session summary will appear here while the camera runs, and again when you stop.")
                     wevents = gr.Dataframe(
@@ -1661,6 +1698,146 @@ CAREGIVER_APP_CSS = (
     "background:#F1F5F9!important;color:#0F172A!important}"
     "/* ---- CareView product"
     + (_CAREVIEWS_CSS[1] if len(_CAREVIEWS_CSS) > 1 else "")
+    + """
+/* Caregiver health and safety theme — coastal light, quiet glass surfaces. */
+html,body,.gradio-container{
+  background:
+    radial-gradient(ellipse at 7% 0%,rgba(131,190,200,.30),transparent 34%),
+    radial-gradient(ellipse at 96% 8%,rgba(231,190,145,.25),transparent 32%),
+    linear-gradient(145deg,#E8F1EF 0%,#F7F5EF 48%,#EAF1EF 100%)!important;
+  background-attachment:fixed!important;color:#17383F!important}
+.gradio-container,.gradio-container .contain,.gradio-container .wrap,
+.gradio-container .main,.gradio-container .app,#care-page-wrap,#cv-layout,
+#careview-shell,#careview-shell .block,#careview-shell .form,#careview-shell .cv-main{
+  background:transparent!important}
+#careview-shell{--color-accent:#347C78!important;--body-background-fill:transparent!important;
+  background:transparent!important}
+#careview-shell .cv-main{background:transparent!important}
+#cv-gradio-rail{
+  background:linear-gradient(165deg,rgba(24,76,79,.97),rgba(20,55,64,.96))!important;
+  border:1px solid rgba(255,255,255,.36)!important;
+  box-shadow:0 18px 48px rgba(28,70,72,.18)!important;backdrop-filter:blur(18px)}
+#cv-gradio-rail .cv-brand-mark{background:linear-gradient(145deg,#E7CF9A,#C6A96C)!important;
+  color:#17383F!important;box-shadow:0 5px 16px rgba(10,35,41,.18)}
+#cv-gradio-rail .cv-brand-name{font-family:Georgia,"Times New Roman",serif!important;letter-spacing:.01em}
+#cv-gradio-rail #cv-side-nav label{border-radius:12px!important;color:#E4EFEC!important}
+#cv-gradio-rail #cv-side-nav label:hover{background:rgba(255,255,255,.09)!important}
+#cv-gradio-rail #cv-side-nav label:has(input:checked){
+  background:rgba(225,199,143,.19)!important;border-color:rgba(231,207,154,.45)!important;
+  color:#FFF4D7!important}
+#cv-gradio-rail #cv-side-nav label{gap:10px!important;font-weight:700!important;letter-spacing:.01em}
+#cv-gradio-rail #cv-side-nav label:before{content:"";display:inline-grid;place-items:center;
+  flex:0 0 18px;width:18px;height:18px;font-family:"Segoe UI Symbol","Noto Sans Symbols 2",sans-serif;
+  font-size:16px;line-height:1;color:inherit}
+#cv-gradio-rail #cv-side-nav fieldset label:nth-of-type(1):before{content:"⌂"}
+#cv-gradio-rail #cv-side-nav fieldset label:nth-of-type(2):before{content:"⚠"}
+#cv-gradio-rail #cv-side-nav fieldset label:nth-of-type(3):before{content:"◷"}
+#cv-gradio-rail #cv-side-nav fieldset label:nth-of-type(4):before{content:"⚙"}
+#cv-gradio-rail #cv-side-nav label:has(input[value="Home"]):before{content:"⌂"}
+#cv-gradio-rail #cv-side-nav label:has(input[value="Alerts"]):before{content:"⚠"}
+#cv-gradio-rail #cv-side-nav label:has(input[value="History"]):before{content:"◷"}
+#cv-gradio-rail #cv-side-nav label:has(input[value="Settings"]):before{content:"⚙"}
+#careview-shell .cv-top-home{
+  position:relative!important;display:grid!important;grid-template-columns:minmax(0,1fr) minmax(230px,360px)!important;
+  align-items:center!important;gap:24px!important;isolation:isolate;overflow:hidden!important;
+  min-height:190px;margin:8px 0 20px!important;padding:24px 28px 22px!important;
+  border:1px solid rgba(255,255,255,.84)!important;border-radius:25px!important;
+  background:
+    radial-gradient(ellipse at 90% 10%,rgba(255,255,255,.76),transparent 35%),
+    radial-gradient(ellipse at 75% 110%,rgba(126,177,166,.24),transparent 42%),
+    linear-gradient(112deg,rgba(255,255,255,.86),rgba(235,244,239,.74) 55%,rgba(232,239,234,.60))!important;
+  box-shadow:0 16px 42px rgba(39,77,76,.10),inset 0 1px 0 rgba(255,255,255,.78)!important;
+  backdrop-filter:blur(18px)}
+#careview-shell .cv-top-home:before{content:none!important}
+#careview-shell .cv-top-home:after{content:"";position:absolute;z-index:0;width:185px;height:185px;
+  right:7%;top:-104px;border:1px solid rgba(57,121,115,.22);border-radius:50%;
+  box-shadow:0 0 0 22px rgba(57,121,115,.045),0 0 0 46px rgba(57,121,115,.03)}
+#careview-shell .cv-top-home>div{position:relative;z-index:1}
+#careview-shell .cv-health-kicker{color:#3F716D!important;font-size:11px!important;
+  margin:0 0 11px!important;letter-spacing:.10em!important;text-transform:none!important}
+#careview-shell .cv-top-home .cv-hello{margin:0;color:#183C42!important;
+  font-family:Georgia,"Times New Roman",serif!important;font-size:clamp(30px,3.4vw,42px)!important;
+  font-weight:500!important;letter-spacing:-.045em!important;line-height:1.08!important}
+#careview-shell .cv-top-home .cv-sub{margin-top:9px!important;color:#5D7779!important;font-size:13px!important}
+#careview-shell .cv-health-card{width:100%;min-width:0;max-width:360px;justify-self:end;
+  background:linear-gradient(145deg,rgba(255,255,255,.82),rgba(242,248,244,.72))!important;
+  border-color:rgba(255,255,255,.92)!important;box-shadow:0 12px 30px rgba(39,77,76,.09),
+    inset 0 1px 0 rgba(255,255,255,.9)!important}
+#careview-shell .cv-health-card-live{border-color:rgba(86,157,120,.42)!important;
+  box-shadow:0 12px 30px rgba(39,77,76,.09),0 0 0 3px rgba(82,157,112,.08),
+    inset 0 1px 0 rgba(255,255,255,.9)!important}
+#careview-shell .cv-health-camera{padding:6px 9px;border:1px solid rgba(75,117,112,.18);
+  border-radius:999px;background:rgba(236,244,240,.82);color:#3F6563!important;
+  font-size:11px!important;letter-spacing:.02em!important;text-transform:none!important}
+#careview-shell .cv-health-camera-live{background:#E7F4EB;border-color:rgba(46,130,82,.25);color:#246C4D!important}
+#careview-shell .cv-health-camera-waiting{background:#FBF1DE;border-color:rgba(155,111,36,.24);color:#805511!important}
+#careview-shell .cv-health-updated{color:#526E6D!important;font-size:11px!important}
+#careview-shell .cv-health-detail{color:#4D6969!important;font-size:12px!important}
+#careview-shell .cv-health-board-safe{color:#286D50!important}
+#careview-shell .cv-health-board-attention{color:#805511!important}
+#careview-shell .cv-health-board-alert{color:#A93631!important}
+#careview-shell .cv-health-board-idle{color:#385F61!important}
+#careview-shell .cv-health-meta{color:#526E6D!important;font-size:11px!important}
+#careview-shell .cv-health-meta b{color:#23484A!important}
+#careview-shell .cv-health-divider{background:rgba(58,105,99,.17)!important}
+#careview-shell .cv-section-head h2{font-family:Georgia,"Times New Roman",serif!important;
+  color:#1B4145!important;font-size:19px!important;font-weight:500!important;letter-spacing:-.02em}
+#careview-shell .cv-section-head .cv-link{color:#52817C!important}
+#careview-shell .cv-stat,#careview-shell .cv-patient-card,#careview-shell .cv-alerts,
+#careview-shell .cv-ac-card,#careview-shell .cv-hist2-panel,
+#careview-shell .cv-hist2-stat,#careview-shell .cv-hist2-card{
+  background:rgba(255,255,255,.76)!important;border-color:rgba(255,255,255,.92)!important;
+  box-shadow:0 12px 32px rgba(40,75,73,.08),inset 0 1px 0 rgba(255,255,255,.9)!important;
+  backdrop-filter:blur(14px)}
+#careview-shell .cv-patient-card{border-radius:18px!important;transition:transform .18s ease,box-shadow .18s ease}
+#careview-shell .cv-patient-card.cv-clickable:hover{transform:translateY(-2px);
+  box-shadow:0 17px 35px rgba(40,75,73,.13)!important}
+#careview-shell .cv-avatar{background:linear-gradient(145deg,#DCECE5,#BFD8CE)!important;color:#285C58!important}
+#careview-shell .cv-main .cv-patient-name,#careview-shell .cv-main .cv-alert-title,
+#careview-shell .cv-hist2-stat-n,#careview-shell .cv-hist2-panel-h,
+#careview-shell .cv-hist2-detail-h,#careview-shell .cv-hist2-card-h{color:#193B40!important}
+#careview-shell .cv-main .cv-patient-room,#careview-shell .cv-main .cv-alert-time{color:#526C6C!important}
+#careview-shell .cv-open-link{color:#397F78!important}
+#careview-shell .cv-alerts{border-radius:18px!important;overflow:hidden}
+#careview-shell .cv-alert-row{border-color:rgba(45,91,87,.10)!important}
+#careview-shell .cv-alert-row.cv-clickable:hover{background:rgba(235,245,241,.82)!important}
+#careview-shell .cv-alert-empty{background:rgba(255,255,255,.64)!important;
+  border-color:rgba(79,132,126,.24)!important;color:#617B7B!important}
+#careview-shell button.primary,#careview-shell .primary,
+#careview-shell .cv-ac-open-patient{background:#347C78!important;border-color:#347C78!important;color:#fff!important}
+#careview-shell button.primary:hover,#careview-shell .cv-ac-open-patient:hover{background:#286965!important}
+#careview-shell input:focus,#careview-shell textarea:focus,#careview-shell select:focus{
+  border-color:#70A9A0!important;box-shadow:0 0 0 3px rgba(92,157,145,.15)!important}
+@media(min-width:769px){
+  #cv-gradio-rail{top:14px!important;height:calc(100vh - 28px)!important;
+    max-height:calc(100vh - 28px)!important;margin:14px 0 14px 14px!important;
+    border-radius:22px!important}
+  #careview-shell{padding-left:18px!important;padding-right:18px!important}
+}
+@media(max-width:768px){
+  #cv-mobile-top,#cv-gradio-rail{background:linear-gradient(110deg,#194B4D,#173B47)!important}
+  #cv-mobile-top{border-bottom:1px solid rgba(255,255,255,.18)!important}
+  #cv-mobile-top .cv-m-mark{background:linear-gradient(145deg,#E7CF9A,#C6A96C)!important;color:#17383F!important}
+  #cv-mobile-top .cv-m-bell{color:#F1DDAE!important}
+  #cv-gradio-rail{border-top:1px solid rgba(255,255,255,.18)!important}
+  #cv-gradio-rail #cv-side-nav label:has(input:checked){
+    background:rgba(231,207,154,.22)!important;color:#FFF4D7!important}
+  #cv-gradio-rail #cv-side-nav label{gap:4px!important;font-size:11px!important}
+  #cv-gradio-rail #cv-side-nav label:before{flex-basis:14px;width:14px;height:16px;font-size:14px}
+  #careview-shell .cv-top-home{display:flex!important;flex-direction:column!important;align-items:stretch!important;
+    gap:16px!important;min-height:0;margin:5px 0 16px!important;padding:20px 18px 18px!important;
+    border-radius:21px!important}
+  #careview-shell .cv-top-home:after{right:-4%;top:-108px}
+  #careview-shell .cv-health-copy{width:100%}
+  #careview-shell .cv-health-kicker{font-size:10px!important;letter-spacing:.08em!important;margin-bottom:9px!important}
+  #careview-shell .cv-health-card{max-width:none;padding:14px 15px}
+  #careview-shell .cv-top-home .cv-hello{font-size:31px!important}
+  #careview-shell .cv-top-home .cv-sub{font-size:12px!important;line-height:1.5}
+  #careview-shell .cv-stat{background:rgba(255,255,255,.82)!important}
+  #careview-shell .cv-alerts{background:transparent!important;border:0!important;
+    box-shadow:none!important;backdrop-filter:none!important}
+}
+"""
 )
 
 
@@ -1678,6 +1855,7 @@ def build_caregiver_ui(
     care_load_demo_pack=None,
     care_alert_watch=None,
     care_response_preview=None,
+    care_home_tick=None,
 ):
     """Phone/desktop caregiver app — no Camera Station controls, no lab sidebar."""
     with gr.Blocks(title="CareView | Caregiver") as demo:
@@ -1933,6 +2111,7 @@ def build_caregiver_ui(
                         cmon = gr.Markdown("Live status")
                         clive_seq = gr.State(0)
                     clive_timer = gr.Timer(0.22, active=True)
+                    chome_timer = gr.Timer(3.0, active=care_home_tick is not None)
             # open→10 (with seq) + handle/play/filters/settings/events vis + playback 4
             detail_outs = [
                 ccards, cnote, cframe, clive_banner, cpatient, calert, ceid,
@@ -2039,6 +2218,11 @@ def build_caregiver_ui(
                 clive_timer.tick(
                     care_live_tick, [cpatient, clive_seq],
                     [cframe, clive_banner, cmon, clive_seq],
+                )
+            if care_home_tick is not None:
+                chome_timer.tick(
+                    care_home_tick, [cauth, cnav, cpatient], [ccards],
+                    show_progress="hidden",
                 )
             # Interrupt poll: urgent banner + beep even while watching live.
             if care_alert_watch is not None:

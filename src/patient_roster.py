@@ -121,7 +121,7 @@ class PatientRoster:
         self,
         caregiver_id: str = "cg1",
         *,
-        empty: str = "No live patient assigned",
+        empty: str = "No Live Patient Assigned",
     ) -> str:
         """Display label for Camera Station header (Name · Room)."""
         patient = self.get_live_patient(caregiver_id)

@@ -66,10 +66,12 @@ class ServerCameraStation:
         self._raw_rgb: np.ndarray | None = None  # small UI preview
         self._annotated_rgb: np.ndarray | None = None  # small UI preview
         self._ui_seq: int = -1
+        self._raw_preview_seq: int = 0
+        self._raw_ui_seq: int = -1
         self._ui_raw_cache: np.ndarray | None = None
         self._ui_ann_cache: np.ndarray | None = None
-        self._headline = "Camera Station idle."
-        self._panel = "Press **Start Monitoring** to open the laptop webcam."
+        self._headline = "Camera Station Idle."
+        self._panel = "Press **Start Monitoring** To Open The Laptop Webcam."
         self._frames_captured = 0
         self._frames_processed = 0
         self._frames_skipped = 0
@@ -128,6 +130,16 @@ class ServerCameraStation:
             "diagnostics": self._diagnostics_md(hub, rec),
         }
 
+    def snapshot_raw_preview(self) -> tuple[np.ndarray | None, bool]:
+        """Return one new raw preview, independently of the slower AI UI poll."""
+        with self._cap_lock:
+            seq = self._raw_preview_seq
+            frame = self._raw_rgb
+            if frame is None or seq == self._raw_ui_seq:
+                return None, False
+            self._raw_ui_seq = seq
+            return np.ascontiguousarray(frame), True
+
     def _diagnostics_md(
         self, hub: dict[str, Any] | None = None, rec: dict[str, Any] | None = None,
     ) -> str:
@@ -137,24 +149,25 @@ class ServerCameraStation:
         )
         lag = self._preview_lag_ms
         lag_s = f"{lag:.0f}" if isinstance(lag, (int, float)) else "—"
-        r_status = rec.get("recording_status") or "NONE"
+        r_status = str(rec.get("recording_status") or "NONE").replace("_", " ").title()
+        live_state = str(hub.get("live_state") or "Unknown").replace("_", " ").title()
         r_dur = float(rec.get("recording_duration_s") or 0.0)
         r_drop = int(rec.get("recording_frames_dropped") or 0)
         r_fps = rec.get("recording_fps") or self.record_fps
         r_err = rec.get("recording_error") or ""
         warn = ""
         if rec.get("recording_warn_30m") or r_dur >= 30 * 60:
-            warn = "  \n⚠️ Recording has exceeded **30 minutes** (still recording — not auto-stopped)."
-        err_line = f"  \nRecording error: {r_err}" if r_err else ""
+            warn = "  \n⚠️ Recording Has Exceeded **30 Minutes** (Still Recording — Not Auto-Stopped)."
+        err_line = f"  \nRecording Error: {r_err}" if r_err else ""
         return (
-            f"**Station perf** · capture `{self._capture_fps:.1f} FPS` · "
-            f"AI `{self._process_fps:.1f} FPS` · infer `{self._last_infer_ms:.0f} ms` · "
-            f"preview lag `{lag_s} ms`  \n"
-            f"Captured `{self._frames_captured}` · processed `{self._frames_processed}` · "
-            f"skipped `{self._frames_skipped}` · hub seq `{hub.get('frame_seq')}` · "
-            f"JPEG `{hub.get('jpeg_bytes') or 0} B` · state **{hub.get('live_state')}**  \n"
-            f"**Recording** · **{r_status}** · `{r_dur:.0f}s` · target `{r_fps:g} FPS` · "
-            f"dropped `{r_drop}`"
+            f"**Station Performance** · Capture `{self._capture_fps:.1f} FPS` · "
+            f"AI `{self._process_fps:.1f} FPS` · Inference `{self._last_infer_ms:.0f} ms` · "
+            f"Preview Lag `{lag_s} ms`  \n"
+            f"Captured `{self._frames_captured}` · Processed `{self._frames_processed}` · "
+            f"Skipped `{self._frames_skipped}` · Hub Sequence `{hub.get('frame_seq')}` · "
+            f"JPEG `{hub.get('jpeg_bytes') or 0} B` · State **{live_state}**  \n"
+            f"**Recording** · **{r_status}** · `{r_dur:.0f}s` · Target `{r_fps:g} FPS` · "
+            f"Dropped `{r_drop}`"
             f"{warn}{err_line}"
         )
 
@@ -190,6 +203,9 @@ class ServerCameraStation:
                 self.ui_preview_max_w,
                 self.ui_preview_max_h,
             )
+            with self._cap_lock:
+                self._raw_preview_seq = 1
+                self._raw_ui_seq = -1
             self._running = True
             self._frames_captured = 1
             self._frames_processed = 0
@@ -278,11 +294,11 @@ class ServerCameraStation:
         self._ui_raw_cache = None
         self._ui_ann_cache = None
         self._ui_seq = -1
-        r_status = (rec_meta or {}).get("recording_status") or "NONE"
-        self._headline = "### Camera Station stopped"
+        r_status = str((rec_meta or {}).get("recording_status") or "NONE").replace("_", " ").title()
+        self._headline = "### Camera Station Stopped"
         self._panel = (
-            f"Session finalized. Recording **{r_status}**. "
-            "Press **Start Monitoring** for another run."
+            f"Session Finalized. Recording **{r_status}**. "
+            "Press **Start Monitoring** For Another Run."
         )
         return finished
 
@@ -386,7 +402,7 @@ class ServerCameraStation:
                     self._last_error = (
                         "Camera disconnected or frame grab failed while monitoring."
                     )
-                    self._headline = "### Camera unavailable"
+                    self._headline = "### Camera Unavailable"
                     mon = self.hub.monitor().update(None, None, camera_unavailable=True)
                     self.hub.mark_camera_unavailable(mon)
                     self._panel = mon.get("panel_markdown") or self._last_error
@@ -416,7 +432,9 @@ class ServerCameraStation:
                     self.ui_preview_max_w,
                     self.ui_preview_max_h,
                 )
-                self._raw_rgb = raw_small
+                with self._cap_lock:
+                    self._raw_rgb = raw_small
+                    self._raw_preview_seq = cap_seq
                 self._preview_lag_ms = max(0.0, (time.time() - now) * 1000.0)
                 # Tiny yield so AI / Gradio can run; avoid busy-spin if camera is fast.
                 if self._stop.wait(0.001):
@@ -424,7 +442,7 @@ class ServerCameraStation:
                 _ = cap_seq  # silence lint; seq stored under lock
         except Exception as exc:
             self._last_error = f"Capture thread error: {exc}"
-            self._headline = "### Camera Station error"
+            self._headline = "### Camera Station Error"
             self._panel = self._last_error
         finally:
             try:
@@ -511,20 +529,20 @@ class ServerCameraStation:
                     annotated_rgb, self.ui_preview_max_w, self.ui_preview_max_h,
                 )
                 self._last_error = ""
-                act = (r.get("activity") or "unknown").upper()
+                act = (r.get("activity") or "unknown").replace("_", " ").title()
                 conf = float(r.get("confidence") or 0)
                 flags = []
                 if r.get("fall_alert"):
-                    flags.append("POSSIBLE FALL")
+                    flags.append("Possible Fall")
                 elif r.get("inactive_alert"):
-                    flags.append("INACTIVE")
+                    flags.append("Inactive")
                 elif r.get("zone_alert"):
-                    flags.append(str(r.get("zone_label") or "ZONE"))
+                    flags.append(str(r.get("zone_label") or "Zone").replace("_", " ").title())
                 flag = (" · " + " · ".join(flags)) if flags else ""
                 # Show real process FPS, not instantaneous 1000/infer_ms (was misleading).
                 self._headline = (
-                    f"### {act} · {conf:.0%} · {ms:.0f} ms/infer · "
-                    f"AI {self._process_fps:.1f} FPS · cam {self._capture_fps:.1f} FPS{flag}"
+                    f"### {act} · {conf:.0%} · {ms:.0f} ms/Inference · "
+                    f"AI {self._process_fps:.1f} FPS · Camera {self._capture_fps:.1f} FPS{flag}"
                 )
                 rec = self._recorder.snapshot() if self._recorder is not None else self._recording_snap
                 self._panel = (
@@ -539,7 +557,7 @@ class ServerCameraStation:
                     self._stop.wait(delay)
         except Exception as exc:
             self._last_error = f"AI thread error: {exc}"
-            self._headline = "### Camera Station error"
+            self._headline = "### Camera Station Error"
             self._panel = self._last_error
         finally:
             if pipe is not None:

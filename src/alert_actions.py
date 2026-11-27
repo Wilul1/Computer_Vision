@@ -16,9 +16,9 @@ from . import config
 
 ALERT_DIR = config.OUTPUTS_DIR / "alerts"
 STATUS_COLORS = {
-    "SAFE": "#7CB87C",
-    "ATTENTION": "#E0A84A",
-    "ALERT": "#E05555",
+    "SAFE": "#26734A",
+    "ATTENTION": "#8A4A00",
+    "ALERT": "#B42318",
 }
 
 
@@ -101,15 +101,20 @@ def decide(r: dict | None = None, *, camera_unavailable: bool = False) -> dict:
 
 def format_decision(d: dict, *, activity: str | None = None) -> str:
     """Markdown for Gradio status panel with color cue."""
-    status = d.get("status", "SAFE")
-    color = STATUS_COLORS.get(status, "#ccc")
+    status_key = str(d.get("status") or "SAFE").upper()
+    status = status_key.replace("_", " ").title()
+    color = STATUS_COLORS.get(status_key, "#64748B")
     action = d.get("action", "Continue monitoring")
     reason = d.get("reason", d.get("trigger", ""))
-    act = activity or ""
+    act = (activity or "").replace("_", " ").title()
     act_line = f"**Activity:** {act}  \n" if act else ""
+    reason = str(reason or "").strip()
+    action = str(action or "").strip()
+    reason = reason[:1].upper() + reason[1:] if reason else "—"
+    action = action[:1].upper() + action[1:] if action else "—"
     return (
         f"### <span style='color:{color}'>Status: {status}</span>\n"
         f"{act_line}"
         f"**Reason:** {reason}  \n"
-        f"**Next action:** {action}"
+        f"**Next Action:** {action}"
     )

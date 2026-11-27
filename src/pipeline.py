@@ -230,7 +230,7 @@ class MonitorPipeline:
 
     # ---- stage 4 -------------------------------------------------------------
     def render(self, x: dict, result: dict):
-        return draw_result(x["bgr"], result)
+        return draw_result(x["bgr"], result, show_status=not self.live)
 
     def process(self, frame, t: float) -> dict:
         """Run all four stages on one frame taken at time `t` (seconds)."""

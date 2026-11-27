@@ -142,6 +142,22 @@ def _events_df(patient_id: str = LIVE_PATIENT) -> pd.DataFrame:
     return pd.DataFrame(rows, columns=EVENT_TABLE_HEADERS)
 
 
+def _station_events_df() -> pd.DataFrame:
+    """Display Camera Station events with readable labels and title-case values."""
+    frame = _events_df().rename(columns={
+        "id": "ID", "time": "Time", "type": "Type", "status": "Status",
+        "action": "Action", "snapshot": "Snapshot",
+    })
+    if "Type" in frame:
+        frame["Type"] = frame["Type"].fillna("").astype(str).str.replace("_", " ").str.title()
+    if "Status" in frame:
+        status_labels = {"OPEN": "Open", "ACK": "Acknowledged", "RESOLVED": "Resolved"}
+        frame["Status"] = frame["Status"].fillna("").astype(str).map(
+            lambda value: status_labels.get(value.upper(), value.replace("_", " ").title())
+        )
+    return frame
+
+
 def timeline(times: list[float], labels: list[str], min_len: float = 0.5) -> pd.DataFrame:
     """Per-frame labels -> segments [start, end, activity]; runs shorter than
     min_len seconds are merged into the previous segment."""
@@ -329,22 +345,23 @@ def _live_patient_name() -> str:
     patient = PATIENT_ROSTER.get_live_patient()
     if patient and (patient.get("name") or "").strip():
         return patient["name"].strip()
-    return "the live patient"
+    return "The Live Patient"
 
 
 def _station_status_md(snap: dict | None = None) -> str:
     snap = snap or LIVE_HUB.snapshot()
-    conn = "CONNECTED" if snap.get("connected") else "DISCONNECTED"
+    conn = "Connected" if snap.get("connected") else "Disconnected"
     sid = snap.get("session_id") or "—"
     elapsed = float(snap.get("elapsed_s") or 0)
     mins, secs = divmod(int(elapsed), 60)
     act = (snap.get("activity") or "—").replace("_", " ").title()
+    status = str(snap.get("status") or "SAFE").replace("_", " ").title()
     conf = snap.get("confidence")
     conf_s = f"{conf:.0%}" if isinstance(conf, (int, float)) else "—"
     label = _live_patient_label()
     return (
         f"**Camera Station · {label}**  \n"
-        f"Session `#{sid}` · **{snap.get('status') or 'SAFE'}** · Camera **{conn}**  \n"
+        f"Session `#{sid}` · **{status}** · Camera **{conn}**  \n"
         f"Activity: **{act}** ({conf_s}) · Elapsed **{mins}m {secs:02d}s**"
     )
 
@@ -411,8 +428,11 @@ def webcam_step(frame, state):
     flag = ("  ·  " + "  ·  ".join(flags)) if flags else ""
     text = (f"### {r['activity'].upper()}  ·  {r['confidence']:.0%}  ·  "
             f"{ms:.0f} ms/frame ({1000 / max(ms, 1):.0f} FPS)"
-            f"{flag}")
-    live_fps = 12.0
+            f"{flag}\n\n"
+            f"**Motion:** {'YES' if r['moving'] else 'no'} {r['motion_ratio']:.1%} · "
+            f"events: {r['motion_events']} · "
+            f"**Baseline (MOG2 blob):** {r.get('activity_baseline') or 'N/A'}")
+    live_fps = 4.0
     dur = len(state["labels"]) / live_fps
     summary = (
         _station_status_md(snap)
@@ -446,8 +466,9 @@ def stop_webcam(state):
         dur = float(finished.get("duration_s") or 0)
         acts = finished.get("activity_seconds") or {}
         act_bits = ", ".join(
-            f"{k}: {v:.0f}s" for k, v in sorted(acts.items(), key=lambda kv: -kv[1])
-        ) or "no activity segments"
+            f"{str(k).replace('_', ' ').title()}: {v:.0f}s"
+            for k, v in sorted(acts.items(), key=lambda kv: -kv[1])
+        ) or "No Activity Segments"
         who = _live_patient_name()
         panel = format_decision({
             "status": finished.get("final_status") or "SAFE",
@@ -480,14 +501,14 @@ def stop_webcam(state):
         LIVE_PATIENT,
         status=st.get("status") or "SAFE",
         activity=st.get("activity") or "",
-        reason="Live camera stopped",
+        reason="Live Camera Stopped",
         action=st.get("action") or f"Open {_live_patient_name()}'s details to review the session",
     )
     reconcile_patient_status(EVENT_STORE, LIVE_PATIENT)
     return (
         gr.skip(),
         None,
-        "### Camera Station stopped — session saved.",
+        "### Camera Station Stopped — Session Saved.",
         panel,
         summary,
         _events_df(),
@@ -653,7 +674,7 @@ def _station_ui_bundle(*, skip_unchanged_images: bool = False):
     snap = CAMERA_STATION.snapshot_ui()
     hub = snap["hub"]
     err = snap.get("error") or ""
-    err_md = f"**Camera error:** {err}" if err else ""
+    err_md = f"**Camera Error:** {err}" if err else ""
     diag = snap.get("diagnostics") or LIVE_HUB.diagnostics_md()
     label = _live_patient_label()
     if CAMERA_STATION.running:
@@ -661,7 +682,7 @@ def _station_ui_bundle(*, skip_unchanged_images: bool = False):
     else:
         status = (
             _station_status_md(hub)
-            + "\n\nCamera Station is **stopped**. Press **Start Monitoring** to open the laptop webcam."
+            + "\n\nCamera Station Is **Stopped**. Press **Start Monitoring** To Open The Laptop Webcam."
             + "\n\n" + diag
         )
     raw = snap.get("raw")
@@ -678,7 +699,7 @@ def _station_ui_bundle(*, skip_unchanged_images: bool = False):
         snap.get("panel") or status,
         status,
         err_md,
-        gr.update(value=_events_df(), label=f"Session events ({label})"),
+        gr.update(value=_station_events_df(), label=f"Session Events ({label})"),
         camera_station_footer_html(label),
     )
 
@@ -695,8 +716,8 @@ def station_start(camera_index):
         title, raw, ann, head, panel, status, _err, events, footer = _station_ui_bundle()
         return (
             title, raw, ann,
-            f"### Could not start camera\n{exc}",
-            panel, status, f"**Camera error:** {exc}", events, footer,
+            f"### Could Not Start Camera\n{exc}",
+            panel, status, f"**Camera Error:** {exc}", events, footer,
         )
     # Sync board patient state while station runs (worker updates hub; refresh once).
     st = LIVE_HUB.snapshot()
@@ -718,7 +739,7 @@ def station_stop():
         LIVE_PATIENT,
         status=st.get("status") or "SAFE",
         activity=st.get("activity") or "",
-        reason="Live camera stopped",
+        reason="Live Camera Stopped",
         action=st.get("action") or f"Open {who}'s details to review the session",
     )
     reconcile_patient_status(EVENT_STORE, LIVE_PATIENT)
@@ -729,9 +750,10 @@ def station_stop():
         dur = float(row.get("duration_s") or 0)
         acts = row.get("activity_seconds") or {}
         act_bits = ", ".join(
-            f"{k}: {v:.0f}s" for k, v in sorted(acts.items(), key=lambda kv: -kv[1])
-        ) or "no activity segments"
-        rec_st = row.get("recording_status") or "NONE"
+            f"{str(k).replace('_', ' ').title()}: {v:.0f}s"
+            for k, v in sorted(acts.items(), key=lambda kv: -kv[1])
+        ) or "No Activity Segments"
+        rec_st = str(row.get("recording_status") or "NONE").replace("_", " ").title()
         rec_path = row.get("recording_path") or "—"
         rec_err = row.get("recording_error") or ""
         rec_line = f"Recording **{rec_st}** · `{rec_path}`"
@@ -743,20 +765,31 @@ def station_stop():
             "action": f"Review session on {who}'s patient page",
         }, activity=row.get("final_activity"))
         head = (
-            f"### Session #{row.get('id')} · **{row.get('session_status')}**\n"
+            f"### Session #{row.get('id')} · **{str(row.get('session_status') or 'Completed').replace('_', ' ').title()}**\n"
             f"Duration **{dur:.0f}s** · Events **{row.get('event_count', 0)}**\n\n"
             f"Activity: {act_bits}\n\n{rec_line}"
         )
         status = head
     else:
-        head = "### Camera Station stopped"
+        head = "### Camera Station Stopped"
         panel = format_decision(decide(camera_unavailable=True))
     return title, raw, ann, head, panel, status, err, events, footer
 
 
 def station_tick():
     """Timer poll for Camera Station preview images + status."""
-    return _station_ui_bundle(skip_unchanged_images=True)
+    title, _raw, annotated, head, panel, status, err, events, footer = _station_ui_bundle(
+        skip_unchanged_images=True,
+    )
+    return title, annotated, head, panel, status, err, events, footer
+
+
+def station_raw_preview_tick():
+    """Refresh only the raw preview at camera rate, independently of AI output."""
+    if not CAMERA_STATION.running:
+        return gr.skip()
+    raw, changed = CAMERA_STATION.snapshot_raw_preview()
+    return raw if changed and raw is not None else gr.skip()
 
 
 def acknowledge_event(event_id, *, handled_by=None, note=None):
@@ -930,6 +963,18 @@ def _care_user(user):
         return user
     from src.care_demo import get_caregiver
     return get_caregiver("caregiver", "care123")
+
+
+def care_home_live_tick(user, panel, patient_id):
+    """Refresh only the Home board so its safety and camera indicators stay live."""
+    if (panel or "Home").strip().lower() != "home" or patient_id:
+        return gr.skip()
+    user = _care_user(user)
+    if not user:
+        return gr.skip()
+    return build_dashboard_html(
+        EVENT_STORE, user["id"], user.get("name", "Caregiver"), panel="Home",
+    )
 
 
 def _preview_html_for_caregiver(preview, patient_id: str) -> str:
@@ -1555,10 +1600,12 @@ caregiver_demo = build_caregiver_ui(
     care_load_demo_pack=care_load_demo_pack,
     care_alert_watch=care_alert_watch,
     care_response_preview=care_response_preview,
+    care_home_tick=care_home_live_tick,
 )
 
 camera_demo = build_camera_station_ui(
     station_start, station_stop, station_tick,
+    station_preview_tick=station_raw_preview_tick,
     initial_patient_label=_live_patient_label(),
 )
 

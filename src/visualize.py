@@ -15,7 +15,7 @@ COLORS = {
 }
 
 
-def draw_result(frame, r: dict):
+def draw_result(frame, r: dict, *, show_status: bool = True):
     out = frame.copy()
     h, w = out.shape[:2]
     color = COLORS.get(r["activity"], (255, 255, 255))
@@ -75,43 +75,44 @@ def draw_result(frame, r: dict):
             if v >= vis:
                 cv2.circle(out, (int(x), int(y)), 3, color, -1)
 
-    act = r["activity"].upper() if r["activity"] != "unknown" else "UNKNOWN"
-    lines = [f"{act}  {r['confidence']:.0%}   {r['fps']:.0f} FPS"]
-    if not live:
-        lines.append(
-            f"Motion: {'YES' if r['moving'] else 'no'}  {r['motion_ratio']:.1%}  "
-            f"events: {r['motion_events']}"
-        )
-        if "activity_baseline" in r:
-            other = "activity_baseline" if r["activity"] == r.get("activity_main") else "activity_main"
-            name = "Baseline" if other == "activity_baseline" else "Main"
-            lines.append(f"{name}: {r[other]}")
-    extras = []
-    if r.get("fall_events"):
-        extras.append(f"fall×{r['fall_events']}")
-    if r.get("inactive_events"):
-        extras.append(f"idle×{r['inactive_events']}")
-    if r.get("zone_label"):
-        extras.append(r["zone_label"])
-    if extras:
-        lines.append(" · ".join(extras))
+    if show_status:
+        act = r["activity"].upper() if r["activity"] != "unknown" else "UNKNOWN"
+        lines = [f"{act}  {r['confidence']:.0%}   {r['fps']:.0f} FPS"]
+        if not live:
+            lines.append(
+                f"Motion: {'YES' if r['moving'] else 'no'}  {r['motion_ratio']:.1%}  "
+                f"events: {r['motion_events']}"
+            )
+            if "activity_baseline" in r:
+                other = "activity_baseline" if r["activity"] == r.get("activity_main") else "activity_main"
+                name = "Baseline" if other == "activity_baseline" else "Main"
+                lines.append(f"{name}: {r[other]}")
+        extras = []
+        if r.get("fall_events"):
+            extras.append(f"fall×{r['fall_events']}")
+        if r.get("inactive_events"):
+            extras.append(f"idle×{r['inactive_events']}")
+        if r.get("zone_label"):
+            extras.append(r["zone_label"])
+        if extras:
+            lines.append(" · ".join(extras))
 
-    # Compact top-left HUD (semi-transparent feel via dark strip, limited height).
-    text_w = max(cv2.getTextSize(t, font, hud_scale, hud_thick)[0][0] for t in lines) + pad * 2
-    box_h = pad * 2 + line_h * len(lines)
-    # Cap HUD so it stays a corner chip (~28% max), not a full-frame mask.
-    max_h = max(line_h + pad * 2, int(h * 0.28))
-    if box_h > max_h:
-        lines = lines[: max(1, (max_h - pad * 2) // line_h)]
+        # Compact top-left HUD (semi-transparent feel via dark strip, limited height).
+        text_w = max(cv2.getTextSize(t, font, hud_scale, hud_thick)[0][0] for t in lines) + pad * 2
         box_h = pad * 2 + line_h * len(lines)
-    overlay = out.copy()
-    cv2.rectangle(overlay, (0, 0), (min(text_w, w), box_h), (0, 0, 0), -1)
-    cv2.addWeighted(overlay, 0.72, out, 0.28, 0, out)
-    for i, text in enumerate(lines):
-        cv2.putText(
-            out, text[:72], (pad, pad + line_h * (i + 1) - 4),
-            font, hud_scale, color if i == 0 else (240, 240, 240), hud_thick,
-        )
+        # Cap HUD so it stays a corner chip (~28% max), not a full-frame mask.
+        max_h = max(line_h + pad * 2, int(h * 0.28))
+        if box_h > max_h:
+            lines = lines[: max(1, (max_h - pad * 2) // line_h)]
+            box_h = pad * 2 + line_h * len(lines)
+        overlay = out.copy()
+        cv2.rectangle(overlay, (0, 0), (min(text_w, w), box_h), (0, 0, 0), -1)
+        cv2.addWeighted(overlay, 0.72, out, 0.28, 0, out)
+        for i, text in enumerate(lines):
+            cv2.putText(
+                out, text[:72], (pad, pad + line_h * (i + 1) - 4),
+                font, hud_scale, color if i == 0 else (240, 240, 240), hud_thick,
+            )
 
     # Thin bottom banner — fall > inactive > zone.
     if r.get("fall_alert"):

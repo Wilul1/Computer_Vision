@@ -529,11 +529,12 @@ def build_dashboard_html(
 ) -> str:
     """CareView main panel HTML (nav is a Gradio Radio — Gradio strips HTML onclick)."""
     panel = normalize_panel(panel)
-    for p in patients_for(caregiver_id):
+    patients = patients_for(caregiver_id)
+    for p in patients:
         reconcile_patient_status(store, p["id"])
     counts = _status_counts(store, caregiver_id)
     open_n = _open_alert_total(store, caregiver_id)
-    patient_n = len(patients_for(caregiver_id))
+    patient_n = len(patients)
 
     cards = []
     for p in patients_for(caregiver_id):
@@ -575,7 +576,7 @@ def build_dashboard_html(
         cards.append(
             """
             <div class="cv-patient-card" style="min-height:120px">
-              <div class="cv-patient-name">No patients yet</div>
+              <div class="cv-patient-name">No Patients Yet</div>
               <div class="cv-patient-room">Add a name and room under Settings.</div>
               <div class="cv-card-hint">Settings → Add patient</div>
             </div>
@@ -613,9 +614,61 @@ def build_dashboard_html(
     open_groups = _open_patient_alerts_for_caregiver(store, caregiver_id, limit=20)
     alerts_html = [_patient_alert_row(g) for g in open_groups]
     if not alerts_html:
-        alerts_html = ['<div class="cv-alert-empty">No open alerts right now.</div>']
+        alerts_html = ['<div class="cv-alert-empty">No Open Alerts Right Now.</div>']
     # Patient-level open count for Home (one row == one patient alert).
     open_patient_n = len(open_groups)
+
+    if open_patient_n or counts["ALERT"]:
+        board_status = "Review Active Alerts"
+        board_class = "cv-health-board-alert"
+    elif counts["ATTENTION"]:
+        board_status = "Attention Needed"
+        board_class = "cv-health-board-attention"
+    elif patient_n:
+        board_status = "No Active Concerns"
+        board_class = "cv-health-board-safe"
+    else:
+        board_status = "Ready To Start"
+        board_class = "cv-health-board-idle"
+
+    live_patient = next((p for p in patients if p.get("source_type") == "live"), None)
+    live_snapshot = None
+    if live_patient:
+        try:
+            from .live_hub import get_shared_hub
+
+            hub = get_shared_hub()
+            if hub is not None and hub.patient_id == live_patient["id"]:
+                live_snapshot = hub.snapshot()
+        except Exception:
+            live_snapshot = None
+    if not live_patient:
+        camera_state = "Camera Not Assigned"
+        camera_class = "cv-health-camera-idle"
+        camera_detail = "Assign a patient in Settings to connect the Camera Station."
+        updated_label = "Awaiting Setup"
+    elif live_snapshot and live_snapshot.get("active") and live_snapshot.get("has_fresh_frame"):
+        camera_state = "Live Monitoring"
+        camera_class = "cv-health-camera-live"
+        live_activity = (live_snapshot.get("activity") or "").replace("_", " ").title()
+        camera_detail = " · ".join(filter(None, [
+            str(live_patient.get("name") or "Patient"),
+            str(live_patient.get("room") or "Room Not Set"),
+            live_activity,
+        ]))
+        age = float(live_snapshot.get("frame_age_s") or 0)
+        updated_label = "Updated Just Now" if age < 2 else f"Updated {int(age)}s Ago"
+    elif live_snapshot and live_snapshot.get("session_id") is not None:
+        camera_state = "Waiting For Camera"
+        camera_class = "cv-health-camera-waiting"
+        camera_detail = "Camera station is starting or waiting for a fresh frame."
+        updated_label = "Waiting For Frame"
+    else:
+        camera_state = "Camera Standby"
+        camera_class = "cv-health-camera-idle"
+        camera_detail = "Start Monitoring at the Camera Station to begin a live check."
+        updated_label = "Ready When You Are"
+    camera_card_class = "cv-health-card-live" if camera_class == "cv-health-camera-live" else ""
 
     history_body, hist_n = _build_resolved_history_html(store, caregiver_id)
 
@@ -628,18 +681,19 @@ def build_dashboard_html(
             f'<div class="cv-alert-time">{src}</div></div></div>'
         )
 
-    greet = _greeting()
-    if open_patient_n == 0 and counts["ALERT"] == 0 and counts["ATTENTION"] == 0 and patient_n:
-        home_sub = f"{patient_n} patients · all safe right now"
+    if patient_n == 0:
+        home_sub = "Add your first patient to begin room safety monitoring."
+    elif open_patient_n == 0 and counts["ALERT"] == 0 and counts["ATTENTION"] == 0:
+        home_sub = f"{patient_n} Patients · {counts['SAFE']} Safe · No Active Concerns"
     else:
         home_sub = (
-            f"{patient_n} patients · {counts['SAFE']} safe · "
-            f"{counts['ATTENTION']} attention · {counts['ALERT']} alert"
-            + (f" · {open_patient_n} open" if open_patient_n else "")
+            f"{patient_n} Patients · {counts['SAFE']} Safe · "
+            f"{counts['ATTENTION']} Attention · {counts['ALERT']} Alert"
+            + (f" · {open_patient_n} Open" if open_patient_n else "")
         )
     titles = {
         "Home": (
-            greet,
+            "Health & Safety Check",
             home_sub,
         ),
         "Alerts": (
@@ -670,13 +724,13 @@ def build_dashboard_html(
             </div>
           </div>
           <div class="cv-section-head">
-            <h2>My patients</h2>
-            <span class="cv-link">{patient_n} rooms</span>
+            <h2>My Patients</h2>
+            <span class="cv-link">{patient_n} Rooms</span>
           </div>
           <div class="cv-patients">{''.join(cards)}</div>
           <div class="cv-section-head" style="margin-top:18px">
-            <h2>Open alerts</h2>
-            <span class="cv-link">{open_patient_n} open</span>
+            <h2>Open Alerts</h2>
+            <span class="cv-link">{open_patient_n} Open</span>
           </div>
           <div class="cv-alerts">{''.join(alerts_html[:4])}</div>
         """
@@ -707,7 +761,7 @@ def build_dashboard_html(
               <div class="cv-alert-time">{caregiver_name} · demo login caregiver / care123</div>
             </div></div>
           </div>
-          <div class="cv-section-head"><h2>Your patients</h2></div>
+          <div class="cv-section-head"><h2>Your Patients</h2></div>
           <div class="cv-alerts">{''.join(settings_rooms)}</div>
           <p class="cv-muted" style="margin-top:12px">
             Use <b>Add patient</b> below for a name and room. Optional live camera via
@@ -715,14 +769,38 @@ def build_dashboard_html(
           </p>
         """
 
+    is_home_panel = panel == "Home"
+    top_class = "cv-top cv-top-home" if is_home_panel else "cv-top cv-top-section"
+    health_kicker_html = (
+        f'<div class="cv-health-kicker">{_greeting().title()} · Live Health &amp; Safety</div>'
+        if is_home_panel else ""
+    )
+    health_card_html = f"""
+      <div class="cv-health-card {camera_card_class}">
+        <div class="cv-health-card-top">
+          <span class="cv-health-camera {camera_class}"><i></i>{camera_state}</span>
+          <span class="cv-health-updated">{updated_label}</span>
+        </div>
+        <div class="cv-health-board {board_class}">{board_status}</div>
+        <div class="cv-health-detail">{html_lib.escape(camera_detail)}</div>
+        <div class="cv-health-divider"></div>
+        <div class="cv-health-meta">
+          <span><b>{patient_n}</b> Patients</span>
+          <span><b>{open_patient_n}</b> Open Alerts</span>
+        </div>
+      </div>
+    """ if is_home_panel else ""
+
     return f"""
     <div id="careview-root" class="cv-app cv-app-mainonly">
       <section class="cv-main">
-        <div class="cv-top">
-          <div>
+        <div class="{top_class}">
+          <div class="cv-health-copy">
+            {health_kicker_html}
             <div class="cv-hello">{hello}</div>
             <div class="cv-sub">{sub}</div>
           </div>
+          {health_card_html}
         </div>
         {body}
       </section>

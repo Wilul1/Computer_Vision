@@ -20,16 +20,25 @@ from .playback import PlaybackError, event_snapshot_url, session_meta_payload
 
 _ACTIVITIES = ("sitting", "standing", "walking", "running", "lying", "unknown")
 
+
+def _display_label(value, default: str = "—") -> str:
+    """Render machine labels as readable Title Case without changing IDs/times."""
+    label = str(value or default).replace("_", " ").strip()
+    if label.upper() == "ACK":
+        return "Acknowledged"
+    return label.title()
+
+
 EMPTY_PLAYER_HTML = """
 <div class="pd-player-panel" data-patient="" data-session="">
-  <div class="pd-empty">No issue recording to play yet.
-  Open an alert to load the session video linked to that finding.</div>
+  <div class="pd-empty">No Issue Recording To Play Yet.
+  Open An Alert To Load The Session Video Linked To That Finding.</div>
 </div>
 """
 
 EMPTY_PLAYER_INFO_HTML = """
-<div class="pd-player-info pd-muted">The recording for this alert appears here when available.
-Past sessions are not listed.</div>
+<div class="pd-player-info pd-muted">The Recording For This Alert Appears Here When Available.
+Past Sessions Are Not Listed.</div>
 """
 
 
@@ -37,10 +46,10 @@ def _assert_access(user, patient_id: str):
     import gradio as gr
 
     if not user:
-        raise gr.Error("Sign in first.")
+        raise gr.Error("Sign In First.")
     patient = get_patient(patient_id)
     if not patient or patient.get("caregiver_id") != user["id"]:
-        raise gr.Error("Patient not found or not assigned to you.")
+        raise gr.Error("Patient Not Found Or Not Assigned To You.")
     return patient
 
 
@@ -152,12 +161,12 @@ def build_incident_timeline_html(marker: dict[str, Any] | None) -> str:
     label = html_lib.escape(str(marker.get("label") or "Alert"))
     is_fall = bool(marker.get("is_fall"))
     chip_cls = "cv-incident-chip cv-incident-fall" if is_fall else "cv-incident-chip"
-    jump_label = "Jump to fall" if is_fall else "Jump to incident"
+    jump_label = "Jump To Fall" if is_fall else "Jump To Incident"
     offset = marker.get("offset_s")
     if offset is None:
         return f"""
 <div class="cv-incident-bar cv-incident-unavailable">
-  <div class="{chip_cls}">{label} · Incident time unavailable</div>
+  <div class="{chip_cls}">{label} · Incident Time Unavailable</div>
 </div>
 """
     clock = html_lib.escape(_fmt_clock(float(offset)))
@@ -176,7 +185,7 @@ def build_incident_timeline_html(marker: dict[str, Any] | None) -> str:
 <div class="cv-incident-bar" data-offset="{float(offset):.3f}"
      data-jump="{jump_s:.3f}" data-duration="{dur_attr}" data-pct="{pct_attr}">
   <div class="cv-incident-row">
-    <div class="{chip_cls}">{label} · {clock} into recording</div>
+    <div class="{chip_cls}">{label} · {clock} Into Recording</div>
     <button type="button" class="cv-incident-jump">{jump_label}</button>
   </div>
   <div class="cv-incident-track" role="img"
@@ -523,7 +532,7 @@ def select_session_playback(
         # Wrong patient or unknown — never keep a previous player's src.
         return (
             EMPTY_PLAYER_HTML,
-            '<div class="pd-empty">That session is not available for this patient.</div>',
+            '<div class="pd-empty">That Session Is Not Available For This Patient.</div>',
             None,
         )
 
@@ -580,28 +589,34 @@ def build_patient_details_html(
     reconcile_patient_status(store, patient_id)
     status, st, active = effective_status(store, patient_id)
     show_alerts = bool(alert_context or focus_event_id is not None)
-    activity = (st.get("activity") or "—").replace("_", " ").title()
-    reason = st.get("reason") or "No recent monitoring reason recorded."
+    activity = _display_label(st.get("activity"))
+    reason = _display_label(st.get("reason"), "No Recent Monitoring Reason Recorded.")
     updated = _rel_time(st.get("updated_at"))
     source_type = patient.get("source_type") or "unknown"
     live = _live_snap(patient_id) if source_type == "live" else None
     active_sess = store.get_active_session(patient_id) if source_type == "live" else None
     if source_type == "live":
-        source_label = "LIVE CAMERA"
-        source_note = patient.get("note") or (
-            f"Laptop webcam ({patient.get('name') or 'Patient'} · {patient.get('room') or '—'})"
+        source_label = "Live Camera"
+        patient_note = patient.get("note")
+        source_note = _display_label(patient_note) if patient_note else (
+            f"Laptop Webcam ({patient.get('name') or 'Patient'} · {patient.get('room') or '—'})"
         )
         if live and live.get("connected"):
-            cam_status = "CONNECTED · live frames updating"
+            cam_status = "Connected · Live Frames Updating"
         elif active_sess is not None:
-            cam_status = "Session ACTIVE but camera feed not connected"
+            cam_status = "Session Active But Camera Feed Not Connected"
         else:
-            cam_status = "Not monitoring — open /camera-station on the laptop"
+            cam_status = "Not Monitoring — Open /camera-station On The Laptop"
     else:
-        source_label = "PRERECORDED VIDEO"
+        source_label = "Prerecorded Video"
         vpath = resolve_video_path(patient)
-        source_note = patient.get("note") or (str(vpath) if vpath else "Video missing")
-        cam_status = "Video file available" if vpath else "Video file missing"
+        patient_note = patient.get("note")
+        source_note = (
+            _display_label(patient_note)
+            if patient_note
+            else (str(vpath) if vpath else "Video Missing")
+        )
+        cam_status = "Video File Available" if vpath else "Video File Missing"
 
     pill_class = {
         "SAFE": "pd-pill pd-pill-safe",
@@ -613,6 +628,7 @@ def build_patient_details_html(
         "ATTENTION": ("#FEF9C3", "#A16207"),
         "ALERT": ("#FEE2E2", CV["alert"]),
     }.get(status, ("#F1F5F9", CV["muted"]))
+    status_label = _display_label(status)
 
     sessions = store.list_sessions(patient_id, limit=12)
     latest = sessions[0] if sessions else None
@@ -638,18 +654,18 @@ def build_patient_details_html(
     if monitored_today <= 0:
         if source_type == "video":
             activity_body = (
-                '<div class="pd-empty"><b>Video is linked but not analyzed yet.</b><br/>'
-                "Tap <b>Run room check</b> below to generate the session summary, "
-                "alerts (if any), and a playable recording.</div>"
+                '<div class="pd-empty"><b>Video Is Linked But Not Analyzed Yet.</b><br/>'
+                "Tap <b>Run Room Check</b> Below To Generate The Session Summary, "
+                "Alerts (If Any), And A Playable Recording.</div>"
             )
         else:
             activity_body = (
-                '<div class="pd-empty">No monitored activity recorded for this patient today. '
-                "Run a room check on this page to create a session.</div>"
+                '<div class="pd-empty">No Monitored Activity Recorded For This Patient Today. '
+                "Run A Room Check On This Page To Create A Session.</div>"
             )
     else:
         activity_body = (
-            f'<div class="pd-muted">Total monitored today (from saved sessions): '
+            f'<div class="pd-muted">Total Monitored Today (From Saved Sessions): '
             f"<b>{_fmt_dur(monitored_today)}</b></div>"
             f'<div class="pd-acts">{"".join(activity_cards)}</div>'
         )
@@ -658,35 +674,35 @@ def build_patient_details_html(
     current_events = [e for e in events if e.get("event_status") != "RESOLVED"]
     if not current_events:
         event_rows = (
-            '<div class="pd-empty">No open alerts for this patient. '
-            "Resolved alerts and their snapshots are under <b>History</b>.</div>"
+            '<div class="pd-empty">No Open Alerts For This Patient. '
+            "Resolved Alerts And Their Snapshots Are Under <b>History</b>.</div>"
         )
     else:
         bits = []
         for e in current_events:
             eid = e.get("id")
             focus = " pd-focus" if focus_event_id and int(eid) == int(focus_event_id) else ""
-            title = _event_title(e.get("event_type"))
+            title = _display_label(_event_title(e.get("event_type")))
             snap = _snapshot_abs(e.get("snapshot_path"))
-            snap_bit = " · snapshot on file" if snap else " · no snapshot file"
+            snap_bit = " · Snapshot On File" if snap else " · No Snapshot File"
             bits.append(
                 f"""
                 <div class="pd-row{focus}" data-event-id="{eid}">
                   <div>
                     <div class="pd-row-title">#{eid} · {title}</div>
                     <div class="pd-row-sub">
-                      {_rel_time(e.get('created_at'))} · {e.get('event_status')}
+                      {_rel_time(e.get('created_at'))} · {_display_label(e.get('event_status'))}
                       {snap_bit}
-                      <br>{html_lib.escape(e.get('reason_text') or e.get('action_text') or '')}
+                      <br>{html_lib.escape(_display_label(e.get('reason_text') or e.get('action_text'), ''))}
                     </div>
                   </div>
-                  <div class="pd-chip">{e.get('event_status')}</div>
+                  <div class="pd-chip">{_display_label(e.get('event_status'))}</div>
                 </div>
                 """
             )
         event_rows = (
             '<div class="pd-muted" style="margin-bottom:8px">'
-            "Open / acknowledged only — resolve moves the case to <b>History</b>."
+            "Open / Acknowledged Only — Resolve Moves The Case To <b>History</b>."
             "</div>"
             + "".join(bits)
         )
@@ -705,12 +721,12 @@ def build_patient_details_html(
             f"""
             <div class="pd-snap">
               <button type="button" class="cv-snap-zoom" aria-label="Enlarge snapshot">
-                <img class="pd-snap-img" src="{snap_src}" alt="event {eid} snapshot"/>
+                <img class="pd-snap-img" src="{snap_src}" alt="Event {eid} Snapshot"/>
               </button>
               <div class="pd-snap-meta">
-                <b>{_event_title(e.get('event_type'))}</b><br>
+                <b>{_display_label(_event_title(e.get('event_type')))}</b><br>
                 {_rel_time(e.get('created_at'))} · event #{eid}<br>
-                <span class="pd-muted">Tap image to enlarge</span>
+                <span class="pd-muted">Tap Image To Enlarge</span>
               </div>
             </div>
             """
@@ -721,8 +737,8 @@ def build_patient_details_html(
         f'<div class="pd-snaps">{"".join(snaps)}</div>'
         if snaps
         else (
-            '<div class="pd-empty">No open-alert snapshots. '
-            "Resolved snapshots are kept under <b>History</b>.</div>"
+            '<div class="pd-empty">No Open-Alert Snapshots. '
+            "Resolved Snapshots Are Kept Under <b>History</b>.</div>"
         )
     )
 
@@ -732,13 +748,13 @@ def build_patient_details_html(
         most = max(today_secs.items(), key=lambda kv: kv[1])[0].title()
     results = f"""
       <div class="pd-grid3">
-        <div class="pd-stat"><div class="pd-stat-l">Monitored today</div><div class="pd-stat-n">{_fmt_dur(monitored_today)}</div></div>
-        <div class="pd-stat"><div class="pd-stat-l">Open / Ack</div><div class="pd-stat-n">{counts['OPEN'] + counts['ACKNOWLEDGED']}</div></div>
+        <div class="pd-stat"><div class="pd-stat-l">Monitored Today</div><div class="pd-stat-n">{_fmt_dur(monitored_today)}</div></div>
+        <div class="pd-stat"><div class="pd-stat-l">Open / Acknowledged</div><div class="pd-stat-n">{counts['OPEN'] + counts['ACKNOWLEDGED']}</div></div>
         <div class="pd-stat"><div class="pd-stat-l">Resolved</div><div class="pd-stat-n">{counts['RESOLVED']}</div></div>
       </div>
       <div class="pd-muted" style="margin-top:10px">
-        Most observed activity today: <b>{most}</b> · Saved sessions: <b>{len(sessions)}</b><br>
-        These are monitoring estimates from room checks — not clinical assessments.
+        Most Observed Activity Today: <b>{most}</b> · Saved Sessions: <b>{len(sessions)}</b><br>
+        These Are Monitoring Estimates From Room Checks — Not Clinical Assessments.
       </div>
     """
 
@@ -747,38 +763,39 @@ def build_patient_details_html(
         elapsed = float((live or {}).get("elapsed_s") or (active_sess or {}).get("duration_s") or 0)
         conf = (live or {}).get("confidence")
         conf_s = f"{conf:.0%}" if isinstance(conf, (int, float)) else "—"
-        act = ((live or {}).get("activity") or st.get("activity") or "—").replace("_", " ").title()
-        conn = "CONNECTED" if (live or {}).get("connected") else "WAITING FOR CAMERA"
+        act = _display_label((live or {}).get("activity") or st.get("activity"))
+        conn = "Connected" if (live or {}).get("connected") else "Waiting For Camera"
         latest_block = (
-            f"<b>ACTIVE</b> live session #{sid} · {conn}<br>"
-            f"Elapsed {_fmt_dur(elapsed)} · Activity {act} (conf {conf_s})<br>"
-            "Live video appears in the preview below while the laptop Camera Station is streaming. "
-            "This page never opens the webcam."
+            f"<b>Active</b> Live Session #{sid} · {conn}<br>"
+            f"Elapsed {_fmt_dur(elapsed)} · Activity {act} (Confidence {conf_s})<br>"
+            "Live Video Appears In The Preview Below While The Laptop Camera Station Is Streaming. "
+            "This Page Never Opens The Webcam."
         )
     elif latest:
         sess_st = latest.get("session_status") or "COMPLETED"
         latest_block = (
-            f"Latest session #{latest.get('id')} · <b>{sess_st}</b> · "
+            f"Latest Session #{latest.get('id')} · <b>{_display_label(sess_st)}</b> · "
             f"{_fmt_dur(float(latest.get('duration_s') or 0))} · "
-            f"{latest.get('final_status') or '—'} · {latest.get('final_activity') or '—'}"
+            f"{_display_label(latest.get('final_status'))} · "
+            f"{_display_label(latest.get('final_activity'))}"
         )
         if sess_st == "INTERRUPTED":
-            latest_block += "<br>Session ended unexpectedly — durations reflect recorded segments only."
+            latest_block += "<br>Session Ended Unexpectedly — Durations Reflect Recorded Segments Only."
     else:
         latest_block = (
-            "No saved session yet — start Live Camera on the laptop (Ana) "
-            "or Run room check for prerecorded rooms."
+            "No Saved Session Yet — Start Live Camera On The Laptop (Ana) "
+            "Or Run Room Check For Prerecorded Rooms."
         )
 
     if show_alerts:
         alert_block = f"""
       <div class="pd-sec">
-        <h2>Current alerts</h2>
+        <h2>Current Alerts</h2>
         {event_rows}
       </div>
 
       <div class="pd-sec">
-        <h2>Current alert snapshots</h2>
+        <h2>Current Alert Snapshots</h2>
         {snap_body}
       </div>
         """
@@ -786,8 +803,8 @@ def build_patient_details_html(
         alert_block = """
       <div class="pd-sec">
         <div class="pd-muted">
-          Alert details, snapshots, Care Response, and Watch recording appear when you open
-          this patient from an <b>alert banner</b> or the Alert Center.
+          Alert Details, Snapshots, Care Response, And Watch Recording Appear When You Open
+          This Patient From An <b>Alert Banner</b> Or The Alert Center.
         </div>
       </div>
         """
@@ -840,38 +857,38 @@ def build_patient_details_html(
         .pd-player-info{{margin-top:10px}}
         @media(max-width:800px){{.pd-meta,.pd-grid3,.pd-snaps{{grid-template-columns:1fr}}.pd-player{{max-height:42vh}}}}
       </style>
-      <div class="pd-back">Patient details · {patient['name']}</div>
+      <div class="pd-back">Patient Details · {patient['name']}</div>
       <div class="pd-head">
         <div class="pd-name">{patient['name']}</div>
         <div class="pd-sub">ID {patient['id']} · {patient['room']}</div>
-        <span class="{pill_class}" style="background:{pill[0]}!important;color:{pill[1]}!important">{status}</span>
+        <span class="{pill_class}" style="background:{pill[0]}!important;color:{pill[1]}!important">{status_label}</span>
         <div class="pd-meta">
-          <div><b>Current activity</b><br>{activity}</div>
-          <div><b>Last updated</b><br>{updated}</div>
+          <div><b>Current Activity</b><br>{activity}</div>
+          <div><b>Last Updated</b><br>{updated}</div>
           <div><b>Source</b><br>{source_label}</div>
-          <div><b>Source detail</b><br>{source_note}</div>
-          <div><b>Connection / file</b><br>{cam_status}</div>
-          <div><b>Why this status</b><br>{reason}</div>
+          <div><b>Source Detail</b><br>{source_note}</div>
+          <div><b>Connection / File</b><br>{cam_status}</div>
+          <div><b>Why This Status</b><br>{reason}</div>
         </div>
       </div>
 
       <div class="pd-sec">
-        <h2>Current monitoring session</h2>
+        <h2>Current Monitoring Session</h2>
         <div class="pd-muted">{latest_block}</div>
         <div class="pd-muted" style="margin-top:8px">
-          {"The <b>Live Camera</b> panel above this page shows annotated frames from the laptop Camera Station."
+          {"The <b>Live Camera</b> Panel Above This Page Shows Annotated Frames From The Laptop Camera Station."
            if source_type == "live" else
-           "Use <b>Run room check</b> below for prerecorded rooms. Prerecorded video is never labeled live."}
+           "Use <b>Run Room Check</b> Below For Prerecorded Rooms. Prerecorded Video Is Never Labeled Live."}
         </div>
       </div>
 
       <div class="pd-sec">
-        <h2>Today's activity summary</h2>
+        <h2>Today's Activity Summary</h2>
         {activity_body}
       </div>
 
       <div class="pd-sec">
-        <h2>Activity and monitoring results</h2>
+        <h2>Activity And Monitoring Results</h2>
         {results}
       </div>
 
@@ -909,23 +926,23 @@ def open_patient_details(user, patient_id: str, store: EventStore, focus_event_i
     )
     if alert_context:
         note = (
-            f"**{patient['name']}** · {patient['room']} · reviewing alert. "
-            "Use **Care Response** / **Watch recording** below."
+            f"**{patient['name']}** · {patient['room']} · Reviewing Alert. "
+            "Use **Care Response** / **Watch Recording** Below."
         )
     elif patient.get("source_type") == "live":
         note = (
             f"**{patient['name']}** · {patient['room']} — "
-            "patient info and live feed. Open an **alert banner** to respond."
+            "Patient Info And Live Feed. Open An **Alert Banner** To Respond."
         )
     else:
         note = (
             f"**{patient['name']}** · {patient['room']} — "
-            "patient info. Use **Run room check**, or open an **alert** to respond."
+            "Patient Info. Use **Run Room Check**, Or Open An **Alert** To Respond."
         )
     preview = _latest_snapshot_rgb(store, patient_id)
     live_banner = (
         f"**{patient['name']}** · {patient['room']} · "
-        f"{'Live camera' if patient.get('source_type') == 'live' else 'Prerecorded video'}"
+        f"{'Live Camera' if patient.get('source_type') == 'live' else 'Prerecorded Video'}"
     )
     try:
         from .live_hub import get_shared_hub
@@ -938,14 +955,14 @@ def open_patient_details(user, patient_id: str, store: EventStore, focus_event_i
             snap = hub.snapshot()
             if snap.get("has_fresh_frame"):
                 live_banner = (
-                    f"### Live Camera · **LIVE**\n"
-                    f"Session `#{snap.get('session_id')}` · **{snap.get('status')}** · "
+                    f"### Live Camera · **Live**\n"
+                    f"Session `#{snap.get('session_id')}` · **{_display_label(snap.get('status'))}** · "
                     f"{(snap.get('activity') or '—').replace('_', ' ').title()}"
                 )
             elif patient.get("source_type") == "live":
                 live_banner = (
-                    "### Live Camera · **OFFLINE**\n"
-                    "Waiting for fresh frames from `/camera-station` on the laptop."
+                    "### Live Camera · **Offline**\n"
+                    "Waiting For Fresh Frames From `/camera-station` On The Laptop."
                 )
     except Exception:
         pass
@@ -974,9 +991,9 @@ def back_to_patients(user, store: EventStore, panel: str = "Home"):
     cards, inbox, alerts = refresh_dashboard(user, store, panel=panel)
     return (
         cards,
-        "Patient board — tap a card for details.",
+        "Patient Board — Tap A Card For Details.",
         None,
-        "Status / next action",
+        "Status / Next Action",
         "",  # clear patient id textbox so live timer stops targeting Ana
         alerts,
         None,
